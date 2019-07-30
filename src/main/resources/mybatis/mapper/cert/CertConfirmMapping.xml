@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.CertConfirmMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.CertConfirm" >
+    <id column="confirm_id" property="confirmId" jdbcType="INTEGER" />
+    <result column="cert_id" property="certId" jdbcType="INTEGER" />
+    <result column="confirm_date" property="confirmDate" jdbcType="TIMESTAMP" />
+    <result column="confirm_person" property="confirmPerson" jdbcType="VARCHAR" />
+    <result column="confirm_state" property="confirmState" jdbcType="INTEGER" />
+    <result column="result" property="result" jdbcType="INTEGER" />
+    <result column="reason_code" property="reasonCode" jdbcType="VARCHAR" />
+    <result column="confirm_phone" property="confirmPhone" jdbcType="VARCHAR" />
+    <result column="return_reason" property="returnReason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    confirm_id, cert_id, confirm_date, confirm_person, confirm_state, result, reason_code, 
+    confirm_phone, return_reason
+  </sql>
+  <select id="selectByState" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from biz_cert_confirm
+  	where cert_id = #{certId}
+  	and confirm_state = 1
+  </select>
+  <update id="updateConfirmState" parameterType="java.util.Map">
+  	update biz_cert_confirm
+  	<set>
+  		confirm_state = 0
+  	</set>
+  	where cert_id = #{certId}
+  	and confirm_phone = #{confirmPhone}
+  </update>
+  <update id="updateByCertId" parameterType="java.util.Map">
+  	update biz_cert_confirm
+  	<set>
+  		return_reason = #{reason}
+  	</set>
+  	where cert_id = #{certId}
+  	and confirm_phone = #{confirmPhone}
+  </update>
+  <select id="selectByConfirmPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from biz_cert_confirm
+  	where confirm_phone = #{username}
+  	and confirm_state = 1
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from biz_cert_confirm
+    where confirm_id = #{confirmId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCertId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select
+  	<include refid="Base_Column_List"></include>
+  	from biz_cert_confirm
+  	where cert_id = #{certFicateId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from biz_cert_confirm
+    where confirm_id = #{confirmId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.dm.user.entity.CertConfirm" keyProperty="confirmId" useGeneratedKeys="true">
+    insert into biz_cert_confirm
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="certId != null" >
+        cert_id,
+      </if>
+      <if test="confirmDate != null" >
+        confirm_date,
+      </if>
+      <if test="confirmPerson != null" >
+        confirm_person,
+      </if>
+      <if test="confirmState != null" >
+        confirm_state,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+      <if test="reasonCode != null" >
+        reason_code,
+      </if>
+      <if test="confirmPhone != null" >
+        confirm_phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="certId != null" >
+        #{certId,jdbcType=INTEGER},
+      </if>
+      <if test="confirmDate != null" >
+        #{confirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmPerson != null" >
+        #{confirmPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmState != null" >
+        #{confirmState,jdbcType=INTEGER},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=INTEGER},
+      </if>
+      <if test="reasonCode != null" >
+        #{reasonCode,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmPhone != null" >
+        #{confirmPhone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertConfirm" >
+    update biz_cert_confirm
+    <set >
+      <if test="certId != null" >
+        cert_id = #{certId,jdbcType=INTEGER},
+      </if>
+      <if test="confirmDate != null" >
+        confirm_date = #{confirmDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmPerson != null" >
+        confirm_person = #{confirmPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmState != null" >
+        confirm_state = #{confirmState,jdbcType=INTEGER},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=INTEGER},
+      </if>
+      <if test="reasonCode != null" >
+        reason_code = #{reasonCode,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmPhone != null" >
+        confirm_phone = #{confirmPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="returnReason != null" >
+        return_reason = #{returnReason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where confirm_id = #{confirmId,jdbcType=INTEGER}
+  </update>
+</mapper>

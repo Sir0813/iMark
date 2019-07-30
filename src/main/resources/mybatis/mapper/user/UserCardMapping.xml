@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.UserCardMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.UserCard" >
+    <id column="cardid" property="cardid" jdbcType="INTEGER" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="card_type" property="cardType" jdbcType="VARCHAR" />
+    <result column="card_number" property="cardNumber" jdbcType="VARCHAR" />
+    <result column="front_path" property="frontPath" jdbcType="VARCHAR" />
+    <result column="back_path" property="backPath" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="real_state" property="realState" jdbcType="VARCHAR" />
+    <result column="post_time" property="postTime" jdbcType="TIMESTAMP" />
+    <result column="real_time" property="realTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cardid, real_name, card_type, card_number, front_path, back_path, userid, real_state, 
+    post_time, real_time
+  </sql>
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from sys_user_card
+  	where userid = #{userid}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user_card
+    where cardid = #{cardid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sys_user_card
+    where cardid = #{cardid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.dm.user.entity.UserCard" >
+    insert into sys_user_card
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cardid != null" >
+        cardid,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="cardType != null" >
+        card_type,
+      </if>
+      <if test="cardNumber != null" >
+        card_number,
+      </if>
+      <if test="frontPath != null" >
+        front_path,
+      </if>
+      <if test="backPath != null" >
+        back_path,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="realState != null" >
+        real_state,
+      </if>
+      <if test="postTime != null" >
+        post_time,
+      </if>
+      <if test="realTime != null" >
+        real_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cardid != null" >
+        #{cardid,jdbcType=INTEGER},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardType != null" >
+        #{cardType,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumber != null" >
+        #{cardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="frontPath != null" >
+        #{frontPath,jdbcType=VARCHAR},
+      </if>
+      <if test="backPath != null" >
+        #{backPath,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="realState != null" >
+        #{realState,jdbcType=VARCHAR},
+      </if>
+      <if test="postTime != null" >
+        #{postTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="realTime != null" >
+        #{realTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.UserCard" >
+    update sys_user_card
+    <set >
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumber != null" >
+        card_number = #{cardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="frontPath != null" >
+        front_path = #{frontPath,jdbcType=VARCHAR},
+      </if>
+      <if test="backPath != null" >
+        back_path = #{backPath,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="realState != null" >
+        real_state = #{realState,jdbcType=VARCHAR},
+      </if>
+      <if test="postTime != null" >
+        post_time = #{postTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="realTime != null" >
+        real_time = #{realTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cardid = #{cardid,jdbcType=INTEGER}
+  </update>
+</mapper>

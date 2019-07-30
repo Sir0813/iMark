@@ -1,0 +1,37 @@
+#redis基本配置；
+spring:
+   redis:
+      #自定义，redis模式   single单一，cluster集群
+      mode: cluster
+      #redis single配置===============
+      # use dbIndex 
+      database: 0
+      # server host1
+      host: 192.168.0.66
+      # server password
+      password: 
+      #connection port
+      port: 6001
+      # pool settings ...
+      pool:
+         #pool最多有多少个状态为idle(空闲的)的jedis实例
+         maxIdle: 100
+         minIdle: 0
+         maxActive: 300
+         maxTotal: 1000
+         # 表示当borrow(引入)一个jedis实例时，最大的等待时间，如果超过等待时间(毫秒)，则直接抛出JedisConnectionException； 
+         maxWait: 10000
+         # 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的    
+         testOnBorrow: true
+# name of Redis server
+#spring.redis.sentinel.master=
+# comma-separated list of host:port pairs
+#spring.redis.sentinel.nodes=
+
+#======================================================
+#redis cluster配置
+#======================================================
+         cluster:
+            nodes: 192.168.0.66:6001,192.168.0.66:6002
+            timeout: 20000
+            max-redirects: 100

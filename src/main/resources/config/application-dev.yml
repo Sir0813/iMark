@@ -1,0 +1,78 @@
+#application开发环境配置
+server:
+   port: 8080    #不指定默认为8080
+spring:
+   http:
+    multipart:   
+      enabled: false
+      resolveLazily: true  #延迟处理，并不生效
+      #max-file-size: 1Mb #单个文件最大值 控制类中设置大小可以捕获文件过大异常
+      #max-request-size: 10Mb #整体文件最大值
+   profiles:
+      #配置扩展profiles
+      include: sys,mybatis,socket,devDS,devRedis
+   mvc:
+      date-format: yyyy-MM-dd HH:mm:ss
+      #spring-webmvc的视图解析
+      view:
+      #prefix: /WEB-INF/
+      #suffix: .jsp
+      # 静态文件请求匹配方式
+      static-path-pattern: /**
+   #jackson:  
+      #date-format: yyyy-MM-dd HH:mm:ss
+      #serialization: 
+         #WRITE_ENUMS_USING_INDEX: true
+         #FAIL_ON_EMPTY_BEANS: false
+   messages:
+      #国际化语言配置，表示放在classpath的i18n文件夹，文件前缀为msg  
+      basename: i18n/msg
+   #thymeleaf视图框架配置
+   thymeleaf:
+      #指定模板的前缀，默认为:classpath:/templates/
+      prefix: /WEB-INF/thymeleaf/
+      # set to false for hot refresh    
+      cache: false    
+   #dev tools 热部署
+   devtools:
+      livereload:
+         enabled: true
+#log配置
+logging:
+   config: classpath:config/log4j2.xml
+#logging.level=info
+#logging.level.com.sc=debug
+
+#security配置
+security:
+  basic:
+     enabled: false
+  token:
+     secret: dm@123@dm     #token加密的服务端密钥，不能泄漏，否则客户端可以自己生成token
+     expiredTime: 36000000    #过期时间，单位毫秒，即多少毫秒后过期
+     requestParameter: Authorization     #url请求上传token的参数名称，默认为Authorization
+     prefix: Bearer          #url请求上传的token值前缀，验证时需要去掉此前缀
+  passwordEncoder: MD5       #密码编码器，默认使用BCrypt密码编码器
+  login:
+     usernameParameter: username   #spring security登录用户名参数名称，默认为username
+     passwordParameter: password   #spring security登录密码参数名称，默认为password
+management:
+  security:
+    enabled: false
+upload:
+   filePath: D:\upload
+   filePrefix: http://192.168.3.101/img
+#邮箱设置
+email:
+  address: 18811012959@163.com
+  smtp: smtp.163.com
+  pwd: jq390813
+  subject: 【迪曼森】
+  emailContent: 【存证平台】您的验证码是：$code$，验证码五分钟内有效，请不要把验证码泄露给其他人。
+  expired: 300000 #毫秒
+#极光推送服务
+jpush:
+  appKey: f0e7dec1b2aefc534e08fe18
+  masterSecret: 2464890880bcd3f52e00c1d7
+
+

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.User" >
+    <id column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="usercode" property="usercode" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="CHAR" />
+    <result column="is_enabled" property="isEnabled" jdbcType="INTEGER" />
+    <result column="is_expired" property="isExpired" jdbcType="INTEGER" />
+    <result column="is_credentials_expired" property="isCredentialsExpired" jdbcType="INTEGER" />
+    <result column="is_locked" property="isLocked" jdbcType="INTEGER" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="bad_login_num" property="badLoginNum" jdbcType="INTEGER" />
+    <result column="last_pwd_date" property="lastPwdDate" jdbcType="TIMESTAMP" />
+    <result column="last_active" property="lastActive" jdbcType="TIMESTAMP" />
+    <result column="created_date" property="createdDate" jdbcType="VARCHAR" />
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="describe" property="describe" jdbcType="VARCHAR" />
+    <result column="valid_end_date" property="validEndDate" jdbcType="TIMESTAMP" />
+    <result column="head_photo" property="headPhoto" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userid, usercode, username, mobile, email, `password`, sex, is_enabled, is_expired, 
+    is_credentials_expired, is_locked, salt, bad_login_num, last_pwd_date, last_active, 
+    created_date, source, `describe`, valid_end_date, head_photo
+  </sql>
+  <update id="updateById" parameterType="java.util.Map">
+  	update sys_user
+  	<set>
+  		password = #{password}
+  	</set>
+  	where userid = #{userid,jdbcType=INTEGER}
+  </update>
+  
+  <insert id="userRegister" parameterType="com.dm.user.entity.User" useGeneratedKeys="true" keyProperty="userid">
+    insert into sys_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="usercode != null" >
+        usercode,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+        <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+        <if test="isEnabled != null" >
+        is_enabled,
+      </if>
+      <if test="isExpired != null" >
+        is_expired,
+      </if>
+      <if test="isCredentialsExpired != null" >
+        is_credentials_expired,
+      </if>
+      <if test="isLocked != null" >
+        is_locked,
+      </if>
+      <if test="salt != null" >
+        salt,
+      </if>
+      <if test="badLoginNum != null" >
+        bad_login_num,
+      </if>
+      <if test="lastPwdDate != null" >
+        last_pwd_date,
+      </if>
+      <if test="lastActive != null" >
+        last_active,
+      </if>
+      <if test="createdDate != null" >
+        created_date,
+      </if>
+      <if test="source != null" >
+        source,
+      </if>
+      <if test="describe != null" >
+        describe,
+      </if>
+      <if test="validEndDate != null" >
+        valid_end_date,
+      </if>
+      <if test="headPhoto != null" >
+        head_Photo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <if test="usercode != null" >
+        #{usercode,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+        <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=CHAR},
+      </if>
+        <if test="isEnabled != null" >
+        #{isEnabled,jdbcType=INTEGER},
+      </if>
+      <if test="isExpired != null" >
+        #{isExpired,jdbcType=INTEGER},
+      </if>
+      <if test="isCredentialsExpired != null" >
+        #{isCredentialsExpired,jdbcType=INTEGER},
+      </if>
+      <if test="isLocked != null" >
+        #{isLocked,jdbcType=INTEGER},
+      </if>
+      <if test="salt != null" >
+        #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="badLoginNum != null" >
+        #{badLoginNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastPwdDate != null" >
+        #{lastPwdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastActive != null" >
+        #{lastActive,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        #{source,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="validEndDate != null" >
+        #{validEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="headPhoto != null" >
+        #{headPhoto,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List"></include>
+    from sys_user
+    where username = #{username,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user
+    where userid = #{userid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sys_user
+    where userid = #{userid,jdbcType=INTEGER}
+  </delete>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.User" >
+    update sys_user
+    <set >
+      <if test="usercode != null" >
+        usercode = #{usercode,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=CHAR},
+      </if>
+      <if test="isEnabled != null" >
+        is_enabled = #{isEnabled,jdbcType=INTEGER},
+      </if>
+      <if test="isExpired != null" >
+        is_expired = #{isExpired,jdbcType=INTEGER},
+      </if>
+      <if test="isCredentialsExpired != null" >
+        is_credentials_expired = #{isCredentialsExpired,jdbcType=INTEGER},
+      </if>
+      <if test="isLocked != null" >
+        is_locked = #{isLocked,jdbcType=INTEGER},
+      </if>
+      <if test="salt != null" >
+        salt = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="badLoginNum != null" >
+        bad_login_num = #{badLoginNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastPwdDate != null" >
+        last_pwd_date = #{lastPwdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastActive != null" >
+        last_active = #{lastActive,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdDate != null" >
+        created_date = #{createdDate,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=INTEGER},
+      </if>
+      <if test="describe != null" >
+        describe = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="validEndDate != null" >
+        valid_end_date = #{validEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="headPhoto != null" >
+        head_photo = #{headPhoto,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=INTEGER}
+  </update>
+</mapper>

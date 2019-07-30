@@ -1,0 +1,6 @@
+#mybatis配置
+mybatis:
+   config-location: classpath:mybatis/mybatis.cfg.xml #  mybatis主配置文件所在路径
+   type-aliases-package: com.dm.**.entity #实体类所在包路径
+   mapper-locations: #  所有的mapper映射文件
+   - classpath:mybatis/mapper/**/*.xml

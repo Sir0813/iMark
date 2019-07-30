@@ -1,0 +1,12 @@
+#Websocket配置
+websocket:
+   #STOMP端点注册
+   stompEndpoint: /ipws
+   #消息代理
+   messageBroker: 
+      #订阅主题（消费者），这里设置的simple broker是指可以订阅的地址，也就是服务器可以发送的地址
+      destinationPrefixes: /topic,/queue,/user
+      #发送主题（生产者）前缀，客户端向服务端发送时的主题上面需要加上此前缀
+      applicationDestinationPrefixes: /app
+      #给指定用户发送一对一的主题前缀
+      userDestinationPrefix: /user

@@ -1,0 +1,25 @@
+<config>
+    <input>
+        <jar in="jboot-1.0.1-SNAPSHOT.jar" out="jboot-1.0.1-SNAPSHOT-obfuscated.jar"/>
+    </input>
+
+    <keep-names>
+        <class access="protected+">
+            <field access="protected+"/>
+           <method access="protected+" parameters="keep"/>
+        </class>
+        <!-- 
+        <class template="public class * instanceof android.app.Activity">
+             <method template="public void *(android.view.View)"/>
+             <method template="public void set*(**)"/>
+         </class>
+         <class template="public class com.android.vending.licensing.ILicensingService"/>
+         <class template="class * implements android.os.Parcelable">
+             <field template="public static final android.os.Parcelable$Creator *"/>
+         </class>
+         <class template="class com.sc.frame.jboot.global.redis.RedisCacheConfig"/>
+         -->
+    </keep-names>
+
+    <property name="log-file" value="log.xml"/>
+</config>

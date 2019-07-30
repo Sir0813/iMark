@@ -1,0 +1,80 @@
+#spring数据源配置
+spring:
+   # 数据库访问配置
+   # 主数据源，默认的
+   datasource:
+      database: MySQL
+      type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:mysql://192.168.1.220:3306/CZT?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: cdisa
+      password: Cdisa@123
+      driverClassName : com.mysql.jdbc.Driver
+      
+      #test-while-idle: true
+      validation-query: SELECT 1
+      
+      #从数据源配置
+      slave:
+         names: slave1,slave2
+         slave1:
+            type: com.alibaba.druid.pool.DruidDataSource
+            url: jdbc:mysql://192.168.1.220:3306/jboot-slave1?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+            username: cdisa
+            password: Cdisa@123
+            driverClassName : com.mysql.jdbc.Driver
+         slave2:
+            type: com.alibaba.druid.pool.DruidDataSource
+            url: jdbc:mysql://192.168.1.220:3306/jboot-slave2?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+            username: cdisa
+            password: Cdisa@123
+            driverClassName : com.mysql.jdbc.Driver
+            
+      #连接池配置
+      #druid连接池配置
+      druid:
+         initial-size: 5  #初始化连接数
+         max-active: 20 #最大连接数
+         min-idle: 5 #最小连接数
+         max-wait: 6000 #最大等待时间
+         connect-properties: config.decrypt=true;config.decrypt.key=${spring.datasource.druid.config.key}
+         #开启监控页面
+         stat-view-servlet:
+            enabled: true
+            url-pattern: /druid/*
+            login-username: admin
+            login-password: admin
+            #禁用HTML页面上的“Reset All”功能
+            resetEnable: false 
+         filter: stat,wall,log4j
+            #stat:
+             #   log-slow-sql: true
+             #   slow-sql-millis: 1000
+              #  merge-sql: true
+            #wall:
+               # config:
+               #     multi-statement-allow: true
+               #开启Web监控
+         web-stat:
+           enabled: true
+         #开启AOP监控
+         aop-stat:
+           enabled: true
+         #开启WallFilter
+         wall:
+           enabled: true
+           throw-exception: true
+         config:
+           enabled: true
+           #加密秘钥
+           key: dfdfsd1232 | kdfjfdko    #your_public_key | private_key
+       # 下面为连接池的补充设置，应用到上面所有数据源中，初始化大小，最小，最大
+       #dbcp2:                                        #  进行数据库连接池的配置
+         #min-idle: 5                                 #  数据库连接池的最小维持连接数
+         #initial-size: 5                             #  初始化提供的连接数
+         #max-total: 5                                #  最大连接数
+         #max-wait-millis: 200                        #  等待连接获取的最大超时时间
+
+
+
+
+

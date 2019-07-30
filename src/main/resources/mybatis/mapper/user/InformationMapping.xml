@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.InformationMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.Information" >
+    <id column="info_id" property="infoId" jdbcType="INTEGER" />
+    <result column="info_code" property="infoCode" jdbcType="VARCHAR" />
+    <result column="info_msg" property="infoMsg" jdbcType="VARCHAR" />
+    <result column="info_sendDate" property="infoSenddate" jdbcType="TIMESTAMP" />
+    <result column="info_user" property="infoUser" jdbcType="VARCHAR" />
+    <result column="info_state" property="infoState" jdbcType="VARCHAR" />
+    <result column="info_phone" property="infoPhone" jdbcType="VARCHAR" />
+    <result column="info_expiredDate" property="infoExpireddate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    info_id, info_code, info_msg, info_sendDate, info_user, info_state, info_phone, 
+    info_expiredDate
+  </sql>
+  <select id="selectByPhone" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"></include>
+  	from biz_info
+  	where info_phone = #{email}
+  	and info_state = 0
+  	order by info_sendDate DESC
+  	limit 1
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from biz_info
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from biz_info
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.dm.user.entity.Information"
+  useGeneratedKeys="true" keyProperty="infoId" >
+    insert into biz_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="infoCode != null" >
+        info_code,
+      </if>
+      <if test="infoMsg != null" >
+        info_msg,
+      </if>
+      <if test="infoSenddate != null" >
+        info_sendDate,
+      </if>
+      <if test="infoUser != null" >
+        info_user,
+      </if>
+      <if test="infoState != null" >
+        info_state,
+      </if>
+      <if test="infoPhone != null" >
+        info_phone,
+      </if>
+      <if test="infoExpireddate != null" >
+        info_expiredDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="infoCode != null" >
+        #{infoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="infoMsg != null" >
+        #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="infoSenddate != null" >
+        #{infoSenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="infoUser != null" >
+        #{infoUser,jdbcType=VARCHAR},
+      </if>
+      <if test="infoState != null" >
+        #{infoState,jdbcType=VARCHAR},
+      </if>
+      <if test="infoPhone != null" >
+        #{infoPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="infoExpireddate != null" >
+        #{infoExpireddate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.Information" >
+    update biz_info
+    <set >
+      <if test="infoCode != null" >
+        info_code = #{infoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="infoMsg != null" >
+        info_msg = #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="infoSenddate != null" >
+        info_sendDate = #{infoSenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="infoUser != null" >
+        info_user = #{infoUser,jdbcType=VARCHAR},
+      </if>
+      <if test="infoState != null" >
+        info_state = #{infoState,jdbcType=VARCHAR},
+      </if>
+      <if test="infoPhone != null" >
+        info_phone = #{infoPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="infoExpireddate != null" >
+        info_expiredDate = #{infoExpireddate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </update>
+</mapper>
