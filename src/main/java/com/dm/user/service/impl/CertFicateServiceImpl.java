@@ -8,6 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dm.cid.sdk.service.ChainCertService;
+import com.dm.cid.sdk.service.impl.ChainCertServiceImpl;
+import com.dm.fchain.sdk.helper.CryptoHelper;
+import com.dm.fchain.sdk.model.TransactionResult;
+import com.dm.fchain.sdk.msg.Result;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.user.entity.CertConfirm;
@@ -80,7 +87,14 @@ public class CertFicateServiceImpl implements CertFicateService{
 			certFicate.setCertPostDate(new Date());
 			/*存证入链*/
 			if (StateMsg.toCert==certFicate.getCertStatus()) {
-				certFicate.setCertChainno("chainNo");
+				/*ChainCertService chainCertService = new ChainCertServiceImpl();
+				Result result = chainCertService.save(certFicate.getCertHash(), certFicate.getCertName(), new Date().toString(), "");
+				Object data = result.getData();
+				if (data instanceof TransactionResult) {
+					TransactionResult tr = (TransactionResult) result.getData();
+	                String txid = tr.getTransactionID();
+	                certFicate.setCertChainno(txid);
+				}*/
 				certFicate.setCertDate(new Date());
 				certFicate.setCertStatus(certFicate.getCertIsconf()==1?StateMsg.othersConfirm:StateMsg.certSuccess);
 				sendMsg = true;
@@ -104,12 +118,11 @@ public class CertFicateServiceImpl implements CertFicateService{
 						//LoginUserDetails user = loginUserService.getUserByUsername(certConfirm.getConfirmPhone());
 						/*发消息请求确认*/
 						if (certConfirm.getConfirmState()!=StateMsg.originator) {
-							PushUtil.getInstance().sendToRegistrationId(
-									true,"170976fa8af4d7f63a0", "您有一条新的存证待确认",
-									null, "您有一条新的存证待确认，点击查看详情→", "扩展字段（通常传跳转的链接）");
-							/*PushUtil.getInstance().sendToRegistrationId(
-									false,"170976fa8af4d7f63a0", null,
-									"您有一条新的存证待确认", "消息内容", "扩展字段（通常传跳转的链接）");*/
+							JSONObject json = new JSONObject();
+							json.put("time", "2019");
+							json.put("type", "0");
+							json.put("url", "www.baidu.com");
+							PushUtil.getInstance().sendToRegistrationId("170976fa8af4d7f63a0", "我是标题", json.toString());
 						}
 					}
 					certConfirmMapper.insertSelective(certConfirm);

@@ -38,7 +38,7 @@ public class PushUtil{
     	String appKey = null;
     	String masterSecret = null;
     	Yaml yaml = new Yaml();
-    	URL url = PushUtil.class.getClassLoader().getResource("application-dev.yml");
+    	URL url = PushUtil.class.getClassLoader().getResource("config/application-dev.yml");
     	if (url != null) {
             Map<String, Object> map =(Map)yaml.load(new FileInputStream(url.getFile()));
             String jsonStr = new JSONObject(map).get("jpush").toString().replace("=", ":");
@@ -67,23 +67,17 @@ public class PushUtil{
  
     /**
      * 推送给指定设备标识参数的用户（自定义消息通知）
-     * @param sendNotification true 发送通知  false 发送自定义消息
      * @param alias 设备标识 用户ID 别名
-     * @param notification_title 通知内容标题
      * @param msg_title 消息内容标题
      * @param msg_content 消息内容
-     * @param extrasparam 扩展字段（通常传跳转的链接）
      * @return 0推送失败，1推送成功
      */
-    public int sendToRegistrationId(boolean sendNotification, String alias, String notification_title, String msg_title, String msg_content, String extrasparam) {
+    public int sendToRegistrationId(String alias, String msg_title, String msg_content) {
         int result = 0;
         try {
         	PushPayload pushPayload = null;
-        	if (sendNotification) {
-        		pushPayload = this.buildPushObjectAlertWithTitle(alias, notification_title, msg_content, extrasparam);
-			}else {
-				pushPayload = this.buildPushObjectMessageWithTitle(alias, msg_title, msg_content, extrasparam);
-			}
+        	//pushPayload = this.buildPushObjectAlertWithTitle(alias, msg_content, extrasparam);
+			pushPayload = this.buildPushObjectMessageWithTitle(alias, msg_title, msg_content);
             PushResult pushResult = jpushClient.sendPush(pushPayload);
             if(pushResult.getResponseCode() == 200){
                 result=1;
@@ -109,7 +103,7 @@ public class PushUtil{
      * @param extrasparam 扩展字段（通常传跳转的链接）
      * @return
      */
-    private PushPayload buildPushObjectMessageWithTitle(String alias, String msg_title, String msg_content, String extrasparam) {
+    private PushPayload buildPushObjectMessageWithTitle(String alias, String msg_title, String msg_content) {
         //创建一个IosAlert对象，可指定APNs的alert、title等字段
         //IosAlert iosAlert =  IosAlert.newBuilder().setTitleAndBody("title", "alert body").build();
         return PushPayload.newBuilder()
@@ -146,13 +140,12 @@ public class PushUtil{
                                 // .setContentAvailable(true)
                                 .build())
                         .build())*/
-                //Platform指定了哪些平台就会像指定平台中符合推送条件的设备进行推送。 jpush的自定义消息，
+                //Platform指定了哪些平台就会向指定平台中符合推送条件的设备进行推送。 jpush的自定义消息，
                 // sdk默认不做任何处理，不会有通知提示。建议看文档http://docs.jpush.io/guideline/faq/的
                 // [通知与自定义消息有什么区别？]了解通知和自定义消息的区别
                 .setMessage(Message.newBuilder()
-                        .setMsgContent(msg_content)
-                        .setTitle(msg_title)
-                        .addExtra("url", extrasparam) //释放该字段会发送两次消息，第二次消息内容是扩展字段
+                        .setMsgContent(msg_content)//消息内容本身
+                        .setTitle(msg_title)//消息标题
                         .build())
                 .setOptions(Options.newBuilder()
                         //此字段的值是用来指定本推送要推送的apns环境，false表示开发，true表示生产；对android和自定义消息无意义
@@ -174,17 +167,15 @@ public class PushUtil{
      * @param extrasparam
      * @return
      */
-    private PushPayload buildPushObjectAlertWithTitle(String alias, String notification_title, String msg_content, String extrasparam) {
+	private PushPayload buildPushObjectAlertWithTitle(String alias,
+    		String msg_content, String extravalue) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(null==alias?Audience.all():Audience.registrationId(alias))
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(AndroidNotification.newBuilder()
-                                .setAlert(msg_content)
-                                .setTitle(notification_title)
-                                .addExtra("url", extrasparam)
-                                .addExtra("number", 123456)
-                                .addExtra("b", true)
+                                .setAlert(msg_content)//通知内容
+                                .addExtra("key", extravalue)//自定义json信息
                                 .build())
                         .build())
                 .setOptions(Options.newBuilder()
