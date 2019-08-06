@@ -1,7 +1,8 @@
 package com.dm.user;
 
-import com.dm.cid.sdk.service.ChainCertService;
-import com.dm.cid.sdk.service.impl.ChainCertServiceImpl;
+
+import com.dm.cid.sdk.service.CIDService;
+import com.dm.cid.sdk.service.impl.CIDServiceImpl;
 
 /**
  * @Description
@@ -11,12 +12,13 @@ import com.dm.cid.sdk.service.impl.ChainCertServiceImpl;
  */
 public class AppTest {
     public static void main(String[] args) {
-        ChainCertService ccs = new ChainCertServiceImpl();
+        CIDService ccs = new CIDServiceImpl();
         try {
-            String result = ccs.query("id00001");
-            System.out.println("======"+result);
-            ccs.save("id00003","存证测试2","2019-07-31","");
-            result = ccs.query("id00003");
+            //String result = ccs.query("5EEsG2VNPYOYerDAMKSeGfZXTlJ4mkHrjURXPl5MG0c=");
+            //System.out.println("======"+result);
+            //Result res = ccs.save("id00003","存证测试2","2019-07-31","");
+           // System.out.println(res.getData());
+            String result = ccs.query("id00003");
             System.out.println("======"+result);
         } catch (Exception e) {
             e.printStackTrace();

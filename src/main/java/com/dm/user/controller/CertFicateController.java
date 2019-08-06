@@ -1,11 +1,5 @@
 package com.dm.user.controller;
 
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
@@ -13,6 +7,12 @@ import com.dm.user.entity.CertFicate;
 import com.dm.user.service.CertFicateService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/certficate")
@@ -32,7 +32,18 @@ public class CertFicateController extends BaseController {
 		CertFicate cert = certFicateService.save(certFicate);
 		return ResultUtil.success(cert);
 	}
-	
+
+	/**
+	 * 我的存证
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	public Result list(Page<CertFicate> page, String state) throws Exception {
+		PageInfo<CertFicate> certFicateList = certFicateService.list(page,state);
+		return ResultUtil.success(certFicateList);
+	}
+
 	/**
 	 * 存证详情
 	 * @param certFicateId 存证ID
@@ -46,26 +57,15 @@ public class CertFicateController extends BaseController {
 	}
 	
 	/**
-	 * 我的存证
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public Result list(Page<CertFicate> page,String state) throws Exception {
-		PageInfo<CertFicate>certFicateList = certFicateService.list(page,state);
-		return ResultUtil.success(certFicateList);
-	}
-	
-	/**
 	 * 待自己确认
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/waitMyselfConfirm",method=RequestMethod.GET)
+	/*@RequestMapping(value="/waitMyselfConfirm",method=RequestMethod.GET)
 	public Result waitMyselfConfirm(Page<CertFicate> page) throws Exception {
 		PageInfo<CertFicate>certFicateList = certFicateService.waitMyselfConfirm(page);
 		return ResultUtil.success(certFicateList);
-	}
+	}*/
 
 	/**
 	 * 撤回待他人确认存证

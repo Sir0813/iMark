@@ -1,14 +1,5 @@
 package com.dm.user.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
@@ -17,13 +8,28 @@ import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.frame.jboot.util.MD5Util;
 import com.dm.user.entity.Information;
+import com.dm.user.entity.PushMsg;
 import com.dm.user.entity.User;
 import com.dm.user.entity.UserCard;
 import com.dm.user.mapper.InformationMapper;
 import com.dm.user.mapper.UserCardMapper;
 import com.dm.user.mapper.UserMapper;
+import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserService;
+import com.dm.user.util.PushUtil;
 import com.dm.user.util.RandomCode;
+import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
@@ -40,6 +46,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserCardMapper userCardMapper;
+
+	@Autowired
+	private PushMsgService pushMsgService;
 	
 	@Value("${email.emailContent}")
 	private String emailContent;
@@ -136,7 +145,43 @@ public class UserServiceImpl implements UserService{
 		map.put("realState", null==userCard?"":userCard.getRealState());
 		return ResultUtil.success(map);
 	}
-	
+
+	@Override
+	public Result getPushMsg() throws Exception {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(username);
+		if (pmList.size()>0){
+			pmList.forEach(pm->{
+				String json = new Gson().toJson(pm);
+				try {
+					int resout = PushUtil.getInstance().sendToRegistrationId(username, pm.getTitle(), json);
+					if (resout==1){
+						pm.setState("1");
+						pushMsgService.updateByPrimaryKeySelective(pm);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+		return ResultUtil.success();
+	}
+
+	@Override
+	public void getRegistrationId(Map<String,Object>map) throws Exception {
+		try {
+			String registrationId = map.get("registrationId").toString();
+			String alias = map.get("alias").toString();
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User user = userMapper.findByUserName(username);
+			user.setUsercode(registrationId);
+			PushUtil.getInstance().bindMobil(registrationId,alias);
+			userMapper.updateByPrimaryKeySelective(user);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
 	public Result checkVeriCode(Information info,Map<String, Object> map) {
 		if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
 			return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
@@ -149,4 +194,6 @@ public class UserServiceImpl implements UserService{
 		}
 		return ResultUtil.success();
 	}
+
+
 }

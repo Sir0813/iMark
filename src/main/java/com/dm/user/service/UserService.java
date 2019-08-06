@@ -1,8 +1,9 @@
 package com.dm.user.service;
 
-import java.util.Map;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.User;
+
+import java.util.Map;
 
 public interface UserService {
 
@@ -35,4 +36,16 @@ public interface UserService {
 	 */
 	Result userInfo() throws Exception;
 
+	/**
+	 * 登录后获取离线推送消息
+	 * @return
+	 * @throws Exception
+	 */
+	Result getPushMsg() throws Exception;
+
+	/**
+	 * 极光绑定关系
+	 * @param map
+	 */
+	void getRegistrationId(Map<String, Object> map) throws Exception;
 }

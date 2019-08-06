@@ -86,6 +86,14 @@
   				or cert_status = 6
   			</if>
   		</when>
+  		<otherwise>
+            and cert_isconf = 1
+            and cert_status = 4
+            or cert_id in
+            <foreach collection="certid" item="item" open="(" close= ")" separator=",">
+                #{item}
+            </foreach>
+        </otherwise>
   	</choose>
   	and cert_is_delete = 1
   </select>

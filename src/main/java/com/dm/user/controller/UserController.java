@@ -1,15 +1,5 @@
 package com.dm.user.controller;
 
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
@@ -17,6 +7,12 @@ import com.dm.user.entity.User;
 import com.dm.user.service.InformationService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequestMapping
@@ -33,7 +29,6 @@ public class UserController extends BaseController {
 	
 	/**
 	 * 发送验证码
-	 * @param request
 	 * @param phone
 	 * @return
 	 * @throws Exception
@@ -54,7 +49,29 @@ public class UserController extends BaseController {
 	public Result register(@RequestBody User user) throws Exception {
 		return userService.userRegister(user);
 	}
-	
+
+	/**
+	 * 极光推送获取用户 推送ID
+	 * @param registrationId 一个ID对应一个用户
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/getRegistrationId", method = RequestMethod.POST)
+	public Result getRegistrationId(@RequestBody Map<String,Object>map) throws Exception{
+		userService.getRegistrationId(map);
+		return ResultUtil.success();
+	}
+
+    /**
+     * 登录后获取离线推送消息
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/user/getPushMsg", method = RequestMethod.GET)
+    public Result getPushMsg() throws Exception{
+        return userService.getPushMsg();
+    }
+
 	/**
 	 * 我的-个人信息
 	 * @return
@@ -136,6 +153,5 @@ public class UserController extends BaseController {
 	public Result changePhone(@RequestBody Map<String,Object>map) throws Exception {
 		return informationService.changePhone(map);
 	}
-	
-	
+
 }

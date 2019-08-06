@@ -1,7 +1,7 @@
 #当前Channel配置
 name: cid
-path: src/main/resources/channel/cid/
-store: store/cidStore.properties
+path: classpath:channel/cid/
+store: cidStore.properties
 configtxlatorLocation: http://192.168.1.202:7059
 tls: true
 invokeWaitTime: 32000

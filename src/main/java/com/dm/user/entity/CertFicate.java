@@ -1,8 +1,9 @@
 package com.dm.user.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Date;
 import java.util.List;
-import com.alibaba.fastjson.annotation.JSONField;
 
 public class CertFicate {
     private Integer certId;

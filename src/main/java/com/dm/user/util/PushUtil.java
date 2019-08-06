@@ -1,14 +1,5 @@
 package com.dm.user.util;
 
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import cn.jiguang.common.resp.APIConnectionException;
 import cn.jiguang.common.resp.APIRequestException;
 import cn.jpush.api.JPushClient;
@@ -20,6 +11,13 @@ import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.Notification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.FileInputStream;
+import java.util.Map;
 
 @Component
 public class PushUtil{
@@ -29,7 +27,7 @@ public class PushUtil{
     private JPushClient jpushClient;
 
     private static Logger logger = LoggerFactory.getLogger(PushUtil.class);
-    
+
     /**
      * 极光账户初始化
      * @throws Exception
@@ -38,22 +36,24 @@ public class PushUtil{
     	String appKey = null;
     	String masterSecret = null;
     	Yaml yaml = new Yaml();
-    	URL url = PushUtil.class.getClassLoader().getResource("config/application-dev.yml");
-    	if (url != null) {
-            Map<String, Object> map =(Map)yaml.load(new FileInputStream(url.getFile()));
-            String jsonStr = new JSONObject(map).get("jpush").toString().replace("=", ":");
-            jsonStr = jsonStr.replace("{", "{\"").replace(":", "\":\"")
-            		.replace(",", "\",\"").replace("}", "\"}").replace(" ", "");
-            JSONObject parseObject = JSON.parseObject(jsonStr);
-            appKey = parseObject.get("appKey").toString();
-            masterSecret = parseObject.get("masterSecret").toString();
-        }
+        String url = PushUtil.class.getClassLoader().getResource("config/application-dev.yml").getPath();
+        Map<String,Object> map = yaml.loadAs(new FileInputStream(url), Map.class);
+        appKey = ((Map<String, Object>) map.get("jpush")).get("appKey").toString();
+        masterSecret = ((Map<String, Object>) map.get("jpush")).get("masterSecret").toString();
     	if (appKey == null || masterSecret == null) {
             throw new Exception("极光推送账户初始化失败");
         }
         jpushClient = new JPushClient(masterSecret, appKey);
     }
- 
+
+    public void bindMobil(String registrationId,String mobile){
+        try {
+            jpushClient.bindMobile(registrationId, mobile);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public static PushUtil getInstance() throws Exception {
         if (null == instance) {
             synchronized (PushUtil.class) {
@@ -64,7 +64,7 @@ public class PushUtil{
         }
         return instance;
     }
- 
+
     /**
      * 推送给指定设备标识参数的用户（自定义消息通知）
      * @param alias 设备标识 用户ID 别名
@@ -75,11 +75,11 @@ public class PushUtil{
     public int sendToRegistrationId(String alias, String msg_title, String msg_content) {
         int result = 0;
         try {
-        	PushPayload pushPayload = null;
         	//pushPayload = this.buildPushObjectAlertWithTitle(alias, msg_content, extrasparam);
-			pushPayload = this.buildPushObjectMessageWithTitle(alias, msg_title, msg_content);
+            PushPayload pushPayload = null;
+            pushPayload = this.buildPushObjectMessageWithTitle(alias, msg_title, msg_content);
             PushResult pushResult = jpushClient.sendPush(pushPayload);
-            if(pushResult.getResponseCode() == 200){
+            if(pushResult.getResponseCode() == 200&&pushResult.statusCode==0){
                 result=1;
             }
             logger.info("[极光推送]PushResult result is " + pushResult);
@@ -97,10 +97,8 @@ public class PushUtil{
     /**
      * 推送自定义消息
      * @param alias 设备标识 用户ID 别名
-     * @param notification_title 通知内容标题
      * @param msg_title 消息内容标题
      * @param msg_content 消息内容
-     * @param extrasparam 扩展字段（通常传跳转的链接）
      * @return
      */
     private PushPayload buildPushObjectMessageWithTitle(String alias, String msg_title, String msg_content) {
@@ -108,12 +106,11 @@ public class PushUtil{
         //IosAlert iosAlert =  IosAlert.newBuilder().setTitleAndBody("title", "alert body").build();
         return PushPayload.newBuilder()
                 //指定要推送的平台，all代表当前应用配置了的所有平台，也可以传android等具体平台
-                .setPlatform(Platform.all())
+                .setPlatform(Platform.android())
                 //指定推送的接收对象，all代表所有人，也可以指定已经设置成功的tag或alias或该应应用客户端调用接口获取到的registration id
-                //.setAudience(Audience.alias(alias))
+                .setAudience(Audience.alias(alias))
                 //.setAudience(Audience.all()) //所有人
                 //.setAudience(Audience.registrationId(alias)) //注册ID
-                .setAudience(null==alias?Audience.all():Audience.registrationId(alias))
                 //jpush的通知，android的由jpush直接下发，iOS的由apns服务器下发，Winphone的由mpns下发
                 /*.setNotification(Notification.newBuilder()
                         //指定当前推送的android通知
@@ -161,10 +158,8 @@ public class PushUtil{
     /**
      * 推送通知
      * @param alias
-     * @param notification_title
-     * @param msg_title
      * @param msg_content
-     * @param extrasparam
+     * @param extravalue
      * @return
      */
 	private PushPayload buildPushObjectAlertWithTitle(String alias,

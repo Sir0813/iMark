@@ -6,25 +6,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import com.dm.frame.jboot.util.Base64;
 
 public class ShaUtil {
-	
+
 	/**
-	 * 
-	 * @param path 路径
+	 * 文件转换为byte
+	 * @param path
 	 * @return
-	 * @throws Exception
 	 */
-	public static String encodeBase64File(String path) {
+	public static byte[] getFileByte(String path) {
 		try {
 			File file = new File(path);
 			FileInputStream inputFile = new FileInputStream(file);
 			byte[] buffer = new byte[(int) file.length()];
 			inputFile.read(buffer);
 			inputFile.close();
-			String encode = Base64.encode(buffer);
-			return encode;
+			//String encode = Base64.encode(buffer);
+			return buffer;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

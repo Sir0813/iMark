@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.PushMsgMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.PushMsg" >
+    <id column="push_id" property="pushId" jdbcType="INTEGER" />
+    <result column="cert_ficate_id" property="certFicateId" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="server_time" property="serverTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="skip_url" property="skipUrl" jdbcType="VARCHAR" />
+    <result column="receive" property="receive" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state
+  </sql>
+  <select id="selectByReceiveAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_push
+    where receive = #{username}
+    and state = '0'
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from biz_push
+    where push_id = #{pushId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from biz_push
+    where push_id = #{pushId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dm.user.entity.PushMsg" >
+    insert into biz_push (push_id, cert_ficate_id, title, 
+      content, server_time, type, 
+      skip_url, receive, state
+      )
+    values (#{pushId,jdbcType=INTEGER}, #{certFicateId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{serverTime,jdbcType=TIMESTAMP}, #{type,jdbcType=VARCHAR}, 
+      #{skipUrl,jdbcType=VARCHAR}, #{receive,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dm.user.entity.PushMsg" useGeneratedKeys="true" keyProperty="pushId">
+    insert into biz_push
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="certFicateId != null" >
+        cert_ficate_id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="serverTime != null" >
+        server_time,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="skipUrl != null" >
+        skip_url,
+      </if>
+      <if test="receive != null" >
+        receive,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="certFicateId != null" >
+        #{certFicateId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="serverTime != null" >
+        #{serverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="skipUrl != null" >
+        #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="receive != null" >
+        #{receive,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.PushMsg" >
+    update biz_push
+    <set >
+      <if test="certFicateId != null" >
+        cert_ficate_id = #{certFicateId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="serverTime != null" >
+        server_time = #{serverTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="skipUrl != null" >
+        skip_url = #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="receive != null" >
+        receive = #{receive,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where push_id = #{pushId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.PushMsg" >
+    update biz_push
+    set cert_ficate_id = #{certFicateId,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      server_time = #{serverTime,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=VARCHAR},
+      skip_url = #{skipUrl,jdbcType=VARCHAR},
+      receive = #{receive,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR}
+    where push_id = #{pushId,jdbcType=INTEGER}
+  </update>
+</mapper>

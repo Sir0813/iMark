@@ -16,7 +16,7 @@ public final class StateMsg {
 	public static final int isReturn = 5;//已退回
 	
 	public static final int isRevoke = 6;//已撤回
-	
+
 	//----------------确认状态----------------
 	public static final int isConfirm = 0;//已确认
 	
