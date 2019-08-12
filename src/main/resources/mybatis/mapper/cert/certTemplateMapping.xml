@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.user.mapper.CertTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.dm.user.entity.CertTemplate" >
+    <id column="template_id" property="templateId" jdbcType="INTEGER" />
+    <result column="template_title" property="templateTitle" jdbcType="VARCHAR" />
+    <result column="template_url" property="templateUrl" jdbcType="VARCHAR" />
+    <result column="template_type" property="templateType" jdbcType="VARCHAR" />
+    <result column="template_path" property="templatePath" jdbcType="VARCHAR" />
+    <result column="template_edit_url" property="templateEditUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    template_id, template_title, template_url, template_type, template_path, template_edit_url
+  </sql>
+  <select id="getByTemplateType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_template
+    where template_type = #{type}
+  </select>
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_template
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from biz_template
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from biz_template
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.dm.user.entity.CertTemplate" useGeneratedKeys="true" keyProperty="templateId">
+    insert into biz_template
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="templateTitle != null" >
+        template_title,
+      </if>
+      <if test="templateUrl != null" >
+        template_url,
+      </if>
+      <if test="templateType != null" >
+        template_type,
+      </if>
+      <if test="templatePath != null" >
+        template_path,
+      </if>
+      <if test="templateEditUrl != null" >
+        template_edit_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="templateTitle != null" >
+        #{templateTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="templateUrl != null" >
+        #{templateUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="templateType != null" >
+        #{templateType,jdbcType=VARCHAR},
+      </if>
+      <if test="templatePath != null" >
+        #{templatePath,jdbcType=VARCHAR},
+      </if>
+      <if test="templateEditUrl != null" >
+        #{templateEditUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertTemplate" >
+    update biz_template
+    <set >
+      <if test="templateTitle != null" >
+        template_title = #{templateTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="templateUrl != null" >
+        template_url = #{templateUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="templateType != null" >
+        template_type = #{templateType,jdbcType=VARCHAR},
+      </if>
+      <if test="templatePath != null" >
+        template_path = #{templatePath,jdbcType=VARCHAR},
+      </if>
+      <if test="templateEditUrl != null" >
+        template_edit_url = #{templateEditUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where template_id = #{templateId,jdbcType=INTEGER}
+  </update>
+</mapper>
