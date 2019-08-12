@@ -23,6 +23,16 @@ public class PushMsg {
 
     private String state;
 
+    private String certName;
+
+    public String getCertName() {
+        return certName;
+    }
+
+    public void setCertName(String certName) {
+        this.certName = certName;
+    }
+
     public Integer getPushId() {
         return pushId;
     }
@@ -55,7 +65,7 @@ public class PushMsg {
         this.content = content == null ? null : content.trim();
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getServerTime() {
         return serverTime;
     }

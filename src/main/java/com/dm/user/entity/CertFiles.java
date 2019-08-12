@@ -11,7 +11,7 @@ public class CertFiles {
 
     private String filePath;
     
-    private String certId;
+    private Integer certId;
     
     private String fileSeq;
     
@@ -49,6 +49,14 @@ public class CertFiles {
         this.fileName = fileName == null ? null : fileName.trim();
     }
 
+    public Integer getCertId() {
+        return certId;
+    }
+
+    public void setCertId(Integer certId) {
+        this.certId = certId;
+    }
+
     public Double getFileSize() {
         return fileSize;
     }
@@ -64,14 +72,6 @@ public class CertFiles {
     public void setFilePath(String filePath) {
         this.filePath = filePath == null ? null : filePath.trim();
     }
-
-	public String getCertId() {
-		return certId;
-	}
-
-	public void setCertId(String certId) {
-		this.certId = certId;
-	}
 
 	public String getFileUrl() {
 		return fileUrl;

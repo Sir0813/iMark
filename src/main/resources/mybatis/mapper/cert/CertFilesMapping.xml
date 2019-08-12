@@ -14,6 +14,11 @@
   <sql id="Base_Column_List" >
     file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url
   </sql>
+  <delete id="deleteByCertId" parameterType="java.lang.Integer">
+    delete from
+    biz_cert_files
+    where cert_id = #{certId}
+  </delete>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />

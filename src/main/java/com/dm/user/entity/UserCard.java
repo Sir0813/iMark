@@ -1,8 +1,7 @@
 package com.dm.user.entity;
 
-import java.util.Date;
-
 import com.alibaba.fastjson.annotation.JSONField;
+import java.util.Date;
 
 public class UserCard {
     private Integer cardid;

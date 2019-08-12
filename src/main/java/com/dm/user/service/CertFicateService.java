@@ -3,7 +3,6 @@ package com.dm.user.service;
 import com.dm.user.entity.CertFicate;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
-
 import java.util.Map;
 
 public interface CertFicateService {
@@ -28,12 +27,6 @@ public interface CertFicateService {
 	 * @return
 	 */
 	CertFicate details(Integer certFicateId) throws Exception;
-
-	/**
-	 * 等待自己确认
-	 * @return
-	 */
-	//PageInfo<CertFicate> waitMyselfConfirm(Page<CertFicate> page) throws Exception;
 
 	/**
 	 * 草稿删除

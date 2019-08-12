@@ -1,8 +1,9 @@
 package com.dm.user.mapper;
 
-import java.util.List;
-import org.apache.ibatis.annotations.Mapper;
 import com.dm.user.entity.CertFiles;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface CertFilesMapper {
@@ -15,4 +16,6 @@ public interface CertFilesMapper {
     int updateByPrimaryKeySelective(CertFiles record);
 
 	List<CertFiles> findByFilesIds(String[] filesId);
+
+    void deleteByCertId(Integer certId);
 }

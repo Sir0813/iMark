@@ -30,4 +30,5 @@ public final class StateMsg {
 	
 	//----------------分页每页条数----------------
 	public static final int pageSize = 10;
+
 }

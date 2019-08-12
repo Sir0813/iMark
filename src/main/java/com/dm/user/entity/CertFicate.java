@@ -1,7 +1,6 @@
 package com.dm.user.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +9,7 @@ public class CertFicate {
 
     /*存证入链时间*/
     private Date certDate;
-    
+
     /*提交时间*/
     private Date certPostDate;
 
@@ -27,7 +26,7 @@ public class CertFicate {
 
     /*存证是否删除 0 删除 1 未删除 逻辑删除*/
     private Integer certIsDelete;
-    
+
     /*0已确认1未确认*/
     private Integer certIsconf;
 
@@ -39,24 +38,35 @@ public class CertFicate {
     private String certHash;
 
     private String certChainno;
-    
+
     private String certFilesid;
-    
+
     /*确认人业务字段*/
     private List<CertConfirm> certConfirmList;
 
     /*文件业务字段*/
     private List<CertFiles> certFilesList;
-    
+
+    /*是否将文件存入证云链 0 不保存 1 保存*/
+    private String certFileIsSave;
+
+    public String getCertFileIsSave() {
+        return certFileIsSave;
+    }
+
+    public void setCertFileIsSave(String certFileIsSave) {
+        this.certFileIsSave = certFileIsSave;
+    }
+
     public String getCertFilesid() {
-		return certFilesid;
-	}
+        return certFilesid;
+    }
 
-	public void setCertFilesid(String certFilesid) {
-		this.certFilesid = certFilesid;
-	}
+    public void setCertFilesid(String certFilesid) {
+        this.certFilesid = certFilesid;
+    }
 
-	public Integer getCertId() {
+    public Integer getCertId() {
         return certId;
     }
 
@@ -64,7 +74,7 @@ public class CertFicate {
         this.certId = certId;
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCertDate() {
         return certDate;
     }
@@ -113,7 +123,7 @@ public class CertFicate {
         this.certIsDelete = certIsDelete;
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCertDelDate() {
         return certDelDate;
     }
@@ -146,37 +156,37 @@ public class CertFicate {
         this.certChainno = certChainno == null ? null : certChainno.trim();
     }
 
-	public Integer getCertIsconf() {
-		return certIsconf;
-	}
+    public Integer getCertIsconf() {
+        return certIsconf;
+    }
 
-	public void setCertIsconf(Integer certIsconf) {
-		this.certIsconf = certIsconf;
-	}
+    public void setCertIsconf(Integer certIsconf) {
+        this.certIsconf = certIsconf;
+    }
 
-	public List<CertConfirm> getCertConfirmList() {
-		return certConfirmList;
-	}
+    public List<CertConfirm> getCertConfirmList() {
+        return certConfirmList;
+    }
 
-	public void setCertConfirmList(List<CertConfirm> certConfirmList) {
-		this.certConfirmList = certConfirmList;
-	}
+    public void setCertConfirmList(List<CertConfirm> certConfirmList) {
+        this.certConfirmList = certConfirmList;
+    }
 
-	@JSONField(format="yyyy-MM-dd HH:mm:ss")
-	public Date getCertPostDate() {
-		return certPostDate;
-	}
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    public Date getCertPostDate() {
+        return certPostDate;
+    }
 
-	public void setCertPostDate(Date certPostDate) {
-		this.certPostDate = certPostDate;
-	}
+    public void setCertPostDate(Date certPostDate) {
+        this.certPostDate = certPostDate;
+    }
 
-	public List<CertFiles> getCertFilesList() {
-		return certFilesList;
-	}
+    public List<CertFiles> getCertFilesList() {
+        return certFilesList;
+    }
 
-	public void setCertFilesList(List<CertFiles> certFilesList) {
-		this.certFilesList = certFilesList;
-	}
+    public void setCertFilesList(List<CertFiles> certFilesList) {
+        this.certFilesList = certFilesList;
+    }
 
 }

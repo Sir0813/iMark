@@ -1,29 +1,23 @@
 package com.dm.user.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.CertFiles;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.CertFilesService;
-//import sun.misc.BASE64Encoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class FileUtil {
@@ -118,6 +112,24 @@ public class FileUtil {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	public static String getHtmlTemplate(String filePath) {
+		BufferedReader in ;
+		String str ;
+		StringBuffer sb = new StringBuffer();
+		try {
+			in = new BufferedReader(new FileReader(new File(filePath)));
+			while((str=in.readLine())!=null){
+				sb.append(str);
+			}
+			in.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        return sb.toString();
 	}
 
 	/**

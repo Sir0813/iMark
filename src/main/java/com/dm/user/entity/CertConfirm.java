@@ -1,8 +1,7 @@
 package com.dm.user.entity;
 
-import java.util.Date;
-
 import com.alibaba.fastjson.annotation.JSONField;
+import java.util.Date;
 
 public class CertConfirm {
     private Integer confirmId;
@@ -21,7 +20,7 @@ public class CertConfirm {
     private String reasonCode;
 
     private String confirmPhone;
-    
+
     private String returnReason;
 
     public Integer getConfirmId() {
@@ -40,7 +39,7 @@ public class CertConfirm {
         this.certId = certId;
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getConfirmDate() {
         return confirmDate;
     }
@@ -89,11 +88,11 @@ public class CertConfirm {
         this.confirmPhone = confirmPhone == null ? null : confirmPhone.trim();
     }
 
-	public String getReturnReason() {
-		return returnReason;
-	}
+    public String getReturnReason() {
+        return returnReason;
+    }
 
-	public void setReturnReason(String returnReason) {
-		this.returnReason = returnReason;
-	}
+    public void setReturnReason(String returnReason) {
+        this.returnReason = returnReason;
+    }
 }

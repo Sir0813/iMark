@@ -225,7 +225,7 @@
         source = #{source,jdbcType=INTEGER},
       </if>
       <if test="describe != null" >
-        'describe' = #{describe,jdbcType=VARCHAR},
+        `describe` = #{describe,jdbcType=VARCHAR},
       </if>
       <if test="validEndDate != null" >
         valid_end_date = #{validEndDate,jdbcType=TIMESTAMP},

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
 @RestController
@@ -56,17 +57,6 @@ public class CertFicateController extends BaseController {
 		return ResultUtil.success(cert);
 	}
 	
-	/**
-	 * 待自己确认
-	 * @return
-	 * @throws Exception
-	 */
-	/*@RequestMapping(value="/waitMyselfConfirm",method=RequestMethod.GET)
-	public Result waitMyselfConfirm(Page<CertFicate> page) throws Exception {
-		PageInfo<CertFicate>certFicateList = certFicateService.waitMyselfConfirm(page);
-		return ResultUtil.success(certFicateList);
-	}*/
-
 	/**
 	 * 撤回待他人确认存证
 	 * @param certId 存证ID
@@ -113,5 +103,5 @@ public class CertFicateController extends BaseController {
 		certFicateService.draftDel(certFicate);
 		return ResultUtil.success();
 	}
-	
+
 }

@@ -2,7 +2,6 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.PushMsg;
 import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
 
 @Mapper

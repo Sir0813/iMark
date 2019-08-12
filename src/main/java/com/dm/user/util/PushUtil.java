@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileInputStream;
 import java.util.Map;
 
 @Component
+@SuppressWarnings("unchecked")
 public class PushUtil{
 
 	private static PushUtil instance;
@@ -84,12 +84,11 @@ public class PushUtil{
             }
             logger.info("[极光推送]PushResult result is " + pushResult);
         } catch (APIConnectionException e) {
-            logger.error("[极光推送]Connection error. Should retry later. ", e);
+            logger.error("[极光推送]Connection error. Should retry later. ", e.getMessage());
         } catch (APIRequestException e) {
-            logger.error("[极光推送]Error response from JPush server. Should review and fix it. ", e);
-            logger.info("[极光推送]HTTP Status: " + e.getStatus());
-            logger.info("[极光推送]Error Code: " + e.getErrorCode());
-            logger.info("[极光推送]Error Message: " + e.getErrorMessage());
+            logger.error("[极光推送]HTTP Status: " + e.getStatus());
+            logger.error("[极光推送]Error Code: " + e.getErrorCode());
+            logger.error("[极光推送]Error Message: " + e.getErrorMessage());
         }
         return result;
     }
