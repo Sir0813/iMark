@@ -80,8 +80,26 @@
 		    <groupId>cn.jpush.api</groupId>
 		    <artifactId>jpush-client</artifactId>
 		    <version>3.3.10</version>
+			<!-- 排除netty依赖 -->
+			<exclusions>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-all</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-	</dependencies>
+		<!-- 二维码图片 -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.3.3</version>
+		</dependency>
+    </dependencies>
 	<build>
 		<finalName>dms-czt</finalName>
 		<plugins>

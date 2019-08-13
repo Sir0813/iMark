@@ -1,6 +1,10 @@
 package com.dm.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
+import com.dm.fchain.sdk.model.TransactionResult;
+import com.dm.fchain.sdk.msg.Result;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.user.entity.*;
@@ -26,11 +30,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
-public class CertFicateServiceImpl implements CertFicateService{
+public class CertFicateServiceImpl implements CertFicateService {
 	
 	@Autowired
 	private CertFicateMapper certFicateMapper;
@@ -49,6 +56,9 @@ public class CertFicateServiceImpl implements CertFicateService{
 
 	@Autowired
 	private PushMsgService pushMsgService;
+
+	@Autowired
+	private CIDService cidService;
 
 	private static Logger logger = LoggerFactory.getLogger(CertFicateServiceImpl.class);
 
@@ -90,21 +100,22 @@ public class CertFicateServiceImpl implements CertFicateService{
 			/*存证入链*/
 			if (StateMsg.toCert==certFicate.getCertStatus()) {
 				/*对接存证sdk*/
-				/*CIDService cidService = new CIDServiceImpl();
-				Result result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), new Date().toString(), "");
-				Object data = result.getData();
-				if (data instanceof TransactionResult) {
-					TransactionResult tr = (TransactionResult) result.getData();
-	                String txid = tr.getTransactionID();
-	                certFicate.setCertChainno(txid);
-				}else{
+				Result result = null;
+				Object data = null;
+				try {
+					result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), new Date().toString(), "");
+				} catch (Exception e) {
+					data = result.getData();
 					JSONObject json = JSONObject.parseObject(data.toString());
 					logger.error("[存证sdk]error msg: "+json.get("msg"));
 					logger.error("[存证sdk]error code: "+json.get("code"));
 					logger.error("[存证sdk]error data: "+json.get("data"));
-					throw new Exception(data.toString());
-				}*/
-				certFicate.setCertChainno(UUID.randomUUID().toString());
+				}
+				if (data instanceof TransactionResult) {
+					TransactionResult tr = (TransactionResult) result.getData();
+					String txid = tr.getTransactionID();
+					certFicate.setCertChainno(txid);
+				}
 				certFicate.setCertDate(new Date());
 				certFicate.setCertStatus(certFicate.getCertIsconf()==1?StateMsg.othersConfirm:StateMsg.certSuccess);
 				sendMsg = true;
@@ -269,4 +280,6 @@ public class CertFicateServiceImpl implements CertFicateService{
 			throw new Exception(e);
 		}
 	}
+
+
 }

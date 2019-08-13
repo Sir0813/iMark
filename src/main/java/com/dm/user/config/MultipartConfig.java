@@ -1,5 +1,7 @@
 package com.dm.user.config;
 
+import com.dm.cid.sdk.service.CIDService;
+import com.dm.cid.sdk.service.impl.CIDServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
@@ -17,6 +19,10 @@ public class MultipartConfig {
         resolver.setMaxUploadSizePerFile(52428800l);
         resolver.setResolveLazily(true);
         return resolver;
+    }
+    @Bean
+    public CIDService cidService(){
+        return new CIDServiceImpl();
     }
 	
 }
