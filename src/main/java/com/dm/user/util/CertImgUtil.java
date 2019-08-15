@@ -20,7 +20,7 @@ public class CertImgUtil {
      * @return
      * @throws IOException
      */
-    public static ByteArrayResource createStringMark(CertFicate certFicate,String path, String qrPath) throws IOException {
+    public static ByteArrayResource createStringMark(CertFicate certFicate,String path, String qrPath) throws IOException, FontFormatException {
         File file = new File(path);
         Image img = ImageIO.read(file);
         int width = img.getWidth(null);//水印宽度
@@ -32,14 +32,11 @@ public class CertImgUtil {
         g.drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
         g.setPaint(new Color(0,0,0,64));//阴影颜色
         g.setPaint(Color.BLACK);
-        Font f = new Font("lucidabright", Font.PLAIN, 35);
-        g.setFont(f);
+        g.setFont(new Font("黑体", Font.PLAIN, 35));
         g.drawString("文件存证证书", (int) 185, (int) 100);
-        Font font = new Font("lucidabright", Font.PLAIN, 20);
-        g.setFont(font);
+        g.setFont(new Font("黑体", Font.PLAIN, 20));
         g.drawString("证书ID："+certFicate.getCertId().toString(), (int) 267, (int) 200);
-        Font font1 = new Font("lucidabright", Font.PLAIN, 15);
-        g.setFont(font1);
+        g.setFont(new Font("黑体", Font.PLAIN, 15));
         //文件名称
         g.drawString("文件名称：" + certFicate.getCertName(), (int) 100, (int) 350);
         //用户
@@ -58,11 +55,9 @@ public class CertImgUtil {
         String platform = "存证通";
         g.drawString("存证平台：" + platform, (int) 100, (int) 443);
         g.drawString("区块链存证ID：", (int) 100, (int) 500);
-        Font font2 = new Font("lucidabright", Font.PLAIN, 12);
-        g.setFont(font2);
+        g.setFont(new Font("黑体", Font.PLAIN, 12));
         g.drawString(certFicate.getCertChainno(), (int) 100, (int) 525);
-        Font font3 = new Font("lucidabright", Font.PLAIN, 15);
-        g.setFont(font3);
+        g.setFont(new Font("黑体", Font.PLAIN, 15));
 
         g.drawString("存证声明：", (int) 100, (int) 630);
         g.drawString("1.本证书最终解释权归北京迪曼森科技有限公司所有。", (int) 100, (int) 655);

@@ -8,6 +8,7 @@ import com.dm.user.service.CertFicateService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -102,6 +103,18 @@ public class CertFicateController extends BaseController {
 	public Result draftDel(@RequestBody CertFicate certFicate) throws Exception {
 		certFicateService.draftDel(certFicate);
 		return ResultUtil.success();
+	}
+
+	/**
+	 * 获取存证证书
+	 * @param certId 存证ID
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/getCertImg", method = RequestMethod.GET, headers = "Accept=image/jpeg")
+	public ByteArrayResource getCertImg(Integer certId) throws Exception {
+		ByteArrayResource bar = certFicateService.getCertImg(certId);
+		return bar;
 	}
 
 }
