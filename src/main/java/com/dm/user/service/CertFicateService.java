@@ -3,6 +3,8 @@ package com.dm.user.service;
 import com.dm.user.entity.CertFicate;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import org.springframework.core.io.ByteArrayResource;
+
 import java.util.Map;
 
 public interface CertFicateService {
@@ -54,4 +56,11 @@ public interface CertFicateService {
 	 */
 	void confirm(Map<String, Object> map) throws Exception;
 
+	/**
+	 * 获取证书文件
+	 * @param certId
+	 * @return
+	 * @throws Exception
+	 */
+    ByteArrayResource getCertImg(Integer certId) throws Exception;
 }

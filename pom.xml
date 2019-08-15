@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>com.dm</groupId>
 			<artifactId>cid-sdk-java</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<!-- 极光推送jar -->
 		<dependency>

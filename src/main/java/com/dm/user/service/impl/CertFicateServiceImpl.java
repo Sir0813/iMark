@@ -1,6 +1,5 @@
 package com.dm.user.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
 import com.dm.fchain.sdk.model.TransactionResult;
@@ -15,7 +14,9 @@ import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.service.PushMsgService;
+import com.dm.user.util.CertImgUtil;
 import com.dm.user.util.PushUtil;
+import com.dm.user.util.QRCodeGenerator;
 import com.dm.user.util.ShaUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -25,10 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -101,21 +102,17 @@ public class CertFicateServiceImpl implements CertFicateService {
 			if (StateMsg.toCert==certFicate.getCertStatus()) {
 				/*对接存证sdk*/
 				Result result = null;
-				Object data = null;
 				try {
 					result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), new Date().toString(), "");
 				} catch (Exception e) {
-					data = result.getData();
-					JSONObject json = JSONObject.parseObject(data.toString());
-					logger.error("[存证sdk]error msg: "+json.get("msg"));
-					logger.error("[存证sdk]error code: "+json.get("code"));
-					logger.error("[存证sdk]error data: "+json.get("data"));
+					throw new Exception(e);
 				}
-				if (data instanceof TransactionResult) {
+				if (result.getData() instanceof TransactionResult) {
 					TransactionResult tr = (TransactionResult) result.getData();
 					String txid = tr.getTransactionID();
 					certFicate.setCertChainno(txid);
 				}
+				//certFicate.setCertChainno(UUID.randomUUID().toString());
 				certFicate.setCertDate(new Date());
 				certFicate.setCertStatus(certFicate.getCertIsconf()==1?StateMsg.othersConfirm:StateMsg.certSuccess);
 				sendMsg = true;
@@ -281,5 +278,21 @@ public class CertFicateServiceImpl implements CertFicateService {
 		}
 	}
 
-
+    @Override
+    public ByteArrayResource getCertImg(Integer certId) throws Exception {
+	    try {
+            String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certId);
+            certFicate.setCertOwner(username);
+            //String qrCodePath = "D:\\QRCode.png";
+            //String templatePath = "D:\\ct.png";
+			String qrCodePath = "/opt/czt-upload/QRCode.png";
+			String templatePath = "/opt/czt-upload/certTemplate/ct.png";
+            QRCodeGenerator.generateQRCodeImage(certFicate.getCertHash(),qrCodePath);
+            ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
+            return mark;
+        }catch (Exception e){
+	        throw new Exception(e);
+        }
+    }
 }

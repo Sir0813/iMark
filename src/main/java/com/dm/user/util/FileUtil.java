@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -137,7 +138,7 @@ public class FileUtil {
 	 * @param imagePath 图片路径
 	 * @return
 	 */
-	/*@SuppressWarnings("restriction")
+	@SuppressWarnings("restriction")
 	public static String imageChangeBase64(String imagePath){
         InputStream inputStream = null;
         byte[] data = null;
@@ -151,7 +152,7 @@ public class FileUtil {
         }
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(data);
-    }*/
+    }
 	
 	public void fileDownload(HttpServletResponse response, String fileName, String filePath) {
 		response.setHeader("content-type", "application/octet-stream");
