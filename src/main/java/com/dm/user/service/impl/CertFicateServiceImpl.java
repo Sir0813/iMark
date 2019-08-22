@@ -6,11 +6,9 @@ import com.dm.fchain.sdk.model.TransactionResult;
 import com.dm.fchain.sdk.msg.Result;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
+import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.*;
-import com.dm.user.mapper.CertConfirmMapper;
-import com.dm.user.mapper.CertFicateMapper;
-import com.dm.user.mapper.CertFilesMapper;
-import com.dm.user.mapper.UserMapper;
+import com.dm.user.mapper.*;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.service.PushMsgService;
@@ -30,6 +28,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +55,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 	private UserMapper userMapper;
 
 	@Autowired
+	private TemFileMapper temFileMapper;
+
+	@Autowired
 	private PushMsgService pushMsgService;
 
 	@Autowired
@@ -70,8 +72,10 @@ public class CertFicateServiceImpl implements CertFicateService {
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
 			certFicate.setCertOwner(userDetails.getUserid());
-			certFicate.setCertType(1);
 			certFicate.setCertIsDelete(1);
+			if (null == certFicate.getCertType()) {
+				certFicate.setCertType(1);
+			}
 			String[] filesId = certFicate.getCertFilesid().split(",");
 			List<CertFiles>certFiles = certFilesMapper.findByFilesIds(filesId);
 			/*Collections.sort(certFiles, new Comparator<CertFiles>() {  
@@ -103,7 +107,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 				/*对接存证sdk*/
 				Result result = null;
 				try {
-					result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), new Date().toString(), "");
+					result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), DateUtil.timeToString2(new Date()), "");
 				} catch (Exception e) {
 					throw new Exception(e);
 				}
@@ -111,54 +115,23 @@ public class CertFicateServiceImpl implements CertFicateService {
 					TransactionResult tr = (TransactionResult) result.getData();
 					String txid = tr.getTransactionID();
 					certFicate.setCertChainno(txid);
+				}else{
+					throw new Exception(result.getMsg().toString());
 				}
-				//certFicate.setCertChainno(UUID.randomUUID().toString());
 				certFicate.setCertDate(new Date());
 				certFicate.setCertStatus(certFicate.getCertIsconf()==1?StateMsg.othersConfirm:StateMsg.certSuccess);
 				sendMsg = true;
 			}else {
 				certFicate.setCertStatus(StateMsg.noCert);
 			}
-			certFicateMapper.insertSelective(certFicate);
+			if (null!=certFicate.getCertId()){
+				certFicateMapper.updateByPrimaryKeySelective(certFicate);
+			}else{
+				certFicateMapper.insertSelective(certFicate);
+			}
 			/*需要他人确认*/
 			if (certFicate.getCertIsconf()==1) {
-				/*添加发起人*/
-				CertConfirm cc = new CertConfirm();
-				cc.setConfirmDate(new Date());
-				cc.setConfirmState(StateMsg.originator);
-				cc.setConfirmPhone(username);
-				cc.setConfirmPerson(username);
-				certFicate.getCertConfirmList().add(cc);
-				for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
-					certConfirm.setCertId(certFicate.getCertId());
-					if (null==certConfirm.getConfirmState()) {
-						certConfirm.setConfirmState(StateMsg.noConfirm);
-					}
-					if (sendMsg) {
-						/*发消息请求确认*/
-						if (certConfirm.getConfirmState()!=StateMsg.originator) {
-							User u = userMapper.findByUserName(certConfirm.getConfirmPhone());
-							if (null!=u){
-								PushMsg pm = new PushMsg();
-								pm.setCertFicateId(certFicate.getCertId().toString());
-								pm.setTitle("存证待确认→");
-								pm.setContent("您有一条【"+certFicate.getCertName()+"】的存证待确认");
-								pm.setCertName(certFicate.getCertName());
-								pm.setServerTime(new Date());
-								pm.setType("1");
-								pm.setState("0");
-								pm.setReceive(u.getUsername());
-								String json = new Gson().toJson(pm);
-								int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
-								if (resout==1){
-									pm.setState("1");
-								}
-								pushMsgService.insertSelective(pm);
-							}
-						}
-					}
-					certConfirmMapper.insertSelective(certConfirm);
-				}
+				certIsConfirm(username,sendMsg,certFicate);
 			}
 			certFiles.forEach(cf->{
 				cf.setCertId(certFicate.getCertId());
@@ -175,7 +148,49 @@ public class CertFicateServiceImpl implements CertFicateService {
 		}
 		return certFicate;
 	}
-	
+
+	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate) throws Exception {
+		/*添加发起人*/
+		CertConfirm cc = new CertConfirm();
+		cc.setConfirmDate(new Date());
+		cc.setConfirmState(StateMsg.originator);
+		cc.setConfirmPhone(username);
+		cc.setConfirmPerson(username);
+		certFicate.getCertConfirmList().add(cc);
+		for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
+			certConfirm.setCertId(certFicate.getCertId());
+			if (null==certConfirm.getConfirmState()) {
+				certConfirm.setConfirmState(StateMsg.noConfirm);
+			}
+			if (sendMsg) {
+				/*发消息请求确认*/
+				if (certConfirm.getConfirmState()!=StateMsg.originator) {
+					User u = userMapper.findByUserName(certConfirm.getConfirmPhone());
+					if (null!=u){
+						PushMsg pm = new PushMsg();
+						pm.setCertFicateId(certFicate.getCertId().toString());
+						pm.setTitle("存证待确认→");
+						pm.setContent("您有一条【"+certFicate.getCertName()+"】的存证待确认");
+						pm.setCertName(certFicate.getCertName());
+						pm.setServerTime(new Date());
+						pm.setType("1");
+						pm.setState("0");
+						pm.setReceive(u.getUsername());
+						String json = new Gson().toJson(pm);
+						int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
+						if (resout==1){
+							pm.setState("1");
+						}
+						pushMsgService.insertSelective(pm);
+					}
+				}
+			}
+			if(null==certConfirm.getConfirmId()){
+				certConfirmMapper.insertSelective(certConfirm);
+			}
+		}
+	}
+
 	@Override
 	public CertFicate details(Integer certFicateId) throws Exception {
 		try {
@@ -200,14 +215,16 @@ public class CertFicateServiceImpl implements CertFicateService {
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
 			Map<String,Object>map = new HashMap<>();
-			Integer [] ids = null;
-			if (StringUtils.isBlank(state)||state.equals("6")){
-				List<CertConfirm> confirmList = certConfirmMapper.selectByConfirmPhone(username);
-				if (confirmList.size()>0){
-					ids = new Integer[confirmList.size()];
-					for (int i = 0; i < confirmList.size(); i++) {
-						ids[i]=confirmList.get(i).getCertId();
-					}
+			Integer [] ids = null;List<CertConfirm> confirmList = null;
+			if (StringUtils.isBlank(state)){
+				confirmList = certConfirmMapper.selectByConfirmPhone(username);
+			}else if(state.equals("6")){
+				confirmList = certConfirmMapper.selectByConfirmPhoneAndState(username);
+			}
+			if (confirmList!=null&&confirmList.size()>0){
+				ids = new Integer[confirmList.size()];
+				for (int i = 0; i < confirmList.size(); i++) {
+					ids[i]=confirmList.get(i).getCertId();
 				}
 			}
 			map.put("certid",ids);
@@ -215,11 +232,8 @@ public class CertFicateServiceImpl implements CertFicateService {
 			map.put("userId",Integer.parseInt(userDetails.getUserid()));
 			PageHelper.startPage(page.getPageNum(), StateMsg.pageSize, "cert_post_date DESC");
 			if (state.equals("6")){
-				if (ids==null){
-					return null;
-				}else{
-					list = certFicateMapper.selectByIDs(ids);
-				}
+				if (ids==null) return null;
+				list = certFicateMapper.selectByIDs(ids);
 			}else{
 				list = certFicateMapper.list(map);
 			}
@@ -284,10 +298,15 @@ public class CertFicateServiceImpl implements CertFicateService {
             String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certId);
             certFicate.setCertOwner(username);
-            //String qrCodePath = "D:\\QRCode.png";
-            //String templatePath = "D:\\ct.png";
-			String qrCodePath = "/opt/czt-upload/QRCode.png";
-			String templatePath = "/opt/czt-upload/certTemplate/ct.png";
+			String os = System.getProperty("os.name").toLowerCase();
+			String qrCodePath = "";String templatePath = "";
+			if(!os.startsWith("win")){
+				qrCodePath = "/opt/czt-upload/QRCode.png";
+				templatePath = "/opt/czt-upload/certTemplate/ct.png";
+			}else{
+				qrCodePath = "D:\\QRCode.png";
+				templatePath = "D:\\ct.png";
+			}
             QRCodeGenerator.generateQRCodeImage(certFicate.getCertHash(),qrCodePath);
             ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
             return mark;
@@ -295,4 +314,37 @@ public class CertFicateServiceImpl implements CertFicateService {
 	        throw new Exception(e);
         }
     }
+
+	@Override
+	public CertFicate temSave(TemCertFile temCertFile) throws Exception {
+		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
+		CertFicate certFicate = null;
+		if(null!=temCertFile.getCertFicate()&&null!=temCertFile.getCertFicate().getCertId()){
+			TemFile temFile = temFileMapper.selectByCertId(temCertFile.getCertFicate().getCertId().toString());
+			temCertFile.getTemFile().setTemId(temFile.getTemId());
+			temFileMapper.updateByPrimaryKeySelective(temCertFile.getTemFile());
+		}else{
+			certFicate = new CertFicate();
+			TemFile temFile = new TemFile();
+			certFicate.setCertOwner(userDetails.getUserid());
+			certFicate.setCertFileIsSave("1");
+			certFicate.setCertIsDelete(1);
+			certFicate.setCertStatus(0);
+			certFicate.setCertName("模板存证");
+			certFicate.setCertType(7);
+			certFicateMapper.insertSelective(certFicate);
+			temFile.setCertId(certFicate.getCertId());
+			temFile.setTemFileText(temCertFile.getTemFile().getTemFileText());
+			temFileMapper.insertSelective(temFile);
+			certFicate.setTemId(temFile.getTemId());
+		}
+		return certFicate;
+	}
+
+	@Override
+	public TemFile selectByCertId(String certId) throws Exception {
+		TemFile temFile = temFileMapper.selectByCertId(certId);
+		return temFile;
+	}
 }

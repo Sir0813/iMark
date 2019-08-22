@@ -1,6 +1,8 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.CertFicate;
+import com.dm.user.entity.TemCertFile;
+import com.dm.user.entity.TemFile;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.springframework.core.io.ByteArrayResource;
@@ -63,4 +65,18 @@ public interface CertFicateService {
 	 * @throws Exception
 	 */
     ByteArrayResource getCertImg(Integer certId) throws Exception;
+
+	/**
+	 * 模板存证存草稿
+	 * @param temFile
+	 * @return
+	 */
+	CertFicate temSave(TemCertFile temCertFile) throws Exception;
+
+	/**
+	 * 获取模板草稿
+	 * @return
+	 * @throws Exception
+	 */
+	TemFile selectByCertId(String certId) throws Exception;
 }

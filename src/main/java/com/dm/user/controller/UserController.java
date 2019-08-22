@@ -10,6 +10,7 @@ import com.dm.user.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -153,5 +154,43 @@ public class UserController extends BaseController {
 	public Result changePhone(@RequestBody Map<String,Object>map) throws Exception {
 		return informationService.changePhone(map);
 	}
+
+	//  测试用  用完删除
+/*
+
+	@Autowired
+	private CertTemplateService certTemplateService;
+
+	@Autowired
+	private CertFicateService certFicateService;
+
+	@Autowired
+	private PDFConvertUtil pdfConvertUtil;
+
+	@RequestMapping(value="/api/edit", method = RequestMethod.GET)
+	public Result getHtmlTemplate(String type) throws Exception {
+		CertTemplate ct = certTemplateService.getByTemplateType(type);
+		String htmlTemplate = FileUtil.getHtmlTemplate(ct.getTemplatePath()).replace("\t","");
+		return ResultUtil.success(htmlTemplate);
+	}
+
+	@RequestMapping(value="/api/temSave",method=RequestMethod.POST)
+	public Result temSave(@RequestBody TemCertFile temCertFile) throws Exception {
+		CertFicate cert = certFicateService.temSave(temCertFile);
+		return ResultUtil.success(cert);
+	}
+
+	@RequestMapping(value="/api/convertPDF", method = RequestMethod.POST)
+	public void pdf(@RequestBody Map<String,Object> map) throws Exception {
+		TemFile temFile = certFicateService.selectByCertId(map.get("certId").toString());
+		pdfConvertUtil.acceptPage(temFile.getTemFileText(),temFile.getCertId());
+	}
+
+	@RequestMapping(value="/api/fileEdit", method = RequestMethod.GET)
+	public Result fileEdit(String certId) throws Exception {
+		String htmlTemplate = certTemplateService.fileEdit(certId);
+		return ResultUtil.success(htmlTemplate);
+	}
+*/
 
 }

@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CertFicate {
 
     private Date certDelDate;
 
-    /*存证类型 0指纹存证1数据存证*/
+    /*存证类型 1文件存证 2 拍照存证 3 相册存证 4 录像存证 5 录音存证 6 录屏存证 7 模板存证*/
     private Integer certType;
 
     private String certHash;
@@ -41,14 +42,24 @@ public class CertFicate {
 
     private String certFilesid;
 
+    /*是否将文件存入证云链 0 不保存 1 保存*/
+    private String certFileIsSave;
+
     /*确认人业务字段*/
     private List<CertConfirm> certConfirmList;
 
     /*文件业务字段*/
     private List<CertFiles> certFilesList;
 
-    /*是否将文件存入证云链 0 不保存 1 保存*/
-    private String certFileIsSave;
+    private Integer temId;
+
+    public Integer getTemId() {
+        return temId;
+    }
+
+    public void setTemId(Integer temId) {
+        this.temId = temId;
+    }
 
     public String getCertFileIsSave() {
         return certFileIsSave;

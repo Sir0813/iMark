@@ -1,9 +1,10 @@
 package com.dm.user.mapper;
 
+import com.dm.user.entity.CertConfirm;
+import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 import java.util.Map;
-import org.apache.ibatis.annotations.Mapper;
-import com.dm.user.entity.CertConfirm;
 
 @Mapper
 public interface CertConfirmMapper {
@@ -17,7 +18,7 @@ public interface CertConfirmMapper {
 
 	List<CertConfirm> selectByCertId(Integer certFicateId);
 
-	List<CertConfirm> selectByConfirmPhone(String username);
+	List<CertConfirm> selectByConfirmPhoneAndState(String username);
 
 	void updateByCertId(Map<String, Object> map);
 
@@ -25,4 +26,5 @@ public interface CertConfirmMapper {
 
 	List<CertConfirm> selectByState(Map<String, Object> map);
 
+	List<CertConfirm> selectByConfirmPhone(String username);
 }

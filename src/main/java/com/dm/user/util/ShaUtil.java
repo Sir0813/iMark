@@ -21,7 +21,6 @@ public class ShaUtil {
 			byte[] buffer = new byte[(int) file.length()];
 			inputFile.read(buffer);
 			inputFile.close();
-			//String encode = Base64.encode(buffer);
 			return buffer;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

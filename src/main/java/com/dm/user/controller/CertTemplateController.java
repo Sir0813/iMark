@@ -39,4 +39,14 @@ public class CertTemplateController extends BaseController {
         return ResultUtil.success(htmlTemplate);
     }
 
+    /**
+     * 编辑合同模板
+     * @return
+     */
+    @RequestMapping(value="/fileEdit", method = RequestMethod.GET)
+    public Result fileEdit(String certId) throws Exception {
+        String htmlTemplate = certTemplateService.fileEdit(certId);
+        return ResultUtil.success(htmlTemplate);
+    }
+
 }

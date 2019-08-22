@@ -40,6 +40,13 @@
   	and confirm_phone = #{confirmPhone}
   </update>
   <select id="selectByConfirmPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from biz_cert_confirm
+    where confirm_phone = #{username}
+    group by cert_id
+  </select>
+  <select id="selectByConfirmPhoneAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select 
   	<include refid="Base_Column_List"></include>
   	from biz_cert_confirm

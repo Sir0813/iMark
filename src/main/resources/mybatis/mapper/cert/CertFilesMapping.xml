@@ -107,7 +107,7 @@
   </update>
 	<select id="findByFilesIds" resultMap="BaseResultMap" parameterType="java.util.List">
 		select 
-		file_id, file_path, file_name, file_url
+		file_id, file_path, file_name, file_url, file_type
 		from biz_cert_files
 		where file_id in 
 		<foreach collection="array" item="fileid" open="(" close= ")" separator=",">

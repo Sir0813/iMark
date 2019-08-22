@@ -4,7 +4,10 @@ import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.CertFicate;
+import com.dm.user.entity.TemCertFile;
+import com.dm.user.entity.TemFile;
 import com.dm.user.service.CertFicateService;
+import com.dm.user.util.PDFConvertUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,9 @@ public class CertFicateController extends BaseController {
 	@Autowired
 	private CertFicateService certFicateService;
 
+	@Autowired
+	private PDFConvertUtil pdfConvertUtil;
+
 	/**
 	 * 存证
 	 * @param certFicate
@@ -32,6 +38,18 @@ public class CertFicateController extends BaseController {
 	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public Result save(@RequestBody CertFicate certFicate) throws Exception {
 		CertFicate cert = certFicateService.save(certFicate);
+		return ResultUtil.success(cert);
+	}
+
+	/**
+	 * 模板存证存草稿
+	 * @param certFicate
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/temSave",method=RequestMethod.POST)
+	public Result temSave(@RequestBody TemCertFile temCertFile) throws Exception {
+		CertFicate cert = certFicateService.temSave(temCertFile);
 		return ResultUtil.success(cert);
 	}
 
@@ -115,6 +133,18 @@ public class CertFicateController extends BaseController {
 	public ByteArrayResource getCertImg(Integer certId) throws Exception {
 		ByteArrayResource bar = certFicateService.getCertImg(certId);
 		return bar;
+	}
+
+	/**
+	 * 修改模板后保存为pdf文件
+	 * @param text
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/convertPDF", method = RequestMethod.POST)
+	public void pdf(@RequestBody Map<String,Object> map) throws Exception {
+		TemFile temFile = certFicateService.selectByCertId(map.get("certId").toString());
+		pdfConvertUtil.acceptPage(temFile.getTemFileText(),temFile.getCertId());
 	}
 
 }
