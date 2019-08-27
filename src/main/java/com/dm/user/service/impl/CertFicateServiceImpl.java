@@ -12,10 +12,7 @@ import com.dm.user.mapper.*;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.service.PushMsgService;
-import com.dm.user.util.CertImgUtil;
-import com.dm.user.util.PushUtil;
-import com.dm.user.util.QRCodeGenerator;
-import com.dm.user.util.ShaUtil;
+import com.dm.user.util.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -30,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
@@ -63,6 +57,12 @@ public class CertFicateServiceImpl implements CertFicateService {
 	@Autowired
 	private CIDService cidService;
 
+	@Autowired
+	private CertFicateService certFicateService;
+
+	@Autowired
+	private PDFConvertUtil pdfConvertUtil;
+
 	private static Logger logger = LoggerFactory.getLogger(CertFicateServiceImpl.class);
 
 	@Override
@@ -76,30 +76,16 @@ public class CertFicateServiceImpl implements CertFicateService {
 			if (null == certFicate.getCertType()) {
 				certFicate.setCertType(1);
 			}
-			String[] filesId = certFicate.getCertFilesid().split(",");
-			List<CertFiles>certFiles = certFilesMapper.findByFilesIds(filesId);
-			/*Collections.sort(certFiles, new Comparator<CertFiles>() {  
-			    @Override  
-			    public int compare(CertFiles o1, CertFiles o2) {  
-			        if (Integer.valueOf(o1.getFileSeq()) > Integer.valueOf(o2.getFileSeq())) {  
-			            return 1;  
-			        }  
-			        if (Integer.valueOf(o1.getFileSeq()) == Integer.valueOf(o2.getFileSeq())) {  
-			            return 0;  
-			        }  
-			        return -1;  
-			    }  
-			});*/
-			StringBuffer hash = new StringBuffer();
-			certFiles.forEach(certFile->{
-				String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
-				hash.append(str);
-			});
-			if (certFiles.size()==1){
-				certFicate.setCertHash(hash.toString());
+			List<CertFiles> certFiles = null;
+			if (certFicate.getCertType()==7){
+				if (certFicate.getCertStatus()==StateMsg.toCert){
+					TemFile temFile = certFicateService.selectByCertId(certFicate.getCertId().toString());
+					Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
+					certFicate.setCertFilesid(fileId.toString());
+					certFiles = getHash(certFicate);
+				}
 			}else{
-				String dataHash = CryptoHelper.hash(hash.toString());
-				certFicate.setCertHash(dataHash);
+				certFiles = getHash(certFicate);
 			}
 			certFicate.setCertPostDate(new Date());
 			/*存证入链*/
@@ -133,20 +119,52 @@ public class CertFicateServiceImpl implements CertFicateService {
 			if (certFicate.getCertIsconf()==1) {
 				certIsConfirm(username,sendMsg,certFicate);
 			}
-			certFiles.forEach(cf->{
-				cf.setCertId(certFicate.getCertId());
-				certFilesMapper.updateByPrimaryKeySelective(cf);
-				/*文件不保存至证云链 将文件删除*/
-				if(certFicate.getCertFileIsSave().equals("0")){
-					File file = new File(cf.getFilePath());
-					file.delete();
-					certFilesMapper.deleteByCertId(certFicate.getCertId());
-				}
-			});
+			if (null!=certFiles){
+				certFiles.forEach(cf->{
+					cf.setCertId(certFicate.getCertId());
+					certFilesMapper.updateByPrimaryKeySelective(cf);
+					/*文件不保存至证云链 将文件删除*/
+					if(certFicate.getCertFileIsSave().equals("0")){
+						File file = new File(cf.getFilePath());
+						file.delete();
+						certFilesMapper.deleteByCertId(certFicate.getCertId());
+					}
+				});
+			}
 		}catch (Exception e){
 			throw new Exception(e);
 		}
 		return certFicate;
+	}
+
+	/*Collections.sort(certFiles, new Comparator<CertFiles>() {
+			    @Override
+			    public int compare(CertFiles o1, CertFiles o2) {
+			        if (Integer.valueOf(o1.getFileSeq()) > Integer.valueOf(o2.getFileSeq())) {
+			            return 1;
+			        }
+			        if (Integer.valueOf(o1.getFileSeq()) == Integer.valueOf(o2.getFileSeq())) {
+			            return 0;
+			        }
+			        return -1;
+			    }
+			});*/
+
+	private List<CertFiles> getHash(CertFicate certFicate){
+		String[] filesId = certFicate.getCertFilesid().split(",");
+		List<CertFiles>certFiles = certFilesMapper.findByFilesIds(filesId);
+		StringBuffer hash = new StringBuffer();
+		certFiles.forEach(certFile->{
+			String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
+			hash.append(str);
+		});
+		if (certFiles.size()==1){
+			certFicate.setCertHash(hash.toString());
+		}else{
+			String dataHash = CryptoHelper.hash(hash.toString());
+			certFicate.setCertHash(dataHash);
+		}
+		return certFiles;
 	}
 
 	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate) throws Exception {
@@ -204,7 +222,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 			}
 			return certFicate;
 		} catch (Exception e) {
-			throw new Exception();
+			throw new Exception(e);
 		}
 	}
 	
@@ -300,11 +318,12 @@ public class CertFicateServiceImpl implements CertFicateService {
             certFicate.setCertOwner(username);
 			String os = System.getProperty("os.name").toLowerCase();
 			String qrCodePath = "";String templatePath = "";
+			String s = UUID.randomUUID().toString();
 			if(!os.startsWith("win")){
-				qrCodePath = "/opt/czt-upload/QRCode.png";
+				qrCodePath = "/opt/czt-upload/"+s+".png";
 				templatePath = "/opt/czt-upload/certTemplate/ct.png";
 			}else{
-				qrCodePath = "D:\\QRCode.png";
+				qrCodePath = "D:\\"+s+".png";
 				templatePath = "D:\\ct.png";
 			}
             QRCodeGenerator.generateQRCodeImage(certFicate.getCertHash(),qrCodePath);
@@ -317,34 +336,45 @@ public class CertFicateServiceImpl implements CertFicateService {
 
 	@Override
 	public CertFicate temSave(TemCertFile temCertFile) throws Exception {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
-		CertFicate certFicate = null;
-		if(null!=temCertFile.getCertFicate()&&null!=temCertFile.getCertFicate().getCertId()){
-			TemFile temFile = temFileMapper.selectByCertId(temCertFile.getCertFicate().getCertId().toString());
-			temCertFile.getTemFile().setTemId(temFile.getTemId());
-			temFileMapper.updateByPrimaryKeySelective(temCertFile.getTemFile());
-		}else{
-			certFicate = new CertFicate();
-			TemFile temFile = new TemFile();
-			certFicate.setCertOwner(userDetails.getUserid());
-			certFicate.setCertFileIsSave("1");
-			certFicate.setCertIsDelete(1);
-			certFicate.setCertStatus(0);
-			certFicate.setCertName("模板存证");
-			certFicate.setCertType(7);
-			certFicateMapper.insertSelective(certFicate);
-			temFile.setCertId(certFicate.getCertId());
-			temFile.setTemFileText(temCertFile.getTemFile().getTemFileText());
-			temFileMapper.insertSelective(temFile);
-			certFicate.setTemId(temFile.getTemId());
+		try {
+			//String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String username = "18811012959";
+			LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
+			CertFicate certFicate = null;
+			if(null!=temCertFile.getCertFicate()&&null!=temCertFile.getCertFicate().getCertId()){
+				TemFile temFile = temFileMapper.selectByCertId(temCertFile.getCertFicate().getCertId().toString());
+				temCertFile.getTemFile().setTemId(temFile.getTemId());
+				temFileMapper.updateByPrimaryKeySelective(temCertFile.getTemFile());
+				certFicate = certFicateMapper.selectByPrimaryKey(temCertFile.getCertFicate().getCertId());
+				certFicateMapper.updateByPrimaryKeySelective(certFicate);
+			}else{
+				certFicate = new CertFicate();
+				TemFile temFile = new TemFile();
+				certFicate.setCertOwner(userDetails.getUserid());
+				certFicate.setCertFileIsSave("1");
+				certFicate.setCertIsDelete(1);
+				certFicate.setCertStatus(0);
+				certFicate.setCertName("模板存证");
+				certFicate.setCertType(7);
+				certFicateMapper.insertSelective(certFicate);
+				temFile.setCertId(certFicate.getCertId());
+				temFile.setTemFileText(temCertFile.getTemFile().getTemFileText());
+				temFileMapper.insertSelective(temFile);
+				certFicate.setTemId(temFile.getTemId());
+			}
+			return certFicate;
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		return certFicate;
 	}
 
 	@Override
 	public TemFile selectByCertId(String certId) throws Exception {
-		TemFile temFile = temFileMapper.selectByCertId(certId);
-		return temFile;
+		try {
+			TemFile temFile = temFileMapper.selectByCertId(certId);
+			return temFile;
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
 	}
 }

@@ -4,6 +4,6 @@ import com.dm.user.entity.CertFiles;
 
 public interface CertFilesService {
 
-	void insertSelective(CertFiles certFiles);
+	void insertSelective(CertFiles certFiles) throws Exception;
 
 }

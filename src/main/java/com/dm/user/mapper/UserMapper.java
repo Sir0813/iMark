@@ -1,8 +1,9 @@
 package com.dm.user.mapper;
 
-import java.util.Map;
-import org.apache.ibatis.annotations.Mapper;
 import com.dm.user.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -23,4 +24,6 @@ public interface UserMapper {
 	User findByUserName(String username);
 
 	void updateById(Map<String, Object> map);
+
+    User userData();
 }

@@ -58,18 +58,22 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public String sendVeriCode(String phone) throws Exception {
-		Information info = new Information();
-		Date date = new Date();
-		long randomNumber = RandomCode.generateRandomNumber(6);
-		String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
-		info.setInfoCode(String.valueOf(randomNumber));
-		info.setInfoMsg(replaceContent);
-		info.setInfoPhone(phone);
-		info.setInfoSenddate(date);
-		info.setInfoExpireddate(new Date(date.getTime()+expired));
-		info.setInfoState("0");
-		informationMapper.insertSelective(info);
-		return String.valueOf(randomNumber);
+		try {
+			Information info = new Information();
+			Date date = new Date();
+			long randomNumber = RandomCode.generateRandomNumber(6);
+			String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
+			info.setInfoCode(String.valueOf(randomNumber));
+			info.setInfoMsg(replaceContent);
+			info.setInfoPhone(phone);
+			info.setInfoSenddate(date);
+			info.setInfoExpireddate(new Date(date.getTime()+expired));
+			info.setInfoState("0");
+			informationMapper.insertSelective(info);
+			return String.valueOf(randomNumber);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
 	}
 	
 	@Override
@@ -112,88 +116,109 @@ public class UserServiceImpl implements UserService{
 	
 	
 	@Override
-	public Result resetPassword(Map<String,Object>map) {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		LoginUserDetails user = loginUserService.getUserByUsername(username);
-		String md5Password = MD5Util.encode(map.get("oldPassword").toString()+user.getSalt());
-		if (!md5Password.equals(user.getPassword())) {
-			return ResultUtil.info(I18nUtil.getMessage("user.reset.password.error.code"),
-					I18nUtil.getMessage("user.reset.password.error.msg"));
+	public Result resetPassword(Map<String,Object>map) throws Exception {
+		try {
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			LoginUserDetails user = loginUserService.getUserByUsername(username);
+			String md5Password = MD5Util.encode(map.get("oldPassword").toString()+user.getSalt());
+			if (!md5Password.equals(user.getPassword())) {
+				return ResultUtil.info(I18nUtil.getMessage("user.reset.password.error.code"),
+						I18nUtil.getMessage("user.reset.password.error.msg"));
+			}
+			String newPwd = MD5Util.encode(map.get("newPassword").toString()+user.getSalt());
+			if (newPwd.equals(user.getPassword())) {
+				return ResultUtil.info(I18nUtil.getMessage("user.reset.equal.password.code"),
+						I18nUtil.getMessage("user.reset.equal.password.msg"));
+			}else {
+				map.put("userid", user.getUserid());
+				map.put("password", newPwd);
+				userMapper.updateById(map);
+			}
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		String newPwd = MD5Util.encode(map.get("newPassword").toString()+user.getSalt());
-		if (newPwd.equals(user.getPassword())) {
-			return ResultUtil.info(I18nUtil.getMessage("user.reset.equal.password.code"),
-					I18nUtil.getMessage("user.reset.equal.password.msg"));
-		}else {
-			map.put("userid", user.getUserid());
-			map.put("password", newPwd);
-			userMapper.updateById(map);
-		}
-		return ResultUtil.success();
 	}
 	
 	@Override
 	public Result userInfo() throws Exception {
-		Map<String,Object> map = new HashMap<>();
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User user = userMapper.findByUserName(username);
-		UserCard userCard = userCardMapper.selectByUserId(user.getUserid().toString());
-		map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
-		map.put("userName", username);
-		map.put("realName", null==userCard?"":userCard.getRealName());
-		map.put("headPhoto", StringUtils.isBlank(user.getHeadPhoto())?"":user.getHeadPhoto());
-		map.put("realState", null==userCard?"":userCard.getRealState());
-		return ResultUtil.success(map);
+		try {
+			Map<String,Object> map = new HashMap<>();
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User user = userMapper.findByUserName(username);
+			UserCard userCard = userCardMapper.selectByUserId(user.getUserid().toString());
+			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
+			map.put("userName", username);
+			map.put("realName", null==userCard?"":userCard.getRealName());
+			map.put("headPhoto", StringUtils.isBlank(user.getHeadPhoto())?"":user.getHeadPhoto());
+			map.put("realState", null==userCard?"":userCard.getRealState());
+			map.put("sex", user.getSex());
+			map.put("nickName", null==user.getDescribe()?"":user.getDescribe());
+			map.put("userid", user.getUserid());
+			return ResultUtil.success(map);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
 	}
 
 	@Override
 	public Result getPushMsg() throws Exception {
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(username);
-		if (pmList.size()>0){
-			pmList.forEach(pm->{
-				String json = new Gson().toJson(pm);
-				try {
-					int resout = PushUtil.getInstance().sendToRegistrationId(username, pm.getTitle(), json);
-					if (resout==1){
-						pm.setState("1");
-						pushMsgService.updateByPrimaryKeySelective(pm);
+		try {
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(username);
+			if (pmList.size()>0){
+				pmList.forEach(pm->{
+					String json = new Gson().toJson(pm);
+					try {
+						int resout = PushUtil.getInstance().sendToRegistrationId(username, pm.getTitle(), json);
+						if (resout==1){
+							pm.setState("1");
+							pushMsgService.updateByPrimaryKeySelective(pm);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+				});
+			}
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		return ResultUtil.success();
 	}
 
 	@Override
 	public void getRegistrationId(Map<String,Object>map) throws Exception {
 		try {
 			String registrationId = map.get("registrationId").toString();
-			String alias = map.get("alias").toString();
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			User user = userMapper.findByUserName(username);
 			user.setUsercode(registrationId);
-			PushUtil.getInstance().bindMobil(registrationId,alias);
 			userMapper.updateByPrimaryKeySelective(user);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
 	}
 
-	public Result checkVeriCode(Information info,Map<String, Object> map) {
-		if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-			return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
-						I18nUtil.getMessage("email.code.error.msg"));
+	public Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+		try {
+			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
+				return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
+							I18nUtil.getMessage("email.code.error.msg"));
+			}
+			Date date = new Date();
+			if (date.after(info.getInfoExpireddate())) {
+				return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
+						I18nUtil.getMessage("email.code.expire.msg"));
+			}
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		Date date = new Date();
-		if (date.after(info.getInfoExpireddate())) {
-			return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
-					I18nUtil.getMessage("email.code.expire.msg"));
-		}
-		return ResultUtil.success();
 	}
 
-
+	@Override
+	public Result userUpdate(User user) throws Exception {
+		userMapper.updateByPrimaryKeySelective(user);
+		return ResultUtil.success();
+	}
 }

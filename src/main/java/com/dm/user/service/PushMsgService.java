@@ -9,5 +9,5 @@ public interface PushMsgService {
 
     List<PushMsg> selectByReceiveAndState(String username);
 
-    void updateByPrimaryKeySelective(PushMsg pm);
+    void updateByPrimaryKeySelective(PushMsg pm) throws Exception;
 }

@@ -1,7 +1,9 @@
 package com.dm.user.util;
 
+import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.CertFicate;
 import org.springframework.core.io.ByteArrayResource;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +52,7 @@ public class CertImgUtil {
         }
         g.drawString("存证类型：" + type, (int) 100, (int) 395);
         //存证时间
-        g.drawString("存证时间：" + certFicate.getCertDate(), (int) 100, (int) 418);
+        g.drawString("存证时间：" + DateUtil.timeToString2(certFicate.getCertDate()), (int) 100, (int) 418);
         //存证平台
         String platform = "存证通";
         g.drawString("存证平台：" + platform, (int) 100, (int) 443);
@@ -67,12 +69,12 @@ public class CertImgUtil {
         graphics.drawImage(img1, 387, 670, null);
         graphics.setColor(Color.WHITE);
         graphics.dispose();
-        File qrFile = new File(qrPath);
-        qrFile.delete();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bi, "jpg", baos);
         byte[] bytes = baos.toByteArray();
         ByteArrayResource bar = new ByteArrayResource(bytes);
+        File qrFile = new File(qrPath);
+        qrFile.delete();
         return bar;
     }
 

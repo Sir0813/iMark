@@ -47,4 +47,11 @@ public interface UserService {
 	 * @param map
 	 */
 	void getRegistrationId(Map<String, Object> map) throws Exception;
+
+	/**
+	 * 我的-个人信息(修改)
+	 * @return
+	 * @throws Exception
+	 */
+	Result userUpdate(User user)throws Exception;
 }

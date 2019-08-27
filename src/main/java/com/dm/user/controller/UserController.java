@@ -3,14 +3,16 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
-import com.dm.user.entity.User;
+import com.dm.user.entity.*;
+import com.dm.user.service.CertFicateService;
+import com.dm.user.service.CertTemplateService;
 import com.dm.user.service.InformationService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
+import com.dm.user.util.PDFConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -74,7 +76,7 @@ public class UserController extends BaseController {
     }
 
 	/**
-	 * 我的-个人信息
+	 * 我的-认证信息
 	 * @return
 	 * @throws Exception
 	 */
@@ -82,7 +84,17 @@ public class UserController extends BaseController {
 	public Result userInfo() throws Exception {
 		return userService.userInfo();
 	}
-	
+
+	/**
+	 * 我的-个人信息(修改)
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/update", method=RequestMethod.POST)
+	public Result userUpdate(@RequestBody  User user) throws Exception {
+		return userService.userUpdate(user);
+	}
+
 	/**
 	 * 上传头像
 	 * @param request
@@ -156,7 +168,7 @@ public class UserController extends BaseController {
 	}
 
 	//  测试用  用完删除
-/*
+
 
 	@Autowired
 	private CertTemplateService certTemplateService;
@@ -191,6 +203,6 @@ public class UserController extends BaseController {
 		String htmlTemplate = certTemplateService.fileEdit(certId);
 		return ResultUtil.success(htmlTemplate);
 	}
-*/
+
 
 }

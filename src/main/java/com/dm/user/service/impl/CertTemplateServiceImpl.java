@@ -10,7 +10,6 @@ import com.dm.user.service.CertTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -45,7 +44,11 @@ public class CertTemplateServiceImpl implements CertTemplateService {
 
     @Override
     public String fileEdit(String certId) throws Exception {
-        TemFile tf = temFileMapper.selectByCertId(certId);
-        return tf.getTemFileText();
+        try {
+            TemFile tf = temFileMapper.selectByCertId(certId);
+            return tf.getTemFileText();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

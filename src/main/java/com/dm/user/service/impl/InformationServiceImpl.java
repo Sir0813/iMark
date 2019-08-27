@@ -1,12 +1,5 @@
 package com.dm.user.service.impl;
 
-import java.util.Date;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
@@ -17,6 +10,14 @@ import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.InformationService;
 import com.dm.user.util.RandomCode;
 import com.dm.user.util.SendMailSmtp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
@@ -68,57 +69,73 @@ public class InformationServiceImpl implements InformationService{
 	
 	@Override
 	public Result bindEmail(Map<String, Object> map) throws Exception {
-		Information info = informationMapper.selectByPhone(map);
-		Result result = checkVeriCode(info,map);
-		if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
-			return result;
+		try {
+			Information info = informationMapper.selectByPhone(map);
+			Result result = checkVeriCode(info,map);
+			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+				return result;
+			}
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User u = userMapper.findByUserName(username);
+			u.setEmail(map.get("email").toString());
+			userMapper.updateByPrimaryKeySelective(u);
+			info.setInfoState("1");
+			informationMapper.updateByPrimaryKeySelective(info);
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User u = userMapper.findByUserName(username);
-		u.setEmail(map.get("email").toString());
-		userMapper.updateByPrimaryKeySelective(u);
-		info.setInfoState("1");
-		informationMapper.updateByPrimaryKeySelective(info);
-		return ResultUtil.success();
 	}
 	
 	@Override
 	public Result checkCode(Map<String, Object> map) throws Exception {
-		map.put("email", map.get("oldPhone").toString());
-		Information info = informationMapper.selectByPhone(map);
-		return checkVeriCode(info,map);
+		try {
+			map.put("email", map.get("oldPhone").toString());
+			Information info = informationMapper.selectByPhone(map);
+			return checkVeriCode(info,map);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
 	}
 	
 	@Override
 	public Result changePhone(Map<String, Object> map) throws Exception {
-		map.put("email", map.get("newPhone").toString());
-		User user = userMapper.findByUserName(map.get("newPhone").toString());
-		if (null!=user) {
-			return ResultUtil.info(I18nUtil.getMessage("register.has.name.code"),
-					I18nUtil.getMessage("register.has.name.msg"));
+		try {
+			map.put("email", map.get("newPhone").toString());
+			User user = userMapper.findByUserName(map.get("newPhone").toString());
+			if (null!=user) {
+				return ResultUtil.info(I18nUtil.getMessage("register.has.name.code"),
+						I18nUtil.getMessage("register.has.name.msg"));
+			}
+			Information info = informationMapper.selectByPhone(map);
+			Result result = checkVeriCode(info,map);
+			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+				return result;
+			}
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User u = userMapper.findByUserName(username);
+			u.setUsername(map.get("newPhone").toString());
+			userMapper.updateByPrimaryKeySelective(u);
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		Information info = informationMapper.selectByPhone(map);
-		Result result = checkVeriCode(info,map);
-		if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
-			return result;
-		}
-		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User u = userMapper.findByUserName(username);
-		u.setUsername(map.get("newPhone").toString());
-		userMapper.updateByPrimaryKeySelective(u);
-		return ResultUtil.success();
 	}
 	
-	public Result checkVeriCode(Information info,Map<String, Object> map) {
-		if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-			return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
-						I18nUtil.getMessage("email.code.error.msg"));
+	public Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+		try {
+			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
+				return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
+							I18nUtil.getMessage("email.code.error.msg"));
+			}
+			Date date = new Date();
+			if (date.after(info.getInfoExpireddate())) {
+				return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
+						I18nUtil.getMessage("email.code.expire.msg"));
+			}
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		Date date = new Date();
-		if (date.after(info.getInfoExpireddate())) {
-			return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
-					I18nUtil.getMessage("email.code.expire.msg"));
-		}
-		return ResultUtil.success();
 	}
 }

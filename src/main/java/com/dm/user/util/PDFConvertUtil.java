@@ -22,7 +22,7 @@ public class PDFConvertUtil {
     @Autowired
     private CertFilesService certFilesService;
 
-    public void acceptPage(String text,Integer certId) throws Exception {
+    public Integer acceptPage(String text,Integer certId) throws Exception {
         Document parse = Jsoup.parse(text);
         Elements meta = parse.getElementsByTag("meta");
         String html = parse.html();
@@ -69,8 +69,9 @@ public class PDFConvertUtil {
             certFiles.setFileSeq("1");
             certFiles.setCertId(certId);
             certFilesService.insertSelective(certFiles);
+            return certFiles.getFileId();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception(e);
         }
     }
 

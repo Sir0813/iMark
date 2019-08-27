@@ -1,0 +1,76 @@
+#当前Channel配置
+name: cid
+path: classpath:channel/cid/    #src/main/resources/
+store: cidStore.properties
+configtxlatorLocation: http://192.168.1.202:7059
+tls: true
+invokeWaitTime: 32000
+deployWaitTime: 120000
+proposalWaitTime: 120000
+clientOrg: org1
+orgs:
+  org1:
+    mspId: Org1MSP
+    domainName: org1.example.com
+    type: peer
+    ca:
+      name: ca_peerOrg1    #要跟区块链网络上部署的CA容器名称一致
+      location: http://192.168.1.202:7054
+    orderers:
+      orderer:
+        domainName: orderer.example.com
+        location: grpc://orderer.example.com:7050
+    peers:
+      peer0:
+        domainName: peer0.org1.example.com
+        location: grpc://peer0.org1.example.com:7051
+        roles: ledgerQuery,chaincodeQuery,endorsingPeer,eventSource,serviceDiscovery  #endorsingPeer/chaincodeQuery/ledgerQuery/eventSource/serviceDiscovery/all/no_event_source
+      peer1:
+        domainName: peer1.org1.example.com
+        location: grpc://peer1.org1.example.com:8051
+        roles: ledgerQuery,eventSource  #endorsingPeer/chaincodeQuery/ledgerQuery/eventSource/serviceDiscovery/all/no_event_source
+    admin:
+      name: Admin
+    peerAdmin:
+      name: Admin
+  org2:
+    mspId: Org2MSP
+    domainName: org2.example.com
+    type: peer
+    ca:
+      name: ca_peerOrg2    #要跟区块链网络上部署的CA容器名称一致
+      location: http://192.168.1.202:8054
+    orderers:
+      orderer:
+        domainName: orderer.example.com
+        location: grpc://orderer.example.com:7050
+    peers:
+      peer0:
+        domainName: peer0.org2.example.com
+        location: grpc://peer0.org2.example.com:9051
+        roles: ledgerQuery,chaincodeQuery,endorsingPeer,eventSource,serviceDiscovery  #endorsingPeer/chaincodeQuery/ledgerQuery/eventSource/serviceDiscovery/all/no_event_source
+      peer1:
+        domainName: peer1.org2.example.com
+        location: grpc://peer1.org2.example.com:10051
+        roles: ledgerQuery,eventSource  #endorsingPeer/chaincodeQuery/ledgerQuery/eventSource/serviceDiscovery/all/no_event_source
+    admin:
+      name: Admin
+    peerAdmin:
+      name: Admin
+anchorPeers:    #锚节点，也称为定位节点，实现与其它组织节点之间互通
+  - peer0.org1.example.com:7051
+  - peer0.org2.example.com:9051
+chaincodes:
+  cid_cc:
+    chaincodeDir: chaincode/gocc/cid/
+    chaincodePath: dm.com/cid_cc/
+    chaincodeVersion: 1.0
+    chaincodeLang: GO_LANG
+    #invokeWatiTime: 120000   #交易（即执行合约操作）等待时间，若没有配置，则提前面配置的全局时间
+    #deployWatiTime: 120000   #实例化等待时间，若没有配置，则提前面配置的全局时间
+    #proposalWaitTime: 120000  #交易提案等待时间，若没有配置，则提前面配置的全局时间
+    endorseCount: 1    #最少背书数量，根据背书策略定义进行配置，只有满足最少背书数量，才能提交给Orderer，否则提交也没意义
+    endorsePeers:      #指定已安装合约的背书节点，不指定则交易发送给channel上所有已安装合约的背书节点
+    #- peer0.org1.example.com:7051
+    #- peer0.org2.example.com:9051
+    endorsePolicyPath: chaincode/policy/cid/chaincodeendorsementpolicy.yaml

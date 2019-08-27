@@ -6,6 +6,9 @@ import com.dm.user.entity.CertFiles;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.CertFilesService;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +59,24 @@ public class FileUtil {
 				throw new Exception();
 			}
 			CertFiles certFiles = new CertFiles();
+			boolean osWin = false;
+			String osname = System.getProperty("os.name").toLowerCase();
+			if (osname.startsWith("win")){
+				osWin = true;
+			}
+			if (suffix.equals(".mp4")||suffix.equals(".mov")){
+				String uuid = UUID.randomUUID().toString();
+				if (osWin){
+					FileUtil.fetchFrame(filePath,"D:\\upload\\vidopng\\"+uuid+".png");
+					certFiles.setFileName("http://192.168.3.101/img/vidopng/"+uuid+".png");
+				}else{
+					FileUtil.fetchFrame(filePath,"/opt/czt-upload/vidopng/"+uuid+".png");
+					certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/"+uuid+".png");
+				}
+			}else{
+				certFiles.setFileName(fileName);
+			}
 			certFiles.setFileUrl(fileUrl);
-			certFiles.setFileName(fileName);
 			certFiles.setFilePath(filePath);
 			certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
 			certFiles.setFileType(suffix);
@@ -131,6 +153,44 @@ public class FileUtil {
 			e.printStackTrace();
 		}
         return sb.toString();
+	}
+
+	/**
+	 * 获取指定视频的帧并保存为图片至指定目录
+	 * @param videofile  源视频文件路径
+	 * @param framefile  截取帧的图片存放路径
+	 * @throws Exception
+	 */
+	public static void fetchFrame(String videofile, String framefile)
+			throws Exception {
+		//long start = System.currentTimeMillis();
+		File targetFile = new File(framefile);
+		FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
+		ff.start();
+		int lenght = ff.getLengthInFrames();
+		int i = 0;
+		Frame f = null;
+		while (i < lenght) {
+			// 过滤前5帧，避免出现全黑的图片，依自己情况而定
+			f = ff.grabFrame();
+			if ((i > 3) && (f.image != null)) {
+				break;
+			}
+			i++;
+		}
+		int owidth = f.imageWidth;
+		int oheight = f.imageHeight;
+		// 对截取的帧进行等比例缩放
+		int width = 800;
+		int height = (int) (((double) width / owidth) * oheight);
+		Java2DFrameConverter converter = new Java2DFrameConverter();
+		BufferedImage fecthedImage = converter.getBufferedImage(f);
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		bi.getGraphics().drawImage(fecthedImage.getScaledInstance(width,height, Image.SCALE_SMOOTH),
+				0, 0, null);
+		ImageIO.write(bi, "jpg", targetFile);
+		ff.flush();
+		ff.stop();
 	}
 
 	/**

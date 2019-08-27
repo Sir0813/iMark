@@ -28,7 +28,11 @@ public class PushMsgServiceImpl implements PushMsgService {
     }
 
     @Override
-    public void updateByPrimaryKeySelective(PushMsg pm) {
-        pushMsgMapper.updateByPrimaryKeySelective(pm);
+    public void updateByPrimaryKeySelective(PushMsg pm) throws Exception{
+        try {
+            pushMsgMapper.updateByPrimaryKeySelective(pm);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

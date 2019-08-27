@@ -48,7 +48,7 @@ public class PushUtil{
 
     public void bindMobil(String registrationId,String mobile){
         try {
-            jpushClient.bindMobile(registrationId, mobile);
+            //jpushClient.bindMobile(registrationId, mobile);
         }catch (Exception e){
             e.printStackTrace();
         }

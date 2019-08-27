@@ -8,15 +8,19 @@ import com.dm.user.mapper.CertFilesMapper;
 import com.dm.user.service.CertFilesService;
 
 @Service
-@Transactional(rollbackFor=Exception.class)
-public class CertFilesServiceImpl implements CertFilesService{
-	
-	@Autowired
-	private CertFilesMapper certFilesMapper;
+@Transactional(rollbackFor = Exception.class)
+public class CertFilesServiceImpl implements CertFilesService {
 
-	@Override
-	public void insertSelective(CertFiles certFiles) {
-		certFilesMapper.insertSelective(certFiles);
-	}
-	
+    @Autowired
+    private CertFilesMapper certFilesMapper;
+
+    @Override
+    public void insertSelective(CertFiles certFiles) throws Exception{
+        try {
+            certFilesMapper.insertSelective(certFiles);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
 }
