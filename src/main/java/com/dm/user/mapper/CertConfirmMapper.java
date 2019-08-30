@@ -27,4 +27,6 @@ public interface CertConfirmMapper {
 	List<CertConfirm> selectByState(Map<String, Object> map);
 
 	List<CertConfirm> selectByConfirmPhone(String username);
+
+    void deleteByCertId(Integer certId);
 }

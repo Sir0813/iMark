@@ -7,8 +7,8 @@ spring:
       include: sys,mybatis,socket,devDS,devRedis,common
 
 upload:
-   filePath: D:\upload
-   filePrefix: http://192.168.3.101/img
+   filePath: D:\upload\cert
+   filePrefix: http://192.168.3.101/img/cert
 #邮箱设置
 email:
   address: 18811012959@163.com

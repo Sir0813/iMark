@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class CertConfirm {
@@ -8,6 +9,7 @@ public class CertConfirm {
 
     private Integer certId;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date confirmDate;
 
     private String confirmPerson;
@@ -39,7 +41,6 @@ public class CertConfirm {
         this.certId = certId;
     }
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getConfirmDate() {
         return confirmDate;
     }

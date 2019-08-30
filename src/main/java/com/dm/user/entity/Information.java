@@ -1,7 +1,8 @@
 package com.dm.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
-import com.alibaba.fastjson.annotation.JSONField;
 
 public class Information {
     private Integer infoId;
@@ -10,6 +11,7 @@ public class Information {
 
     private String infoMsg;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date infoSenddate;
 
     private String infoUser;
@@ -19,6 +21,7 @@ public class Information {
 
     private String infoPhone;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date infoExpireddate;
 
     public Integer getInfoId() {
@@ -45,7 +48,6 @@ public class Information {
         this.infoMsg = infoMsg == null ? null : infoMsg.trim();
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getInfoSenddate() {
         return infoSenddate;
     }
@@ -70,7 +72,6 @@ public class Information {
         this.infoPhone = infoPhone == null ? null : infoPhone.trim();
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getInfoExpireddate() {
         return infoExpireddate;
     }

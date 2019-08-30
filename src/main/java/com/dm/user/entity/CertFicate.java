@@ -1,6 +1,6 @@
 package com.dm.user.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -8,9 +8,11 @@ public class CertFicate {
     private Integer certId;
 
     /*存证入链时间*/
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+08")
     private Date certDate;
 
     /*提交时间*/
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+08")
     private Date certPostDate;
 
     private String certOwner;
@@ -30,6 +32,7 @@ public class CertFicate {
     /*0已确认1未确认*/
     private Integer certIsconf;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+08")
     private Date certDelDate;
 
     /*存证类型 1文件存证 2 拍照存证 3 相册存证 4 录像存证 5 录音存证 6 录屏存证 7 模板存证*/
@@ -84,7 +87,6 @@ public class CertFicate {
         this.certId = certId;
     }
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCertDate() {
         return certDate;
     }
@@ -133,7 +135,6 @@ public class CertFicate {
         this.certIsDelete = certIsDelete;
     }
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCertDelDate() {
         return certDelDate;
     }
@@ -182,7 +183,6 @@ public class CertFicate {
         this.certConfirmList = certConfirmList;
     }
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getCertPostDate() {
         return certPostDate;
     }

@@ -1,6 +1,6 @@
 package com.dm.user.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
@@ -13,6 +13,7 @@ public class PushMsg {
 
     private String content;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date serverTime;
 
     private String type;
@@ -65,7 +66,6 @@ public class PushMsg {
         this.content = content == null ? null : content.trim();
     }
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     public Date getServerTime() {
         return serverTime;
     }

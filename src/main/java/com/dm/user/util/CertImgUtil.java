@@ -46,8 +46,13 @@ public class CertImgUtil {
         //文件类型
         String type = "";
         switch (certFicate.getCertType()){
-            case 1 : type = "图片";break;
-            case 2 : type = "文件";break;
+            case 1 : type = "文件存证";break;
+            case 2 : type = "拍照存证";break;
+            case 3 : type = "相册存证";break;
+            case 4 : type = "录像存证";break;
+            case 5 : type = "录音存证";break;
+            case 6 : type = "录屏存证";break;
+            case 7 : type = "模板存证";break;
             default: type = "图片";break;
         }
         g.drawString("存证类型：" + type, (int) 100, (int) 395);

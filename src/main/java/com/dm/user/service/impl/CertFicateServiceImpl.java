@@ -169,6 +169,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 
 	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate) throws Exception {
 		/*添加发起人*/
+		if (null!=certFicate.getCertId()){
+			certConfirmMapper.deleteByCertId(certFicate.getCertId());
+		}
 		CertConfirm cc = new CertConfirm();
 		cc.setConfirmDate(new Date());
 		cc.setConfirmState(StateMsg.originator);
@@ -203,9 +206,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 					}
 				}
 			}
-			if(null==certConfirm.getConfirmId()){
-				certConfirmMapper.insertSelective(certConfirm);
-			}
+			certConfirmMapper.insertSelective(certConfirm);
 		}
 	}
 
@@ -216,9 +217,11 @@ public class CertFicateServiceImpl implements CertFicateService {
 			List<CertConfirm> list = certConfirmMapper.selectByCertId(certFicateId);
 			certFicate.setCertConfirmList(list);
 			if(certFicate.getCertFileIsSave().equals("1")){
-				String[] filesId = certFicate.getCertFilesid().split(",");
-				List<CertFiles> certFiles = certFilesMapper.findByFilesIds(filesId);
-				certFicate.setCertFilesList(certFiles);
+				if (StringUtils.isNotBlank(certFicate.getCertFilesid())){
+					String[] filesId = certFicate.getCertFilesid().split(",");
+					List<CertFiles> certFiles = certFilesMapper.findByFilesIds(filesId);
+					certFicate.setCertFilesList(certFiles);
+				}
 			}
 			return certFicate;
 		} catch (Exception e) {
@@ -337,16 +340,15 @@ public class CertFicateServiceImpl implements CertFicateService {
 	@Override
 	public CertFicate temSave(TemCertFile temCertFile) throws Exception {
 		try {
-			//String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			String username = "18811012959";
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			//String username = "18811012959";
 			LoginUserDetails userDetails = loginUserService.getUserByUsername(username);
 			CertFicate certFicate = null;
-			if(null!=temCertFile.getCertFicate()&&null!=temCertFile.getCertFicate().getCertId()){
-				TemFile temFile = temFileMapper.selectByCertId(temCertFile.getCertFicate().getCertId().toString());
+			if(null!=temCertFile.getTemFile()&&null!=temCertFile.getTemFile().getCertId()){
+				TemFile temFile = temFileMapper.selectByCertId(temCertFile.getTemFile().getCertId().toString());
 				temCertFile.getTemFile().setTemId(temFile.getTemId());
 				temFileMapper.updateByPrimaryKeySelective(temCertFile.getTemFile());
-				certFicate = certFicateMapper.selectByPrimaryKey(temCertFile.getCertFicate().getCertId());
-				certFicateMapper.updateByPrimaryKeySelective(certFicate);
+				certFicate = certFicateMapper.selectByPrimaryKey(temCertFile.getTemFile().getCertId());
 			}else{
 				certFicate = new CertFicate();
 				TemFile temFile = new TemFile();

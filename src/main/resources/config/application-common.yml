@@ -44,7 +44,7 @@ security:
   #  enabled: false
   token:
      secret: dm@123@dm     #token加密的服务端密钥，不能泄漏，否则客户端可以自己生成token
-     expiredTime: 36000000    #过期时间，单位毫秒，即多少毫秒后过期
+     expiredTime: 360000000    #过期时间，单位毫秒，即多少毫秒后过期
      requestParameter: Authorization     #url请求上传token的参数名称，默认为Authorization
      prefix: Bearer          #url请求上传的token值前缀，验证时需要去掉此前缀         
   passwordEncoder: MD5       #密码编码器，默认使用BCrypt密码编码器

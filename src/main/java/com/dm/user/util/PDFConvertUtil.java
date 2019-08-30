@@ -48,13 +48,13 @@ public class PDFConvertUtil {
             if (osname.startsWith("win")) {
                 outputFile = "D:\\upload\\" + s + ".pdf";
                 fontPath = "C:\\Windows\\Fonts\\simsun.ttc";
-                certFiles.setFilePath("D:\\upload"+s+".pdf");
-                certFiles.setFileUrl("http:\\\\192.168.3.101\\img\\"+s+".pdf");
+                certFiles.setFilePath("D:\\upload\\"+s+".pdf");
+                certFiles.setFileUrl("http://192.168.3.101/img/"+s+".pdf");
             } else {
                 outputFile = "/opt/czt-upload/userTemplate/" + s + ".pdf";
-                fontPath = "/opt/jdk1.8.0_221/jre/lib/fonts/simhei.ttf";
-                certFiles.setFileUrl("/opt/czt-upload/"+s+".pdf");
-                certFiles.setFilePath("http://114.244.37.10:7080/img/"+s+".pdf");
+                fontPath = "/opt/jdk1.8.0_221/jre/lib/fonts/simsun.ttc";
+                certFiles.setFilePath("/opt/czt-upload/userTemplate/"+s+".pdf");
+                certFiles.setFileUrl("http://114.244.37.10:7080/img/userTemplate/"+s+".pdf");
             }
             OutputStream os = new FileOutputStream(outputFile);
             ITextRenderer render = new ITextRenderer();

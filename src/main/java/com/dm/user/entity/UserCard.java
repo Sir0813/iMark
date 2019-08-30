@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class UserCard {
@@ -20,8 +21,10 @@ public class UserCard {
 
     private String realState;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date postTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date realTime;
 
     public Integer getCardid() {
@@ -88,7 +91,6 @@ public class UserCard {
         this.realState = realState == null ? null : realState.trim();
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getPostTime() {
         return postTime;
     }
@@ -97,7 +99,6 @@ public class UserCard {
         this.postTime = postTime;
     }
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getRealTime() {
         return realTime;
     }
