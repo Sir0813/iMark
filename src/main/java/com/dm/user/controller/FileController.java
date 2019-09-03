@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 public class FileController {
 
 	@Autowired
@@ -31,7 +31,7 @@ public class FileController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/upload")
+	@RequestMapping("/api/upload")
 	public Result upload(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "file") MultipartFile[] multipartFile) throws Exception {
 		Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile);

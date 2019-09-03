@@ -157,6 +157,8 @@ public class CertFicateServiceImpl implements CertFicateService {
 		certFiles.forEach(certFile->{
 			String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
 			hash.append(str);
+			certFile.setFileHash(str);
+			certFilesMapper.updateByPrimaryKeySelective(certFile);
 		});
 		if (certFiles.size()==1){
 			certFicate.setCertHash(hash.toString());
@@ -329,7 +331,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 				qrCodePath = "D:\\"+s+".png";
 				templatePath = "D:\\ct.png";
 			}
-            QRCodeGenerator.generateQRCodeImage(certFicate.getCertHash(),qrCodePath);
+            QRCodeGenerator.generateQRCodeImage(certFicate.getCertId().toString(),qrCodePath);
             ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
             return mark;
         }catch (Exception e){

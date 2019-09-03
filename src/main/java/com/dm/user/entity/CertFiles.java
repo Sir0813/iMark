@@ -17,6 +17,16 @@ public class CertFiles {
     
     private String fileUrl;
 
+    private String fileHash;
+
+    public String getFileHash() {
+        return fileHash;
+    }
+
+    public void setFileHash(String fileHash) {
+        this.fileHash = fileHash;
+    }
+
     public String getFileSeq() {
 		return fileSeq;
 	}

@@ -104,6 +104,14 @@
     from biz_certficate
     where cert_id = #{certId,jdbcType=INTEGER}
   </select>
+    <select id="selectByIdAndState" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from biz_certficate
+        where cert_id = #{certId,jdbcType=INTEGER}
+        and cert_status = 2
+        and cert_is_delete = 1
+    </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from biz_certficate
     where cert_id = #{certId,jdbcType=INTEGER}

@@ -10,9 +10,10 @@
     <result column="cert_id" property="certId" jdbcType="INTEGER" />
     <result column="file_seq" property="fileSeq" jdbcType="VARCHAR" />
     <result column="file_url" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="file_hash" property="fileHash" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url
+    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url, file_hash
   </sql>
   <delete id="deleteByCertId" parameterType="java.lang.Integer">
     delete from
@@ -53,6 +54,9 @@
       <if test="fileUrl != null" >
         file_url,
       </if>
+      <if test="fileHash != null" >
+        file_hash,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="fileType != null" >
@@ -75,6 +79,9 @@
       </if>
       <if test="fileUrl != null" >
         #{fileUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="fileHash != null" >
+        #{fileHash,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -102,16 +109,20 @@
       <if test="fileUrl != null" >
         file_url = #{fileUrl,jdbcType=VARCHAR},
       </if>
+      <if test="fileHash != null" >
+        file_hash = #{fileHash,jdbcType=VARCHAR},
+      </if>
     </set>
     where file_id = #{fileId,jdbcType=INTEGER}
   </update>
 	<select id="findByFilesIds" resultMap="BaseResultMap" parameterType="java.util.List">
 		select 
-		file_id, file_path, file_name, file_url, file_type
+		file_id, file_path, file_name, file_url, file_type, file_hash, file_seq
 		from biz_cert_files
 		where file_id in 
 		<foreach collection="array" item="fileid" open="(" close= ")" separator=",">
 			#{fileid}
 		</foreach>
+		order by file_seq asc
 	</select>
 </mapper>

@@ -9,7 +9,7 @@ spring:
       #主数据源,默认数据源
       master:
          type: com.alibaba.druid.pool.DruidDataSource
-         url: jdbc:mysql://192.168.1.220:3306/CZT?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+         url: jdbc:mysql://192.168.1.220:3306/CZT?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
          username: cdisa
          password: Cdisa@123
          driverClassName : com.mysql.cj.jdbc.Driver
@@ -17,13 +17,13 @@ spring:
       slaves:
          - key: slave1
            type: com.alibaba.druid.pool.DruidDataSource
-           url: jdbc:mysql://192.168.1.220:3306/jboot-slave1?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+           url: jdbc:mysql://192.168.1.220:3306/jboot-slave1?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
            username: cdisa
            password: Cdisa@123
            driverClassName : com.mysql.cj.jdbc.Driver   #springboot使用新版本驱动，而新驱动不支持旧版本数据库，验证过Mysql5.5版本就会报错
          - key: slave2
            type: com.alibaba.druid.pool.DruidDataSource
-           url: jdbc:mysql://192.168.1.220:3306/jboot-slave2?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+           url: jdbc:mysql://192.168.1.220:3306/jboot-slave2?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
            username: cdisa
            password: Cdisa@123
            driverClassName : com.mysql.cj.jdbc.Driver

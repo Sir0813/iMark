@@ -18,4 +18,5 @@ public interface CertFilesMapper {
 	List<CertFiles> findByFilesIds(String[] filesId);
 
     void deleteByCertId(Integer certId);
+
 }

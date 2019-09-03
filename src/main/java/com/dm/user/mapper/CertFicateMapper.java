@@ -1,9 +1,10 @@
 package com.dm.user.mapper;
 
+import com.dm.user.entity.CertFicate;
+import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 import java.util.Map;
-import org.apache.ibatis.annotations.Mapper;
-import com.dm.user.entity.CertFicate;
 
 @Mapper
 public interface CertFicateMapper {
@@ -30,4 +31,6 @@ public interface CertFicateMapper {
 	void updateReasonByCertId(int certId);
 
 	void updateCertState(Map<String, Object> map);
+
+    CertFicate selectByIdAndState(Integer certId);
 }
