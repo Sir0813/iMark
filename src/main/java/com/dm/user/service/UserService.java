@@ -54,4 +54,28 @@ public interface UserService {
 	 * @throws Exception
 	 */
 	Result userUpdate(User user)throws Exception;
+
+	/**
+	 * 修改密码
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+    Result retrievePwd(Map<String, Object> map) throws Exception;
+
+	/**
+	 * 找回密码下一步
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	Result nextOperate(Map<String, Object> map) throws Exception;
+
+	/**
+	 * 动态密码登录
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+    Result dynamicLogin(Map<String, Object> map) throws Exception;
 }

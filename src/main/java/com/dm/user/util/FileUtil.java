@@ -29,11 +29,17 @@ import java.util.UUID;
 @Component
 public class FileUtil {
 
-	@Value("${upload.filePath}")
+	@Value("${upload.certFilePath}")
 	private String uploadFilePath;
 	
-	@Value("${upload.filePrefix}")
+	@Value("${upload.certFilePrefix}")
 	private String filePrefix;
+
+	@Value("${upload.realFilePath}")
+	private String realFilePath;
+
+	@Value("${upload.realFilePrefix}")
+	private String realFilePrefix;
 	
 	@Autowired
 	private CertFilesService certFilesService;
@@ -242,5 +248,35 @@ public class FileUtil {
 			}
 		}
 	}
-	
+
+	public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response, MultipartFile[] multipartFile)
+			throws Exception{
+			request.setCharacterEncoding("utf-8");
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("text/html;charset=utf-8");
+			Map<String,Object>map = new HashMap<String,Object>();
+			String certIds[] = new String[multipartFile.length];
+			for (int i = 0; i < multipartFile.length; i++) {
+				String fileName = multipartFile[i].getOriginalFilename();
+				String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+				UUID randomUUID = UUID.randomUUID();
+				String filePath = realFilePath + File.separator + randomUUID+suffix;
+				String fileUrl = realFilePrefix+File.separator+randomUUID+suffix;
+				boolean uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+				if (!uploadBoolean) {
+					throw new Exception();
+				}
+				CertFiles certFiles = new CertFiles();
+				certFiles.setFileName(fileName);
+				certFiles.setFileUrl(fileUrl);
+				certFiles.setFilePath(filePath);
+				certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
+				certFiles.setFileType(suffix);
+				certFiles.setFileSeq(i+"");
+				certFilesService.insertSelective(certFiles);
+				certIds[i]=String.valueOf(certFiles.getFileId());
+			}
+			map.put("fileIds", certIds);
+			return map;
+		}
 }

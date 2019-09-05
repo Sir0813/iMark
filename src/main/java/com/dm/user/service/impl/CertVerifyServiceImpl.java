@@ -14,7 +14,7 @@ import com.dm.user.util.ShaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -37,11 +37,15 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
     public boolean verifyCert(CertFicate certFicate) throws Exception {
         try {
             CertFicate cf = certFicateMapper.selectByIdAndState(certFicate.getCertId());
-            if (null==cf) return false;
-            String[] ids = cf.getCertFilesid().split(",");
-            List<CertFiles> fileList = certFilesMapper.findByFilesIds(ids);
             String[] filesId = certFicate.getCertFilesid().split(",");
             List<CertFiles> certFiles = certFilesMapper.findByFilesIds(filesId);
+            if (null==cf) {
+                deleteCertFile(certFiles);
+                return false;
+            }
+            String[] ids = cf.getCertFilesid().split(",");
+            List<CertFiles> fileList = certFilesMapper.findByFilesIds(ids);
+
             String fhash = "";String cfHash = "";String result = "";
             for (CertFiles files : fileList) {
                 fhash+=(files.getFileHash()+",");
@@ -49,23 +53,23 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             for (CertFiles files : certFiles) {
                 String str = CryptoHelper.hash(ShaUtil.getFileByte(files.getFilePath()));
                 if (!fhash.contains(str)){
+                    deleteCertFile(certFiles);
                     return false;
                 }else{
                     cfHash+=str;
                 }
             }
-            String replace = fhash.replace(",", "");
+            deleteCertFile(certFiles);
             if (fileList.size()==1){
                 if (!cf.getCertHash().equals(cfHash)) return false;
                 result = cidService.query(cfHash);
             } else {
-                String hashs = CryptoHelper.hash(replace);
+                String hashs = CryptoHelper.hash(cfHash);
                 if (!cf.getCertHash().equals(hashs)) return false;
                 result = cidService.query(hashs);
             }
             JSONObject jsonObject = JSONObject.parseObject(result);
-            if (jsonObject.get("code").toString().equals("200")
-            &&jsonObject.get("msg").toString().equals("Success"))
+            if (jsonObject.get("code").toString().equals("200")&&jsonObject.get("msg").toString().equals("Success"))
             return true;
             return false;
         } catch (GlobalException e) {
@@ -73,5 +77,13 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    private void deleteCertFile(List<CertFiles> certFiles) {
+        certFiles.forEach(c->{
+            File file = new File(c.getFilePath());
+            file.delete();
+            certFilesMapper.deleteByPrimaryKey(c.getFileId());
+        });
     }
 }

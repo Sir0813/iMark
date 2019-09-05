@@ -1,6 +1,5 @@
 package com.dm.user.exception;
 
-import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public class UploadFailException {
         new ResultUtil();
         logger.error("error URL ===>>"+req.getRequestURL()
                 +"<===>error msg ===>>"+e.getMessage());
-		return ResultUtil.info(I18nUtil.getMessage("file.upload.max.size.code"),I18nUtil.getMessage("file.upload.max.size.msg"));
+		return ResultUtil.info("file.upload.max.size.code","file.upload.max.size.msg");
     }
 
     @ExceptionHandler(Exception.class)

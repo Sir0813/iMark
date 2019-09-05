@@ -3,6 +3,9 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.security.LoginUserDetailsService;
+import com.dm.frame.jboot.security.MD5PasswordEncoder;
+import com.dm.frame.jboot.security.token.JwtTokenProvider;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
@@ -22,14 +25,14 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
@@ -49,6 +52,12 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private PushMsgService pushMsgService;
+
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+
+	@Autowired
+	private LoginUserDetailsService loginUserDetailsService;
 	
 	@Value("${email.emailContent}")
 	private String emailContent;
@@ -80,12 +89,10 @@ public class UserServiceImpl implements UserService{
 	public Result userRegister(User user) throws Exception {
 		try {
 			if (StringUtils.isBlank(user.getUsername())) {
-				return ResultUtil.info(I18nUtil.getMessage("register.no.name.code"),
-						I18nUtil.getMessage("register.no.name.msg"));
+				return ResultUtil.info("register.no.name.code","register.no.name.msg");
 			}
 			if (StringUtils.isBlank(user.getPassword())) {
-				return ResultUtil.info(I18nUtil.getMessage("register.no.password.code"),
-						I18nUtil.getMessage("register.no.password.msg"));
+				return ResultUtil.info("register.no.password.code","register.no.password.msg");
 			}
 			Map<String, Object> map = new HashMap<>();
 			map.put("email", user.getUsername());
@@ -97,8 +104,7 @@ public class UserServiceImpl implements UserService{
 			}
 			User u = userMapper.findByUserName(user.getUsername());
 			if (null!=u) {
-				return ResultUtil.info(I18nUtil.getMessage("register.has.name.code"),
-						I18nUtil.getMessage("register.has.name.msg"));
+				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
 			information.setInfoState("1");
 			user.setSalt(RandomCode.getCode());
@@ -122,13 +128,11 @@ public class UserServiceImpl implements UserService{
 			LoginUserDetails user = loginUserService.getUserByUsername(username);
 			String md5Password = MD5Util.encode(map.get("oldPassword").toString()+user.getSalt());
 			if (!md5Password.equals(user.getPassword())) {
-				return ResultUtil.info(I18nUtil.getMessage("user.reset.password.error.code"),
-						I18nUtil.getMessage("user.reset.password.error.msg"));
+				return ResultUtil.info("user.reset.password.error.code","user.reset.password.error.msg");
 			}
 			String newPwd = MD5Util.encode(map.get("newPassword").toString()+user.getSalt());
 			if (newPwd.equals(user.getPassword())) {
-				return ResultUtil.info(I18nUtil.getMessage("user.reset.equal.password.code"),
-						I18nUtil.getMessage("user.reset.equal.password.msg"));
+				return ResultUtil.info("user.reset.equal.password.code","user.reset.equal.password.msg");
 			}else {
 				map.put("userid", user.getUserid());
 				map.put("password", newPwd);
@@ -199,16 +203,14 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 
-	public Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+	private Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
 		try {
 			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-				return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
-							I18nUtil.getMessage("email.code.error.msg"));
+				return ResultUtil.info("email.code.error.code","email.code.error.msg");
 			}
 			Date date = new Date();
 			if (date.after(info.getInfoExpireddate())) {
-				return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
-						I18nUtil.getMessage("email.code.expire.msg"));
+				return ResultUtil.info("email.code.expire.code","email.code.expire.msg");
 			}
 			return ResultUtil.success();
 		} catch (Exception e) {
@@ -220,5 +222,64 @@ public class UserServiceImpl implements UserService{
 	public Result userUpdate(User user) throws Exception {
 		userMapper.updateByPrimaryKeySelective(user);
 		return ResultUtil.success();
+	}
+
+	@Override
+	public Result retrievePwd(Map<String, Object> map) throws Exception {
+		try {
+			User user = userMapper.findByUserName(map.get("phone").toString());
+			user.setSalt(RandomCode.getCode());
+			String md5Password = MD5Util.encode(map.get("password").toString()+user.getSalt());
+			user.setPassword(md5Password);
+			userMapper.updateByPrimaryKeySelective(user);
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public Result nextOperate(Map<String, Object> map) throws Exception {
+		try {
+			User user = userMapper.findByUserName(map.get("phone").toString());
+			if (null==user) {
+				return ResultUtil.info("login.account.no.code","login.account.no.msg");
+			}
+			map.put("email", map.get("phone").toString());
+			map.put("veriCode", map.get("veriCode").toString());
+			Information information = informationMapper.selectByPhone(map);
+			Result result = checkVeriCode(information, map);
+			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+				return result;
+			}
+			information.setInfoState("1");
+			informationMapper.updateByPrimaryKeySelective(information);
+			return ResultUtil.success();
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public Result dynamicLogin(Map<String, Object> map) throws Exception {
+		User user = userMapper.findByUserName(map.get("username").toString());
+		if (null==user) {
+			return ResultUtil.info("login.account.no.code","login.account.no.msg");
+		}
+		map.put("email", map.get("username").toString());
+		map.put("veriCode", map.get("password").toString());
+		Information information = informationMapper.selectByPhone(map);
+		Result result = checkVeriCode(information, map);
+		if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+			return result;
+		}
+		MD5PasswordEncoder md5PasswordEncoder = new MD5PasswordEncoder();
+		String encodePwd = md5PasswordEncoder.encode(map.get("password").toString());
+		Collection<GrantedAuthority> authorities = this.loginUserDetailsService.loadAuthority(map.get("username").toString());
+		Authentication authentication = new UsernamePasswordAuthenticationToken(map.get("username").toString(), encodePwd, authorities);
+		String token = this.jwtTokenProvider.createToken(authentication);
+		information.setInfoState("1");
+		informationMapper.updateByPrimaryKeySelective(information);
+		return ResultUtil.success(token);
 	}
 }

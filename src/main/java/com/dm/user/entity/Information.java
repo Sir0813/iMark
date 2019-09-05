@@ -11,7 +11,7 @@ public class Information {
 
     private String infoMsg;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date infoSenddate;
 
     private String infoUser;
@@ -21,7 +21,7 @@ public class Information {
 
     private String infoPhone;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date infoExpireddate;
 
     public Integer getInfoId() {

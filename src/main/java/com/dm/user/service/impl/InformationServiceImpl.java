@@ -92,7 +92,13 @@ public class InformationServiceImpl implements InformationService{
 		try {
 			map.put("email", map.get("oldPhone").toString());
 			Information info = informationMapper.selectByPhone(map);
-			return checkVeriCode(info,map);
+			Result result = checkVeriCode(info,map);
+			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+				return result;
+			}
+			info.setInfoState("1");
+			informationMapper.updateByPrimaryKeySelective(info);
+			return ResultUtil.success();
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -104,8 +110,7 @@ public class InformationServiceImpl implements InformationService{
 			map.put("email", map.get("newPhone").toString());
 			User user = userMapper.findByUserName(map.get("newPhone").toString());
 			if (null!=user) {
-				return ResultUtil.info(I18nUtil.getMessage("register.has.name.code"),
-						I18nUtil.getMessage("register.has.name.msg"));
+				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
 			Information info = informationMapper.selectByPhone(map);
 			Result result = checkVeriCode(info,map);
@@ -116,22 +121,22 @@ public class InformationServiceImpl implements InformationService{
 			User u = userMapper.findByUserName(username);
 			u.setUsername(map.get("newPhone").toString());
 			userMapper.updateByPrimaryKeySelective(u);
+			info.setInfoState("1");
+			informationMapper.updateByPrimaryKeySelective(info);
 			return ResultUtil.success();
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
 	}
 	
-	public Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+	private Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
 		try {
 			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-				return ResultUtil.info(I18nUtil.getMessage("email.code.error.code"),
-							I18nUtil.getMessage("email.code.error.msg"));
+				return ResultUtil.info("email.code.error.code","email.code.error.msg");
 			}
 			Date date = new Date();
 			if (date.after(info.getInfoExpireddate())) {
-				return ResultUtil.info(I18nUtil.getMessage("email.code.expire.code"),
-						I18nUtil.getMessage("email.code.expire.msg"));
+				return ResultUtil.info("email.code.expire.code","email.code.expire.msg");
 			}
 			return ResultUtil.success();
 		} catch (Exception e) {

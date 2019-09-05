@@ -57,5 +57,24 @@ public class ShaUtil {
 		}
 		return strResult;
 	}
-	
+
+	public static String getStarString(String content, int begin, int end) {
+
+		if (begin >= content.length() || begin < 0) {
+			return content;
+		}
+		if (end >= content.length() || end < 0) {
+			return content;
+		}
+		if (begin >= end) {
+			return content;
+		}
+		String starStr = "";
+		for (int i = begin; i < end; i++) {
+			starStr = starStr + "*";
+		}
+		return content.substring(0, begin) + starStr + content.substring(end, content.length());
+
+	}
+
 }

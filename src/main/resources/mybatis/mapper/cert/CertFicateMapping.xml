@@ -17,10 +17,12 @@
     <result column="cert_filesid" property="certFilesid" jdbcType="VARCHAR" />
     <result column="cert_isconf" property="certIsconf" jdbcType="INTEGER" />
     <result column="cert_file_is_save" property="certFileIsSave" jdbcType="VARCHAR" />
+    <result column="cert_address" property="certAddress" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     cert_id, cert_date, cert_owner, cert_name, cert_describe, cert_status, cert_is_delete, 
-    cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save
+    cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save,
+    cert_address
   </sql>
   <update id="updateCertState">
 	update biz_certficate
@@ -161,6 +163,9 @@
         <if test="certFileIsSave != null" >
             cert_file_is_save,
         </if>
+        <if test="certAddress != null" >
+            cert_address,
+        </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="certDate != null" >
@@ -204,6 +209,9 @@
       </if>
         <if test="certFileIsSave != null" >
             #{certFileIsSave,jdbcType=VARCHAR},
+        </if>
+        <if test="certAddress != null" >
+            #{certAddress,jdbcType=VARCHAR},
         </if>
     </trim>
   </insert>
@@ -251,6 +259,9 @@
             </if>
             <if test="certFileIsSave != null" >
                 cert_File_Is_Save = #{certFileIsSave,jdbcType=VARCHAR},
+            </if>
+            <if test="certAddress != null" >
+                cert_Address = #{certAddress,jdbcType=VARCHAR},
             </if>
         </set>
         where cert_id = #{certId,jdbcType=INTEGER}

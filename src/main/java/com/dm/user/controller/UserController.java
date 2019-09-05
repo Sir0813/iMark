@@ -3,16 +3,16 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
-import com.dm.user.entity.*;
-import com.dm.user.service.CertFicateService;
-import com.dm.user.service.CertTemplateService;
+import com.dm.user.entity.User;
+import com.dm.user.entity.UserCard;
 import com.dm.user.service.InformationService;
+import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
-import com.dm.user.util.PDFConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -29,6 +29,9 @@ public class UserController extends BaseController {
 	
 	@Autowired
 	private FileUtil fileUtil;
+
+	@Autowired
+	private UserCardService userCardService;
 	
 	/**
 	 * 发送验证码
@@ -51,6 +54,28 @@ public class UserController extends BaseController {
 	@RequestMapping(value="/api/register", method = RequestMethod.POST)
 	public Result register(@RequestBody User user) throws Exception {
 		return userService.userRegister(user);
+	}
+
+	/**
+	 * 找回密码 验证验证码
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/api/nextOperate", method = RequestMethod.POST)
+	public Result nextOperate(@RequestBody Map<String,Object>map) throws Exception {
+		return userService.nextOperate(map);
+	}
+
+	/**
+	 * 找回密码
+	 * @param phone 手机号
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/api/retrievePwd", method = RequestMethod.POST)
+	public Result retrievePwd(@RequestBody Map<String,Object>map) throws Exception {
+		return userService.retrievePwd(map);
 	}
 
 	/**
@@ -167,42 +192,36 @@ public class UserController extends BaseController {
 		return informationService.changePhone(map);
 	}
 
-	//  测试用  用完删除
-
-
-	@Autowired
-	private CertTemplateService certTemplateService;
-
-	@Autowired
-	private CertFicateService certFicateService;
-
-	@Autowired
-	private PDFConvertUtil pdfConvertUtil;
-
-	@RequestMapping(value="/api/edit", method = RequestMethod.GET)
-	public Result getHtmlTemplate(String type) throws Exception {
-		CertTemplate ct = certTemplateService.getByTemplateType(type);
-		String htmlTemplate = FileUtil.getHtmlTemplate(ct.getTemplatePath()).replace("\t","");
-		return ResultUtil.success(htmlTemplate);
+	/**
+	 * 实名认证
+	 * @param userCard
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/authentication", method = RequestMethod.POST)
+	public Result authentication(@RequestBody UserCard userCard) throws Exception {
+		return userCardService.authentication(userCard);
 	}
 
-	@RequestMapping(value="/api/temSave",method=RequestMethod.POST)
-	public Result temSave(@RequestBody TemCertFile temCertFile) throws Exception {
-		CertFicate cert = certFicateService.temSave(temCertFile);
-		return ResultUtil.success(cert);
+	/**
+	 * 实名信息查看
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/real/info", method = RequestMethod.GET)
+	public Result realInfo() throws Exception {
+		return userCardService.realInfo();
 	}
 
-	@RequestMapping(value="/api/convertPDF", method = RequestMethod.POST)
-	public void pdf(@RequestBody Map<String,Object> map) throws Exception {
-		TemFile temFile = certFicateService.selectByCertId(map.get("certId").toString());
-		pdfConvertUtil.acceptPage(temFile.getTemFileText(),temFile.getCertId());
+	/**
+	 * 短信验证码登录
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/api/dynamic/login", method = RequestMethod.POST)
+	public Result dynamicLogin(@RequestBody Map<String,Object>map) throws Exception {
+		return userService.dynamicLogin(map);
 	}
-
-	@RequestMapping(value="/api/fileEdit", method = RequestMethod.GET)
-	public Result fileEdit(String certId) throws Exception {
-		String htmlTemplate = certTemplateService.fileEdit(certId);
-		return ResultUtil.success(htmlTemplate);
-	}
-
 
 }

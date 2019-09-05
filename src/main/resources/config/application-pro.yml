@@ -6,15 +6,17 @@ spring:
       #配置扩展profiles
       include: sys,mybatis,socket,proDS,common
 upload:
-   filePath: /opt/czt-upload/certfile #文件夹要赋予权限才能保存文件
-   filePrefix: http://114.244.37.10:7080/img/certfile
+   certFilePath: /opt/czt-upload/certfile #文件夹要赋予权限才能保存文件
+   certFilePrefix: http://114.244.37.10:7080/img/certfile
+   realFilePath: /opt/czt-upload/realfile
+   realFilePrefix: http://114.244.37.10:7080/img/realfile
 #邮箱设置
 email:
   address: 18811012959@163.com
   smtp: smtp.163.com
   pwd: jq390813
   subject: 【迪曼森】
-  emailContent: 【存证平台】您的验证码是：$code$，验证码五分钟内有效，请不要把验证码泄露给其他人。
+  emailContent: 【存证平台】您的验证码是：$code$，验证码五分钟内有效，请勿提供给他人可能导致账号被盗。请勿泄露，谨防被骗。
   expired: 300000 #毫秒
 #极光推送服务
 jpush:

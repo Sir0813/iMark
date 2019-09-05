@@ -8,11 +8,11 @@ public class CertFicate {
     private Integer certId;
 
     /*存证入链时间*/
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date certDate;
 
     /*提交时间*/
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date certPostDate;
 
     private String certOwner;
@@ -32,7 +32,7 @@ public class CertFicate {
     /*0已确认1未确认*/
     private Integer certIsconf;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date certDelDate;
 
     /*存证类型 1文件存证 2 拍照存证 3 相册存证 4 录像存证 5 录音存证 6 录屏存证 7 模板存证*/
@@ -53,7 +53,18 @@ public class CertFicate {
     /*文件业务字段*/
     private List<CertFiles> certFilesList;
 
+    /*模板ID 业务字段*/
     private Integer temId;
+
+    private String certAddress;
+
+    public String getCertAddress() {
+        return certAddress;
+    }
+
+    public void setCertAddress(String certAddress) {
+        this.certAddress = certAddress;
+    }
 
     public Integer getTemId() {
         return temId;

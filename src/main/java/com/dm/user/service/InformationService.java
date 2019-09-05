@@ -1,7 +1,8 @@
 package com.dm.user.service;
 
-import java.util.Map;
 import com.dm.frame.jboot.msg.Result;
+
+import java.util.Map;
 
 public interface InformationService {
 
