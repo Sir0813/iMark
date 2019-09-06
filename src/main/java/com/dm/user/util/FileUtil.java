@@ -109,7 +109,7 @@ public class FileUtil {
 				throw new Exception();
 			}
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByUserName(username);
+			User user = userMapper.findByName(username);
 			user.setHeadPhoto(fileUrl);
 			userMapper.updateByPrimaryKeySelective(user);
 			return ResultUtil.success();

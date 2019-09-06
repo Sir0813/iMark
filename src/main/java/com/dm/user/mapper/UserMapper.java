@@ -21,7 +21,7 @@ public interface UserMapper {
 
 	void userRegister(User user);
 
-	User findByUserName(String username);
+	User findByName(String username);
 
 	void updateById(Map<String, Object> map);
 

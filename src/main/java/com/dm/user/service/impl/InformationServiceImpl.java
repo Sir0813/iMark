@@ -76,7 +76,7 @@ public class InformationServiceImpl implements InformationService{
 				return result;
 			}
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByUserName(username);
+			User u = userMapper.findByName(username);
 			u.setEmail(map.get("email").toString());
 			userMapper.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");
@@ -108,7 +108,7 @@ public class InformationServiceImpl implements InformationService{
 	public Result changePhone(Map<String, Object> map) throws Exception {
 		try {
 			map.put("email", map.get("newPhone").toString());
-			User user = userMapper.findByUserName(map.get("newPhone").toString());
+			User user = userMapper.findByName(map.get("newPhone").toString());
 			if (null!=user) {
 				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
@@ -118,7 +118,7 @@ public class InformationServiceImpl implements InformationService{
 				return result;
 			}
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByUserName(username);
+			User u = userMapper.findByName(username);
 			u.setUsername(map.get("newPhone").toString());
 			userMapper.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");

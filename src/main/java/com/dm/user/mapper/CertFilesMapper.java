@@ -19,4 +19,5 @@ public interface CertFilesMapper {
 
     void deleteByCertId(Integer certId);
 
+    CertFiles selectByUrl(String frontPath);
 }

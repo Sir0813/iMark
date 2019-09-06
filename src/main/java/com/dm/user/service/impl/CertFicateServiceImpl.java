@@ -188,7 +188,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 			if (sendMsg) {
 				/*发消息请求确认*/
 				if (certConfirm.getConfirmState()!=StateMsg.originator) {
-					User u = userMapper.findByUserName(certConfirm.getConfirmPhone());
+					User u = userMapper.findByName(certConfirm.getConfirmPhone());
 					if (null!=u){
 						PushMsg pm = new PushMsg();
 						pm.setCertFicateId(certFicate.getCertId().toString());

@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.Date;
 
 @Service
@@ -33,17 +34,29 @@ public class UserCardServiceImpl implements UserCardService{
 	@Override
 	public Result authentication(UserCard userCard) throws Exception {
 		try {
+			boolean b = userCard.getCardid()!=null?true:false;
+			if(b){
+				UserCard card = userCardMapper.selectByPrimaryKey(userCard.getCardid());
+				CertFiles c = certFilesMapper.selectByUrl(card.getFrontPath());
+				CertFiles certFiles = certFilesMapper.selectByUrl(card.getBackPath());
+				File file = new File(c.getFilePath());
+				File f = new File(certFiles.getFilePath());
+				file.delete();
+				f.delete();
+				certFilesMapper.deleteByPrimaryKey(c.getFileId());
+				certFilesMapper.deleteByPrimaryKey(certFiles.getFileId());
+			}
 			String[] split = userCard.getFrontPath().split(",");
 			CertFiles file = certFilesMapper.selectByPrimaryKey(Integer.parseInt(split[0]));
 			CertFiles cf = certFilesMapper.selectByPrimaryKey(Integer.parseInt(split[1]));
 			userCard.setFrontPath(file.getFileUrl());
 			userCard.setBackPath(cf.getFileUrl());
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByUserName(username);
+			User u = userMapper.findByName(username);
 			userCard.setUserid(u.getUserid());
 			userCard.setRealState("1");
 			userCard.setPostTime(new Date());
-			if (userCard.getCardid()!=null) {
+			if (b) {
 				userCardMapper.updateByPrimaryKeySelective(userCard);
 			} else {
 				userCardMapper.insertSelective(userCard);
@@ -58,7 +71,7 @@ public class UserCardServiceImpl implements UserCardService{
 	public Result realInfo() throws Exception {
 		try {
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByUserName(username);
+			User u = userMapper.findByName(username);
 			UserCard userCard = userCardMapper.selectByUserId(u.getUserid().toString());
 			userCard.setFrontPath("");
 			userCard.setBackPath("");

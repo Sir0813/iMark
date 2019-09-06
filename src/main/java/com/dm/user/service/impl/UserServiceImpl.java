@@ -31,7 +31,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @Service
@@ -58,7 +57,7 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private LoginUserDetailsService loginUserDetailsService;
-	
+
 	@Value("${email.emailContent}")
 	private String emailContent;
 	
@@ -102,7 +101,7 @@ public class UserServiceImpl implements UserService{
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
-			User u = userMapper.findByUserName(user.getUsername());
+			User u = userMapper.findByName(user.getUsername());
 			if (null!=u) {
 				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
@@ -149,7 +148,7 @@ public class UserServiceImpl implements UserService{
 		try {
 			Map<String,Object> map = new HashMap<>();
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByUserName(username);
+			User user = userMapper.findByName(username);
 			UserCard userCard = userCardMapper.selectByUserId(user.getUserid().toString());
 			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
 			map.put("userName", username);
@@ -195,7 +194,7 @@ public class UserServiceImpl implements UserService{
 		try {
 			String registrationId = map.get("registrationId").toString();
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByUserName(username);
+			User user = userMapper.findByName(username);
 			user.setUsercode(registrationId);
 			userMapper.updateByPrimaryKeySelective(user);
 		} catch (Exception e) {
@@ -227,7 +226,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result retrievePwd(Map<String, Object> map) throws Exception {
 		try {
-			User user = userMapper.findByUserName(map.get("phone").toString());
+			User user = userMapper.findByName(map.get("phone").toString());
 			user.setSalt(RandomCode.getCode());
 			String md5Password = MD5Util.encode(map.get("password").toString()+user.getSalt());
 			user.setPassword(md5Password);
@@ -241,7 +240,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result nextOperate(Map<String, Object> map) throws Exception {
 		try {
-			User user = userMapper.findByUserName(map.get("phone").toString());
+			User user = userMapper.findByName(map.get("phone").toString());
 			if (null==user) {
 				return ResultUtil.info("login.account.no.code","login.account.no.msg");
 			}
@@ -262,7 +261,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public Result dynamicLogin(Map<String, Object> map) throws Exception {
-		User user = userMapper.findByUserName(map.get("username").toString());
+		User user = userMapper.findByName(map.get("username").toString());
 		if (null==user) {
 			return ResultUtil.info("login.account.no.code","login.account.no.msg");
 		}
