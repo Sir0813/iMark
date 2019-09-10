@@ -64,6 +64,7 @@
 	  and cert_isconf = 1
 	  and cert_is_delete = 1
 	  and cert_status = 4
+	  order by cert_post_date desc
   </select>
   <select id="list" resultMap="BaseResultMap" parameterType="java.util.Map">
   	select 
@@ -99,6 +100,7 @@
         </otherwise>
   	</choose>
   	and cert_is_delete = 1
+    order by cert_post_date desc
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

@@ -54,7 +54,7 @@
   	<include refid="Base_Column_List"></include>
   	from biz_cert_confirm
   	where confirm_phone = #{username}
-  	and confirm_state = 1
+  	and confirm_state = #{state}
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

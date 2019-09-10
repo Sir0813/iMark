@@ -18,7 +18,7 @@ public interface CertConfirmMapper {
 
 	List<CertConfirm> selectByCertId(Integer certFicateId);
 
-	List<CertConfirm> selectByConfirmPhoneAndState(String username);
+	List<CertConfirm> selectByConfirmPhoneAndState(String username,String state);
 
 	void updateByCertId(Map<String, Object> map);
 
@@ -29,4 +29,5 @@ public interface CertConfirmMapper {
 	List<CertConfirm> selectByConfirmPhone(String username);
 
     void deleteByCertId(Integer certId);
+
 }
