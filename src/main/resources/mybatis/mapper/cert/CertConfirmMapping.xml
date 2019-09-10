@@ -11,11 +11,18 @@
     <result column="reason_code" property="reasonCode" jdbcType="VARCHAR" />
     <result column="confirm_phone" property="confirmPhone" jdbcType="VARCHAR" />
     <result column="return_reason" property="returnReason" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     confirm_id, cert_id, confirm_date, confirm_person, confirm_state, result, reason_code, 
-    confirm_phone, return_reason
+    confirm_phone, return_reason, user_id
   </sql>
+  <select id="selectByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from biz_cert_confirm
+    where confirm_phone = #{username}
+  </select>
   <delete id="deleteByCertId" parameterType="java.lang.Integer">
     delete from biz_cert_confirm
     where cert_id = #{certId}
@@ -43,17 +50,17 @@
   	where cert_id = #{certId}
   	and confirm_phone = #{confirmPhone}
   </update>
-  <select id="selectByConfirmPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     distinct cert_id
     from biz_cert_confirm
-    where confirm_phone = #{username}
+    where user_id = #{userId}
   </select>
-  <select id="selectByConfirmPhoneAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByuserIdAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select 
   	<include refid="Base_Column_List"></include>
   	from biz_cert_confirm
-  	where confirm_phone = #{username}
+  	where user_id = #{userId}
   	and confirm_state = #{state}
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -96,6 +103,9 @@
       <if test="confirmPhone != null" >
         confirm_phone,
       </if>
+        <if test="userId != null" >
+            user_id,
+        </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="certId != null" >
@@ -119,6 +129,9 @@
       <if test="confirmPhone != null" >
         #{confirmPhone,jdbcType=VARCHAR},
       </if>
+        <if test="userId != null" >
+            #{userId,jdbcType=INTEGER},
+        </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertConfirm" >
@@ -148,6 +161,9 @@
       <if test="returnReason != null" >
         return_reason = #{returnReason,jdbcType=VARCHAR},
       </if>
+        <if test="userId != null" >
+            user_id = #{userId,jdbcType=INTEGER},
+        </if>
     </set>
     where confirm_id = #{confirmId,jdbcType=INTEGER}
   </update>

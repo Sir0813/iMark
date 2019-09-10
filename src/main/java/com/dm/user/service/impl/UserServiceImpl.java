@@ -10,10 +10,8 @@ import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.frame.jboot.util.MD5Util;
-import com.dm.user.entity.Information;
-import com.dm.user.entity.PushMsg;
-import com.dm.user.entity.User;
-import com.dm.user.entity.UserCard;
+import com.dm.user.entity.*;
+import com.dm.user.mapper.CertConfirmMapper;
 import com.dm.user.mapper.InformationMapper;
 import com.dm.user.mapper.UserCardMapper;
 import com.dm.user.mapper.UserMapper;
@@ -31,6 +29,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @Service
@@ -57,6 +56,9 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private LoginUserDetailsService loginUserDetailsService;
+
+	@Autowired
+	private CertConfirmMapper certConfirmMapper;
 
 	@Value("${email.emailContent}")
 	private String emailContent;
@@ -113,6 +115,13 @@ public class UserServiceImpl implements UserService{
 			user.setCreatedDate(DateUtil.getSystemDateStr());
 			informationMapper.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
+			List<CertConfirm>list = certConfirmMapper.selectByPhone(user.getUsername());
+			if (list.size()>0){
+				list.forEach(l->{
+					l.setUserId(user.getUserid());
+					certConfirmMapper.updateByPrimaryKeySelective(l);
+				});
+			}
 			return ResultUtil.success();
 		} catch (Exception e) {
 			throw new Exception(e);

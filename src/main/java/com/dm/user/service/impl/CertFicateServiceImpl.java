@@ -110,7 +110,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 			}
 			/*需要他人确认*/
 			if (certFicate.getCertIsconf()==1) {
-				certIsConfirm(username,sendMsg,certFicate);
+				certIsConfirm(username,sendMsg,certFicate,user.getUserid());
 			}
 			if (null!=certFiles){
 				certFiles.forEach(cf->{
@@ -166,7 +166,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 		}
 	}
 
-	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate) throws Exception {
+	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate,Integer userId) throws Exception {
 		try {
 			/*添加发起人*/
 			if (null!=certFicate.getCertId()){
@@ -177,6 +177,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 			cc.setConfirmState(StateMsg.originator);
 			cc.setConfirmPhone(username);
 			cc.setConfirmPerson(username);
+			cc.setUserId(userId);
 			certFicate.getCertConfirmList().add(cc);
 			for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
 				certConfirm.setCertId(certFicate.getCertId());
@@ -188,6 +189,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 					if (certConfirm.getConfirmState()!=StateMsg.originator) {
 						User u = userMapper.findByName(certConfirm.getConfirmPhone());
 						if (null!=u){
+                            certConfirm.setUserId(u.getUserid());
 							PushMsg pm = new PushMsg();
 							pm.setCertFicateId(certFicate.getCertId().toString());
 							pm.setTitle("存证待确认→");
@@ -217,16 +219,17 @@ public class CertFicateServiceImpl implements CertFicateService {
 	public CertFicate details(Integer certFicateId) throws Exception {
 		try {
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = userMapper.findByName(username);
 			CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certFicateId);
 			List<CertConfirm> list = certConfirmMapper.selectByCertId(certFicateId);
 			certFicate.setCertConfirmList(list);
 			if (list.size()>0){
 				list.forEach(cc->{
-					if (cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+					if (cc.getUserId()==user.getUserid()&&cc.getConfirmState()==1){
 						certFicate.setCertIsconf(1);//1待自己确认
 						return;
 					}
-					if (!cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+					if (cc.getUserId()!=user.getUserid()&&cc.getConfirmState()==1){
 						certFicate.setCertIsconf(2);//1待他人确认
 						return;
 					}
@@ -254,9 +257,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 			Map<String,Object>map = new HashMap<>();
 			Integer [] ids = null;List<CertConfirm> confirmList = null;
 			if (StringUtils.isBlank(state)){
-				confirmList = certConfirmMapper.selectByConfirmPhone(username);
-			}else if(state.equals("6")){
-				confirmList = certConfirmMapper.selectByConfirmPhoneAndState(username,"1");
+				confirmList = certConfirmMapper.selectByUserId(user.getUserid());
+			}else if(state.equals("6")){//待自己确认
+				confirmList = certConfirmMapper.selectByuserIdAndState(user.getUserid().toString(),"1");
 			}
 			if (confirmList!=null&&confirmList.size()>0){
 				ids = new Integer[confirmList.size()];
@@ -274,24 +277,36 @@ public class CertFicateServiceImpl implements CertFicateService {
 			}else{
 				list = certFicateMapper.list(map);
                 if (list.size()>0){
-                    list.forEach(l->{
-                        if (l.getCertStatus()==4){
-                            //待他人确认和待自己确认
-                            List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
-                            if (certConfirms.size()>0){
+					Iterator<CertFicate> iterator = list.iterator();
+					while (iterator.hasNext()){
+						CertFicate l = iterator.next();
+						if (l.getCertStatus()==4){
+							//待他人确认和待自己确认
+							List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
+							if (certConfirms.size()>0){
 								certConfirms.forEach(cc->{
-									if (cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+									if (cc.getUserId()==user.getUserid()&&cc.getConfirmState()==1){
 										l.setCertIsconf(1);//1待自己确认
 										return;
 									}
-									if (!cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+									if (cc.getUserId()!=user.getUserid()&&cc.getConfirmState()==1){
 										l.setCertIsconf(2);//1待他人确认
 										return;
 									}
 								});
 							}
-                        }
-                    });
+						}else if(l.getCertStatus()==6) {
+							List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
+							if (certConfirms.size()>0){
+								for (CertConfirm cc : certConfirms) {
+									if (cc.getUserId()==user.getUserid()&&cc.getConfirmState()!=4){
+										iterator.remove();
+										break;
+									}
+								}
+							}
+						}
+					}
                 }
 			}
 			if (list.size()==0) return null;
