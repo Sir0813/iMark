@@ -132,7 +132,7 @@
 			<artifactId>ffmpeg-platform</artifactId>
 			<version>4.0.2-1.4.3</version>
 		</dependency>
-	</dependencies>
+    </dependencies>
 	<build>
 		<finalName>dms-czt</finalName>
 		<plugins>

@@ -34,6 +34,10 @@ public class UserCardServiceImpl implements UserCardService{
 	@Override
 	public Result authentication(UserCard userCard) throws Exception {
 		try {
+            UserCard uc = userCardMapper.selectByCardNumber(userCard.getCardNumber());
+            if(null!=uc) {
+                return ResultUtil.info("card.code.error.code","card.code.error.msg");
+            }
 			boolean b = userCard.getCardid()!=null?true:false;
 			if(b){
 				UserCard card = userCardMapper.selectByPrimaryKey(userCard.getCardid());

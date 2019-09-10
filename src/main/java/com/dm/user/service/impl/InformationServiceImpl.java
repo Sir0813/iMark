@@ -75,6 +75,10 @@ public class InformationServiceImpl implements InformationService{
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
+			User user = userMapper.selectByEamil(map.get("email").toString());
+			if (null!=user){
+				return ResultUtil.info("email.code.have.code","email.code.have.msg");
+			}
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			User u = userMapper.findByName(username);
 			u.setEmail(map.get("email").toString());

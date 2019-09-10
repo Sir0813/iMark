@@ -15,4 +15,5 @@ public interface UserCardMapper {
 
 	UserCard selectByUserId(String userid);
 
+    UserCard selectByCardNumber(String cardNumber);
 }

@@ -26,4 +26,6 @@ public interface UserMapper {
 	void updateById(Map<String, Object> map);
 
     User userData();
+
+    User selectByEamil(String email);
 }

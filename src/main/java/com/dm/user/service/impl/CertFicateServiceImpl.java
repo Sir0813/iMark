@@ -150,74 +150,95 @@ public class CertFicateServiceImpl implements CertFicateService {
 			    }
 			});*/
 
-	private List<CertFiles> getHash(CertFicate certFicate){
-		String[] filesId = certFicate.getCertFilesid().split(",");
-		List<CertFiles>certFiles = certFilesMapper.findByFilesIds(filesId);
-		StringBuffer hash = new StringBuffer();
-		certFiles.forEach(certFile->{
-			String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
-			hash.append(str);
-			certFile.setFileHash(str);
-			certFilesMapper.updateByPrimaryKeySelective(certFile);
-		});
-		if (certFiles.size()==1){
-			certFicate.setCertHash(hash.toString());
-		}else{
-			String dataHash = CryptoHelper.hash(hash.toString());
-			certFicate.setCertHash(dataHash);
+	private List<CertFiles> getHash(CertFicate certFicate) throws Exception{
+		try {
+			String[] filesId = certFicate.getCertFilesid().split(",");
+			List<CertFiles>certFiles = certFilesMapper.findByFilesIds(filesId);
+			StringBuffer hash = new StringBuffer();
+			certFiles.forEach(certFile->{
+				String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
+				hash.append(str);
+				certFile.setFileHash(str);
+				certFilesMapper.updateByPrimaryKeySelective(certFile);
+			});
+			if (certFiles.size()==1){
+				certFicate.setCertHash(hash.toString());
+			}else{
+				String dataHash = CryptoHelper.hash(hash.toString());
+				certFicate.setCertHash(dataHash);
+			}
+			return certFiles;
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
-		return certFiles;
 	}
 
 	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate) throws Exception {
-		/*添加发起人*/
-		if (null!=certFicate.getCertId()){
-			certConfirmMapper.deleteByCertId(certFicate.getCertId());
-		}
-		CertConfirm cc = new CertConfirm();
-		cc.setConfirmDate(new Date());
-		cc.setConfirmState(StateMsg.originator);
-		cc.setConfirmPhone(username);
-		cc.setConfirmPerson(username);
-		certFicate.getCertConfirmList().add(cc);
-		for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
-			certConfirm.setCertId(certFicate.getCertId());
-			if (null==certConfirm.getConfirmState()) {
-				certConfirm.setConfirmState(StateMsg.noConfirm);
+		try {
+			/*添加发起人*/
+			if (null!=certFicate.getCertId()){
+				certConfirmMapper.deleteByCertId(certFicate.getCertId());
 			}
-			if (sendMsg) {
-				/*发消息请求确认*/
-				if (certConfirm.getConfirmState()!=StateMsg.originator) {
-					User u = userMapper.findByName(certConfirm.getConfirmPhone());
-					if (null!=u){
-						PushMsg pm = new PushMsg();
-						pm.setCertFicateId(certFicate.getCertId().toString());
-						pm.setTitle("存证待确认→");
-						pm.setContent("您有一条【"+certFicate.getCertName()+"】的存证待确认");
-						pm.setCertName(certFicate.getCertName());
-						pm.setServerTime(new Date());
-						pm.setType("1");
-						pm.setState("0");
-						pm.setReceive(u.getUsername());
-						String json = new Gson().toJson(pm);
-						int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
-						if (resout==1){
-							pm.setState("1");
+			CertConfirm cc = new CertConfirm();
+			cc.setConfirmDate(new Date());
+			cc.setConfirmState(StateMsg.originator);
+			cc.setConfirmPhone(username);
+			cc.setConfirmPerson(username);
+			certFicate.getCertConfirmList().add(cc);
+			for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
+				certConfirm.setCertId(certFicate.getCertId());
+				if (null==certConfirm.getConfirmState()) {
+					certConfirm.setConfirmState(StateMsg.noConfirm);
+				}
+				if (sendMsg) {
+					/*发消息请求确认*/
+					if (certConfirm.getConfirmState()!=StateMsg.originator) {
+						User u = userMapper.findByName(certConfirm.getConfirmPhone());
+						if (null!=u){
+							PushMsg pm = new PushMsg();
+							pm.setCertFicateId(certFicate.getCertId().toString());
+							pm.setTitle("存证待确认→");
+							pm.setContent("您有一条【"+certFicate.getCertName()+"】的存证待确认");
+							pm.setCertName(certFicate.getCertName());
+							pm.setServerTime(DateUtil.timeToString2(new Date()));
+							pm.setType("1");
+							pm.setState("0");
+							pm.setReceive(u.getUsername());
+							String json = new Gson().toJson(pm);
+							int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
+							if (resout==1){
+								pm.setState("1");
+							}
+							pushMsgService.insertSelective(pm);
 						}
-						pushMsgService.insertSelective(pm);
 					}
 				}
+				certConfirmMapper.insertSelective(certConfirm);
 			}
-			certConfirmMapper.insertSelective(certConfirm);
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
 	}
 
 	@Override
 	public CertFicate details(Integer certFicateId) throws Exception {
 		try {
+			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certFicateId);
 			List<CertConfirm> list = certConfirmMapper.selectByCertId(certFicateId);
 			certFicate.setCertConfirmList(list);
+			if (list.size()>0){
+				list.forEach(cc->{
+					if (cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+						certFicate.setCertIsconf(1);//1待自己确认
+						return;
+					}
+					if (!cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+						certFicate.setCertIsconf(2);//1待他人确认
+						return;
+					}
+				});
+			}
 			if(certFicate.getCertFileIsSave().equals("1")){
 				if (StringUtils.isNotBlank(certFicate.getCertFilesid())){
 					String[] filesId = certFicate.getCertFilesid().split(",");
@@ -253,12 +274,33 @@ public class CertFicateServiceImpl implements CertFicateService {
 			map.put("certid",ids);
 			map.put("state", "null".equals(state)?"":state);
 			map.put("userId",Integer.parseInt(userDetails.getUserid()));
-			PageHelper.startPage(page.getPageNum(), StateMsg.pageSize, "cert_post_date DESC");
+			PageHelper.startPage(page.getPageNum(), StateMsg.pageSize);
+			PageHelper.orderBy("cert_post_date DESC");
 			if (state.equals("6")){
 				if (ids==null) return null;
 				list = certFicateMapper.selectByIDs(ids);
 			}else{
 				list = certFicateMapper.list(map);
+                if (list.size()>0){
+                    list.forEach(l->{
+                        if (l.getCertStatus()==4){
+                            //待他人确认和待自己确认
+                            List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
+                            if (certConfirms.size()>0){
+								certConfirms.forEach(cc->{
+									if (cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+										l.setCertIsconf(1);//1待自己确认
+										return;
+									}
+									if (!cc.getConfirmPhone().equals(username)&&cc.getConfirmState()==1){
+										l.setCertIsconf(2);//1待他人确认
+										return;
+									}
+								});
+							}
+                        }
+                    });
+                }
 			}
 			if (list.size()==0) return null;
 			PageInfo<CertFicate> pageInfo = new PageInfo<>(list);

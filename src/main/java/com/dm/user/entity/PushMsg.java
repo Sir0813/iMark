@@ -1,9 +1,5 @@
 package com.dm.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.util.Date;
-
 public class PushMsg {
     private Integer pushId;
 
@@ -13,8 +9,7 @@ public class PushMsg {
 
     private String content;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
-    private Date serverTime;
+    private String serverTime;
 
     private String type;
 
@@ -66,14 +61,6 @@ public class PushMsg {
         this.content = content == null ? null : content.trim();
     }
 
-    public Date getServerTime() {
-        return serverTime;
-    }
-
-    public void setServerTime(Date serverTime) {
-        this.serverTime = serverTime;
-    }
-
     public String getType() {
         return type;
     }
@@ -104,5 +91,13 @@ public class PushMsg {
 
     public void setState(String state) {
         this.state = state == null ? null : state.trim();
+    }
+
+    public String getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(String serverTime) {
+        this.serverTime = serverTime;
     }
 }

@@ -2,6 +2,7 @@ package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.User;
+
 import java.util.Map;
 
 public interface UserService {

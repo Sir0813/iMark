@@ -17,6 +17,12 @@
     cardid, real_name, card_type, card_number, front_path, back_path, userid, real_state, 
     post_time, real_time
   </sql>
+  <select id="selectByCardNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from sys_user_card
+    where card_number = #{cardNumber}
+  </select>
   <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select 
   	<include refid="Base_Column_List"></include>

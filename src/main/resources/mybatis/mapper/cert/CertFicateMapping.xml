@@ -85,8 +85,8 @@
   				and cert_isconf = 1 and cert_status = #{state}
   			</if>
   			<if test="state==5">
-  				and cert_status = #{state}
-  				or cert_status = 6
+  				and (cert_status = #{state}
+  				or cert_status = 6)
   			</if>
   		</when>
   		<otherwise>

@@ -28,6 +28,12 @@
     is_credentials_expired, is_locked, salt, bad_login_num, last_pwd_date, last_active, 
     created_date, source, `describe`, valid_end_date, head_photo
   </sql>
+  <select id="selectByEamil" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"></include>
+    from sys_user
+    where email = #{email}
+  </select>
   <update id="updateById" parameterType="java.util.Map">
   	update sys_user
   	<set>

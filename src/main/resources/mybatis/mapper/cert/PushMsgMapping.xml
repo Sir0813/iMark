@@ -6,7 +6,7 @@
     <result column="cert_ficate_id" property="certFicateId" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="server_time" property="serverTime" jdbcType="TIMESTAMP" />
+    <result column="server_time" property="serverTime" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="VARCHAR" />
     <result column="skip_url" property="skipUrl" jdbcType="VARCHAR" />
     <result column="receive" property="receive" jdbcType="VARCHAR" />
@@ -81,7 +81,7 @@
         #{content,jdbcType=VARCHAR},
       </if>
       <if test="serverTime != null" >
-        #{serverTime,jdbcType=TIMESTAMP},
+        #{serverTime,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
         #{type,jdbcType=VARCHAR},
@@ -110,7 +110,7 @@
         content = #{content,jdbcType=VARCHAR},
       </if>
       <if test="serverTime != null" >
-        server_time = #{serverTime,jdbcType=TIMESTAMP},
+        server_time = #{serverTime,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
         type = #{type,jdbcType=VARCHAR},
