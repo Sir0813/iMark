@@ -81,12 +81,18 @@ public class CertFicateServiceImpl implements CertFicateService {
 				certFiles = getHash(certFicate);
 			}
 			certFicate.setCertPostDate(new Date());
+			if (null!=certFicate.getCertId()){
+				certFicateMapper.updateByPrimaryKeySelective(certFicate);
+			}else{
+				certFicateMapper.insertSelective(certFicate);
+			}
 			/*存证入链*/
 			if (StateMsg.toCert==certFicate.getCertStatus()) {
 				/*对接存证sdk*/
+                String dataHash = CryptoHelper.hash(certFicate.getCertHash()+certFicate.getCertId());
 				Result result = null;
 				try {
-					result = cidService.save(certFicate.getCertHash(), certFicate.getCertName(), DateUtil.timeToString2(new Date()), "");
+					result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), "");
 				} catch (Exception e) {
 					throw new Exception(e);
 				}
@@ -103,11 +109,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 			}else {
 				certFicate.setCertStatus(StateMsg.noCert);
 			}
-			if (null!=certFicate.getCertId()){
-				certFicateMapper.updateByPrimaryKeySelective(certFicate);
-			}else{
-				certFicateMapper.insertSelective(certFicate);
-			}
+			certFicateMapper.updateByPrimaryKeySelective(certFicate);
 			/*需要他人确认*/
 			if (certFicate.getCertIsconf()==1) {
 				certIsConfirm(username,sendMsg,certFicate,user.getUserid());

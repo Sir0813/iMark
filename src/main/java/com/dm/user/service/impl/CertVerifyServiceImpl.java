@@ -45,7 +45,6 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             }
             String[] ids = cf.getCertFilesid().split(",");
             List<CertFiles> fileList = certFilesMapper.findByFilesIds(ids);
-
             String fhash = "";String cfHash = "";String result = "";
             for (CertFiles files : fileList) {
                 fhash+=(files.getFileHash()+",");
@@ -60,20 +59,19 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
                 }
             }
             deleteCertFile(certFiles);
+            String realHash = CryptoHelper.hash(cf.getCertHash()+cf.getCertId());
             if (fileList.size()==1){
-                if (!cf.getCertHash().equals(cfHash)) return false;
-                result = cidService.query(cfHash);
-            } else {
-                String hashs = CryptoHelper.hash(cfHash);
-                if (!cf.getCertHash().equals(hashs)) return false;
-                result = cidService.query(hashs);
+                String confirmHash = CryptoHelper.hash(cfHash+certFicate.getCertId());
+                if (!realHash.equals(confirmHash))
+                return false;
             }
+            result = cidService.query(realHash);
             JSONObject jsonObject = JSONObject.parseObject(result);
             if (jsonObject.get("code").toString().equals("200")&&jsonObject.get("msg").toString().equals("Success"))
             return true;
             return false;
         } catch (GlobalException e) {
-            throw new Exception(e);
+            throw new Exception(e.getMessage());
         } catch (Exception e) {
             throw new Exception(e);
         }

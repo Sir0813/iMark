@@ -17,6 +17,12 @@ public class CertVerifyController extends BaseController {
     @Autowired
     private CertVerifyService certVerifyService;
 
+    /**
+     * 验证
+     * @param certFicate
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/cert")
     public Result verifyCert(@RequestBody CertFicate certFicate) throws Exception{
         boolean b = certVerifyService.verifyCert(certFicate);
