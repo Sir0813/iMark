@@ -12,7 +12,6 @@ import com.dm.user.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 找回密码 验证验证码
+	 * 找回密码 下一步 (验证验证码)
 	 * @param map
 	 * @return
 	 * @throws Exception

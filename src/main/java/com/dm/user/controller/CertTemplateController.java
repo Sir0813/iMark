@@ -29,7 +29,7 @@ public class CertTemplateController extends BaseController {
     }
 
     /**
-     * 编辑合同模板
+     * 第一次合同模板
      * @return
      */
     @RequestMapping(value="/edit", method = RequestMethod.GET)

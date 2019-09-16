@@ -2,8 +2,8 @@ package com.dm.user.util;
 
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.CertFicate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 public class CertImgUtil {
 
@@ -37,41 +38,39 @@ public class CertImgUtil {
         g.setFont(new Font("黑体", Font.PLAIN, 35));
         g.drawString("文件存证证书", (int) 185, (int) 100);
         g.setFont(new Font("黑体", Font.PLAIN, 20));
-        g.drawString("证书ID："+certFicate.getCertId().toString(), (int) 267, (int) 200);
+        DecimalFormat df = new DecimalFormat("000000");
+        String ID = df.format(certFicate.getCertId());
+        g.drawString("证书编号：DMS01"+ID, (int) 120, (int) 170);
         g.setFont(new Font("黑体", Font.PLAIN, 15));
         //文件名称
-        g.drawString("文件名称：" + certFicate.getCertName(), (int) 100, (int) 350);
+        g.drawString("文件名称：" + certFicate.getCertName(), (int) 120, (int) 210);
         //用户
-        g.drawString("用户：" + certFicate.getCertOwner(), (int) 100, (int) 372);
-        //文件类型
-        String type = "";
-        switch (certFicate.getCertType()){
-            case 1 : type = "文件存证";break;
-            case 2 : type = "拍照存证";break;
-            case 3 : type = "相册存证";break;
-            case 4 : type = "录像存证";break;
-            case 5 : type = "录音存证";break;
-            case 6 : type = "录屏存证";break;
-            case 7 : type = "模板存证";break;
-            default: type = "图片";break;
-        }
-        g.drawString("存证类型：" + type, (int) 100, (int) 395);
+        g.drawString("用户：" + certFicate.getCertOwner(), (int) 120, (int) 250);
         //存证时间
-        g.drawString("存证时间：" + DateUtil.timeToString2(certFicate.getCertDate()), (int) 100, (int) 418);
+        g.drawString("存证时间：" + DateUtil.timeToString2(certFicate.getCertDate()), (int) 120, (int) 290);
         //存证平台
-        String platform = "存证通";
-        g.drawString("存证平台：" + platform, (int) 100, (int) 443);
-        g.drawString("区块链存证ID：", (int) 100, (int) 500);
-        g.setFont(new Font("黑体", Font.PLAIN, 12));
-        g.drawString(certFicate.getCertChainno(), (int) 100, (int) 525);
+        g.drawString("存证平台：" + "DMS-iMark", (int) 120, (int) 330);
+        String substring = certFicate.getCertChainno().substring(0, 34);
+        String s = certFicate.getCertChainno().substring(34, certFicate.getCertChainno().length());
+        g.drawString("区块链存证编号："+substring, (int) 120, (int) 370);
+        g.drawString(s, (int) 120, (int) 390);
+        String certAddress = certFicate.getCertAddress();
+        String address = ""; String address2 = "";
+        if (StringUtils.isNotBlank(certAddress)){
+            if (certAddress.length()>22){
+                address = certAddress.substring(0,22);
+                address2 = certAddress.substring(22,certAddress.length());
+            }
+        }
+        g.drawString("存证位置：" + address, (int) 120, (int) 430);
+        g.drawString(address2, (int) 120, (int) 450);
         g.setFont(new Font("黑体", Font.PLAIN, 15));
-
-        g.drawString("存证声明：", (int) 100, (int) 630);
-        g.drawString("1.本证书最终解释权归北京迪曼森科技有限公司所有。", (int) 100, (int) 655);
+        g.drawString("存证声明：", (int) 120, (int) 615);
+        g.drawString("1.本证书最终解释权归北京迪曼森科技有限公司所有。", (int) 120, (int) 640);
         /*二维码*/
         ImageIcon QrcodeimgIcon = new ImageIcon(qrPath);
         Image img1 = QrcodeimgIcon.getImage();
-        graphics.drawImage(img1, 387, 670, null);
+        graphics.drawImage(img1, 235, 670, null);
         graphics.setColor(Color.WHITE);
         graphics.dispose();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

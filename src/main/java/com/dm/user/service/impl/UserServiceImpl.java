@@ -29,7 +29,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @Service
@@ -115,6 +114,7 @@ public class UserServiceImpl implements UserService{
 			user.setCreatedDate(DateUtil.getSystemDateStr());
 			informationMapper.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
+			/*待自己确认 需要更新注册用户ID*/
 			List<CertConfirm>list = certConfirmMapper.selectByPhone(user.getUsername());
 			if (list.size()>0){
 				list.forEach(l->{

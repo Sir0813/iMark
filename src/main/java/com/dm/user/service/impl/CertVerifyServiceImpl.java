@@ -45,27 +45,26 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             }
             String[] ids = cf.getCertFilesid().split(",");
             List<CertFiles> fileList = certFilesMapper.findByFilesIds(ids);
-            String fhash = "";String cfHash = "";String result = "";
+            String fhash = "";
+            String chash = "";
             for (CertFiles files : fileList) {
                 fhash+=(files.getFileHash()+",");
             }
             for (CertFiles files : certFiles) {
-                String str = CryptoHelper.hash(ShaUtil.getFileByte(files.getFilePath()));
-                if (!fhash.contains(str)){
+                chash = CryptoHelper.hash(ShaUtil.getFileByte(files.getFilePath()));
+                if (!fhash.contains(chash)){
                     deleteCertFile(certFiles);
                     return false;
-                }else{
-                    cfHash+=str;
                 }
             }
             deleteCertFile(certFiles);
             String realHash = CryptoHelper.hash(cf.getCertHash()+cf.getCertId());
             if (fileList.size()==1){
-                String confirmHash = CryptoHelper.hash(cfHash+certFicate.getCertId());
+                String confirmHash = CryptoHelper.hash(chash+certFicate.getCertId());
                 if (!realHash.equals(confirmHash))
                 return false;
             }
-            result = cidService.query(realHash);
+            String result = cidService.query(realHash);
             JSONObject jsonObject = JSONObject.parseObject(result);
             if (jsonObject.get("code").toString().equals("200")&&jsonObject.get("msg").toString().equals("Success"))
             return true;

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.Map;
 
@@ -111,11 +110,11 @@ public class InformationServiceImpl implements InformationService{
 	@Override
 	public Result changePhone(Map<String, Object> map) throws Exception {
 		try {
-			map.put("email", map.get("newPhone").toString());
 			User user = userMapper.findByName(map.get("newPhone").toString());
 			if (null!=user) {
 				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
+			map.put("email", map.get("newPhone").toString());
 			Information info = informationMapper.selectByPhone(map);
 			Result result = checkVeriCode(info,map);
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {

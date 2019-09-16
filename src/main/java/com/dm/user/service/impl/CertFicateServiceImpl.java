@@ -16,15 +16,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
@@ -58,8 +56,6 @@ public class CertFicateServiceImpl implements CertFicateService {
 	@Autowired
 	private PDFConvertUtil pdfConvertUtil;
 
-	private static Logger logger = LoggerFactory.getLogger(CertFicateServiceImpl.class);
-
 	@Override
 	public CertFicate save(CertFicate certFicate) throws Exception {
 		try {
@@ -69,8 +65,7 @@ public class CertFicateServiceImpl implements CertFicateService {
             certFicate.setCertOwner(user.getUserid().toString());
 			certFicate.setCertIsDelete(1);
 			List<CertFiles> certFiles = null;
-			//模板存证
-			if (certFicate.getCertType()==7){
+			if (certFicate.getCertType()==7){//模板存证
 				if (certFicate.getCertStatus()==StateMsg.toCert){
 					TemFile temFile = certFicateService.selectByCertId(certFicate.getCertId().toString());
 					Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
@@ -257,10 +252,12 @@ public class CertFicateServiceImpl implements CertFicateService {
 			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = userMapper.findByName(username);
 			Map<String,Object>map = new HashMap<>();
-			Integer [] ids = null;List<CertConfirm> confirmList = null;
+			Integer [] ids = null;
+			List<CertConfirm> confirmList = null;
 			if (StringUtils.isBlank(state)){
 				confirmList = certConfirmMapper.selectByUserId(user.getUserid());
-			}else if(state.equals("6")){//待自己确认
+			}else if(state.equals("6")){
+			    //待自己确认
 				confirmList = certConfirmMapper.selectByuserIdAndState(user.getUserid().toString(),"1");
 			}
 			if (confirmList!=null&&confirmList.size()>0){
@@ -298,6 +295,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 								});
 							}
 						}else if(l.getCertStatus()==6) {
+						    /*撤销的存证 确认人方不显示该存证*/
 							List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
 							if (certConfirms.size()>0){
 								for (CertConfirm cc : certConfirms) {
@@ -379,10 +377,12 @@ public class CertFicateServiceImpl implements CertFicateService {
 				qrCodePath = "/opt/czt-upload/"+s+".png";
 				templatePath = "/opt/czt-upload/certTemplate/ct.png";
 			}else{
-				qrCodePath = "D:\\"+s+".png";
+				qrCodePath = "D:\\upload\\"+s+".png";
 				templatePath = "D:\\ct.png";
 			}
-            QRCodeGenerator.generateQRCodeImage(certFicate.getCertId().toString(),qrCodePath);
+			DecimalFormat df = new DecimalFormat("000000");
+			String ID = df.format(certFicate.getCertId());
+            QRCodeGenerator.generateQRCodeImage("DMS01"+ID,qrCodePath);
             ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
             return mark;
         }catch (Exception e){
