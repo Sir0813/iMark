@@ -33,4 +33,6 @@ public interface CertFicateMapper {
 	void updateCertState(Map<String, Object> map);
 
     CertFicate selectByIdAndState(Integer certId);
+
+    List<CertFicate> selectByCertIDs(String[] certIds);
 }

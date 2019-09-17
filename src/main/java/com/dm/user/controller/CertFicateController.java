@@ -5,7 +5,6 @@ import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.TemCertFile;
-import com.dm.user.entity.TemFile;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.util.PDFConvertUtil;
 import com.github.pagehelper.Page;
@@ -132,18 +131,6 @@ public class CertFicateController extends BaseController {
 	public ByteArrayResource getCertImg(Integer certId) throws Exception {
 		ByteArrayResource bar = certFicateService.getCertImg(certId);
 		return bar;
-	}
-
-	/**
-	 * 修改模板后保存为pdf文件
-	 * @param text
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value="/convertPDF", method = RequestMethod.POST)
-	public void pdf(@RequestBody Map<String,Object> map) throws Exception {
-		TemFile temFile = certFicateService.selectByCertId(map.get("certId").toString());
-		pdfConvertUtil.acceptPage(temFile.getTemFileText(),temFile.getCertId());
 	}
 
 }

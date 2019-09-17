@@ -18,11 +18,12 @@
     <result column="cert_isconf" property="certIsconf" jdbcType="INTEGER" />
     <result column="cert_file_is_save" property="certFileIsSave" jdbcType="VARCHAR" />
     <result column="cert_address" property="certAddress" jdbcType="VARCHAR" />
+    <result column="cert_code" property="certCode" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     cert_id, cert_date, cert_owner, cert_name, cert_describe, cert_status, cert_is_delete, 
     cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save,
-    cert_address
+    cert_address, cert_code
   </sql>
   <update id="updateCertState">
 	update biz_certficate
@@ -66,6 +67,15 @@
 	  and cert_status = 4
 	  order by cert_post_date desc
   </select>
+    <select id="selectByCertIDs" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_certficate
+        where cert_id in
+        <foreach collection="array" item="certid" open="(" close= ")" separator=",">
+            #{certid}
+        </foreach>
+    </select>
   <select id="list" resultMap="BaseResultMap" parameterType="java.util.Map">
   	select 
   	<include refid="Base_Column_List" />
@@ -168,6 +178,9 @@
         <if test="certAddress != null" >
             cert_address,
         </if>
+        <if test="certCode != null" >
+            cert_code,
+        </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="certDate != null" >
@@ -214,6 +227,9 @@
         </if>
         <if test="certAddress != null" >
             #{certAddress,jdbcType=VARCHAR},
+        </if>
+        <if test="certCode != null" >
+            #{certCode,jdbcType=VARCHAR},
         </if>
     </trim>
   </insert>
@@ -264,6 +280,9 @@
             </if>
             <if test="certAddress != null" >
                 cert_Address = #{certAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="certCode != null" >
+                cert_Code = #{certCode,jdbcType=VARCHAR},
             </if>
         </set>
         where cert_id = #{certId,jdbcType=INTEGER}

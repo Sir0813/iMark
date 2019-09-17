@@ -58,6 +58,16 @@ public class CertFicate {
 
     private String certAddress;
 
+    private String certCode;
+
+    public String getCertCode() {
+        return certCode;
+    }
+
+    public void setCertCode(String certCode) {
+        this.certCode = certCode;
+    }
+
     public String getCertAddress() {
         return certAddress;
     }

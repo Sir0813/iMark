@@ -4,6 +4,7 @@ import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.CertFicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 public class CertImgUtil {
 
@@ -38,9 +38,7 @@ public class CertImgUtil {
         g.setFont(new Font("黑体", Font.PLAIN, 35));
         g.drawString("文件存证证书", (int) 185, (int) 100);
         g.setFont(new Font("黑体", Font.PLAIN, 20));
-        DecimalFormat df = new DecimalFormat("000000");
-        String ID = df.format(certFicate.getCertId());
-        g.drawString("证书编号：DMS01"+ID, (int) 120, (int) 170);
+        g.drawString("证书编号："+certFicate.getCertCode(), (int) 120, (int) 170);
         g.setFont(new Font("黑体", Font.PLAIN, 15));
         //文件名称
         g.drawString("文件名称：" + certFicate.getCertName(), (int) 120, (int) 210);

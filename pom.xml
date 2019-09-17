@@ -28,6 +28,12 @@
 		<relativePath />
 	</parent>
 	<dependencies>
+		<!-- word -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.28</version>
+		</dependency>
 		<dependency>
 			<groupId>com.dm.frame</groupId>
 			<artifactId>jboot</artifactId>
@@ -44,7 +50,6 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- 文件上传 -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -56,7 +61,6 @@
 			<artifactId>activation</artifactId>
 			<version>1.1</version>
 		</dependency>
-
 		<!-- yaml -->
 		<dependency>
 			<groupId>org.yaml</groupId>
@@ -126,13 +130,7 @@
 			<artifactId>javacv</artifactId>
 			<version>1.4.3</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.bytedeco.javacpp-presets</groupId>
-			<artifactId>ffmpeg-platform</artifactId>
-			<version>4.0.2-1.4.3</version>
-		</dependency>
-    </dependencies>
+	</dependencies>
 	<build>
 		<finalName>dms-czt</finalName>
 		<plugins>

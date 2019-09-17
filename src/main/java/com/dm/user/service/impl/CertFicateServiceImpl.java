@@ -104,6 +104,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 			}else {
 				certFicate.setCertStatus(StateMsg.noCert);
 			}
+			DecimalFormat df = new DecimalFormat("000000");
+			String ID = df.format(certFicate.getCertId());
+			certFicate.setCertCode("DMS01"+ID);
 			certFicateMapper.updateByPrimaryKeySelective(certFicate);
 			/*需要他人确认*/
 			if (certFicate.getCertIsconf()==1) {
@@ -380,9 +383,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 				qrCodePath = "D:\\upload\\"+s+".png";
 				templatePath = "D:\\ct.png";
 			}
-			DecimalFormat df = new DecimalFormat("000000");
-			String ID = df.format(certFicate.getCertId());
-            QRCodeGenerator.generateQRCodeImage("DMS01"+ID,qrCodePath);
+            QRCodeGenerator.generateQRCodeImage(certFicate.getCertCode(),qrCodePath);
             ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
             return mark;
         }catch (Exception e){
