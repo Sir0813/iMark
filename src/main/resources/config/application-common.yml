@@ -1,5 +1,7 @@
 #application通用环境配置
 spring:
+   freemarker:
+     checkTemplateLocation: false
    mvc:
       date-format: yyyy-MM-dd HH:mm:ss
       #spring-webmvc的视图解析
@@ -18,12 +20,6 @@ spring:
       #cacheSeconds：加载国际化文件的缓存时间，单位为秒，默认为永久缓存。
       encoding: UTF-8
       basename: i18n/msg   #相对路径 首部请勿添加斜杠,可以通过逗号指定多个,application.properties写法i18n.msg
-   #thymeleaf视图框架配置
-   thymeleaf:
-      #指定模板的前缀，默认为:classpath:/templates/
-      prefix: /WEB-INF/thymeleaf/
-      # set to false for hot refresh    
-      cache: false    
    #dev tools 热部署
    devtools:
       livereload:
@@ -32,6 +28,11 @@ spring:
      multipart:
        enabled: false
        resolve-lazily: true
+   jpa:
+     open-in-view: false
+   thymeleaf:
+     enabled: false
+     check-template-location: false
 #log配置
 logging:
    config: classpath:config/log4j2.xml
@@ -54,3 +55,14 @@ security:
 management:
   security:
     enabled: false
+
+swagger:
+  enable: false   #开关，是否启用swagger
+  title: JBOOT API  #标题
+  desc: 测试接口   #描述
+  termsOfServiceUrl: http://localhost  #服务条款
+  version: 1.0.0   #接口版本
+  license: licese  #许可证名称
+  licenseUrl: http://localhost   #许可证地址
+  basePackage: com.dm
+  token: eyJhbGciOiJIUzUxMiJ9   #登录后获取的token，也就是需要先启动登录后，把token赋值到这，再重新启动，只为测试使用。

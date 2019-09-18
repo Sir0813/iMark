@@ -6,6 +6,7 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.security.LoginUserDetailsService;
 import com.dm.frame.jboot.security.MD5PasswordEncoder;
 import com.dm.frame.jboot.security.token.JwtTokenProvider;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
 import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
@@ -26,9 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @Service
@@ -132,8 +133,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result resetPassword(Map<String,Object>map) throws Exception {
 		try {
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			LoginUserDetails user = loginUserService.getUserByUsername(username);
+			LoginUserDetails user = loginUserService.getUserByUsername(LoginUserHelper.getUserName());
 			String md5Password = MD5Util.encode(map.get("oldPassword").toString()+user.getSalt());
 			if (!md5Password.equals(user.getPassword())) {
 				return ResultUtil.info("user.reset.password.error.code","user.reset.password.error.msg");
@@ -156,11 +156,10 @@ public class UserServiceImpl implements UserService{
 	public Result userInfo() throws Exception {
 		try {
 			Map<String,Object> map = new HashMap<>();
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByName(username);
+			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			UserCard userCard = userCardMapper.selectByUserId(user.getUserid().toString());
 			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
-			map.put("userName", username);
+			map.put("userName", LoginUserHelper.getUserName());
 			map.put("realName", null==userCard?"":userCard.getRealName());
 			map.put("headPhoto", StringUtils.isBlank(user.getHeadPhoto())?"":user.getHeadPhoto());
 			map.put("realState", null==userCard?"":userCard.getRealState());
@@ -176,13 +175,12 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result getPushMsg() throws Exception {
 		try {
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(username);
+			List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(LoginUserHelper.getUserName());
 			if (pmList.size()>0){
 				pmList.forEach(pm->{
 					String json = new Gson().toJson(pm);
 					try {
-						int resout = PushUtil.getInstance().sendToRegistrationId(username, pm.getTitle(), json);
+						int resout = PushUtil.getInstance().sendToRegistrationId(LoginUserHelper.getUserName(), pm.getTitle(), json);
 						if (resout==1){
 							pm.setState("1");
 							pushMsgService.updateByPrimaryKeySelective(pm);
@@ -202,8 +200,7 @@ public class UserServiceImpl implements UserService{
 	public void getRegistrationId(Map<String,Object>map) throws Exception {
 		try {
 			String registrationId = map.get("registrationId").toString();
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByName(username);
+			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			user.setUsercode(registrationId);
 			userMapper.updateByPrimaryKeySelective(user);
 		} catch (Exception e) {
@@ -284,7 +281,10 @@ public class UserServiceImpl implements UserService{
 		MD5PasswordEncoder md5PasswordEncoder = new MD5PasswordEncoder();
 		String encodePwd = md5PasswordEncoder.encode(map.get("password").toString());
 		Collection<GrantedAuthority> authorities = this.loginUserDetailsService.loadAuthority(map.get("username").toString());
-		Authentication authentication = new UsernamePasswordAuthenticationToken(map.get("username").toString(), encodePwd, authorities);
+		LoginUserDetails loginUserDetails = new LoginUserDetails();
+		loginUserDetails.setUsername(user.getUsername());
+		loginUserDetails.setUserid(user.getUserid().toString());
+		Authentication authentication = new UsernamePasswordAuthenticationToken(loginUserDetails, encodePwd, authorities);
 		String token = this.jwtTokenProvider.createToken(authentication);
 		information.setInfoState("1");
 		informationMapper.updateByPrimaryKeySelective(information);

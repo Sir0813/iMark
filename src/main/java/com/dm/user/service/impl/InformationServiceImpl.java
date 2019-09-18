@@ -3,6 +3,7 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.Information;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.InformationMapper;
@@ -12,9 +13,9 @@ import com.dm.user.util.RandomCode;
 import com.dm.user.util.SendMailSmtp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -51,12 +52,11 @@ public class InformationServiceImpl implements InformationService{
 				return ResultUtil.error();
 			}
 			Date date = new Date();
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			info.setInfoCode(String.valueOf(randomNumber));
 			info.setInfoMsg(replaceContent);
 			info.setInfoPhone(map.get("email").toString());
 			info.setInfoSenddate(date);
-			info.setInfoUser(username);
+			info.setInfoUser(LoginUserHelper.getUserName());
 			info.setInfoExpireddate(new Date(date.getTime()+expired));
 			info.setInfoState("0");
 			informationMapper.insertSelective(info);
@@ -78,8 +78,7 @@ public class InformationServiceImpl implements InformationService{
 			if (null!=user){
 				return ResultUtil.info("email.code.have.code","email.code.have.msg");
 			}
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByName(username);
+			User u = userMapper.findByName(LoginUserHelper.getUserName());
 			u.setEmail(map.get("email").toString());
 			userMapper.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");
@@ -120,8 +119,7 @@ public class InformationServiceImpl implements InformationService{
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByName(username);
+			User u = userMapper.findByName(LoginUserHelper.getUserName());
 			u.setUsername(map.get("newPhone").toString());
 			userMapper.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");

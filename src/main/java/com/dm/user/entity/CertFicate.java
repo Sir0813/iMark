@@ -60,6 +60,16 @@ public class CertFicate {
 
     private String certCode;
 
+    private String certBlockNumber;
+
+    public String getCertBlockNumber() {
+        return certBlockNumber;
+    }
+
+    public void setCertBlockNumber(String certBlockNumber) {
+        this.certBlockNumber = certBlockNumber;
+    }
+
     public String getCertCode() {
         return certCode;
     }

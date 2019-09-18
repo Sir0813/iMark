@@ -31,11 +31,11 @@
   <select id="selectByEamil" resultMap="BaseResultMap" parameterType="java.lang.String">
     select
     <include refid="Base_Column_List"></include>
-    from sys_user
+    from  uc_user
     where email = #{email}
   </select>
   <update id="updateById" parameterType="java.util.Map">
-  	update sys_user
+  	update  uc_user
   	<set>
   		password = #{password}
   	</set>
@@ -43,7 +43,7 @@
   </update>
   
   <insert id="userRegister" parameterType="com.dm.user.entity.User" useGeneratedKeys="true" keyProperty="userid">
-    insert into sys_user
+    insert into  uc_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
         <if test="usercode != null" >
         usercode,
@@ -166,21 +166,21 @@
   <select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List"></include>
-    from sys_user
+    from  uc_user
     where username = #{username,jdbcType=VARCHAR}
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from sys_user
+    from  uc_user
     where userid = #{userid,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from sys_user
+    delete from  uc_user
     where userid = #{userid,jdbcType=INTEGER}
   </delete>
   <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.User" >
-    update sys_user
+    update  uc_user
     <set >
       <if test="usercode != null" >
         usercode = #{usercode,jdbcType=VARCHAR},

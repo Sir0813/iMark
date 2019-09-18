@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.dm.frame</groupId>
 			<artifactId>jboot</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<!-- 发送邮件jar包 -->
 		<dependency>
@@ -127,9 +127,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<!--<dependency>
+			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv</artifactId>
 			<version>1.4.3</version>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 	<build>
 		<finalName>dms-czt</finalName>

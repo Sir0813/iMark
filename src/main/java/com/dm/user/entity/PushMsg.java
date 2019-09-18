@@ -17,9 +17,21 @@ public class PushMsg {
 
     private String receive;
 
+    /* 0推送失败 1 推送成功*/
     private String state;
 
     private String certName;
+
+    /* 1已读取 0 未读取*/
+    private String isRead;
+
+    public String getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(String isRead) {
+        this.isRead = isRead;
+    }
 
     public String getCertName() {
         return certName;

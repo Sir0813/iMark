@@ -2,6 +2,7 @@ package com.dm.user.util;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.CertFiles;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
@@ -11,7 +12,6 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
@@ -108,8 +108,7 @@ public class FileUtil {
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = userMapper.findByName(username);
+			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			user.setHeadPhoto(fileUrl);
 			userMapper.updateByPrimaryKeySelective(user);
 			return ResultUtil.success();

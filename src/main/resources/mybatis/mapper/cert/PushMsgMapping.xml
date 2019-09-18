@@ -11,10 +11,18 @@
     <result column="skip_url" property="skipUrl" jdbcType="VARCHAR" />
     <result column="receive" property="receive" jdbcType="VARCHAR" />
     <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="is_read" property="isRead" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state
+    push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state, is_read
   </sql>
+  <select id="historyInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_push
+    where receive = #{userName}
+    order by server_time desc
+  </select>
   <select id="selectByReceiveAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -69,6 +77,9 @@
       <if test="state != null" >
         state,
       </if>
+      <if test="isRead != null" >
+        is_read,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="certFicateId != null" >
@@ -94,6 +105,9 @@
       </if>
       <if test="state != null" >
         #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="isRead != null" >
+        #{isRead,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -124,6 +138,9 @@
       <if test="state != null" >
         state = #{state,jdbcType=VARCHAR},
       </if>
+      <if test="isRead != null" >
+        is_read = #{isRead,jdbcType=VARCHAR},
+      </if>
     </set>
     where push_id = #{pushId,jdbcType=INTEGER}
   </update>
@@ -138,5 +155,10 @@
       receive = #{receive,jdbcType=VARCHAR},
       state = #{state,jdbcType=VARCHAR}
     where push_id = #{pushId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByRead" parameterType="java.lang.String">
+    update biz_push
+    set is_read = 1
+    where push_id = #{pushId}
   </update>
 </mapper>

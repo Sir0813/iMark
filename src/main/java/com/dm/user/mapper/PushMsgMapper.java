@@ -19,4 +19,8 @@ public interface PushMsgMapper {
     int updateByPrimaryKey(PushMsg record);
 
     List<PushMsg> selectByReceiveAndState(String username);
+
+    List<PushMsg> historyInfo(String userName);
+
+    void updateByRead(String pushId);
 }

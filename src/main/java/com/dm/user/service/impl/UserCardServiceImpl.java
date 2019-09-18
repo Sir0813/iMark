@@ -2,8 +2,8 @@ package com.dm.user.service.impl;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.CertFiles;
-import com.dm.user.entity.User;
 import com.dm.user.entity.UserCard;
 import com.dm.user.mapper.CertFilesMapper;
 import com.dm.user.mapper.UserCardMapper;
@@ -11,7 +11,6 @@ import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.UserCardService;
 import com.dm.user.util.ShaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,9 +54,7 @@ public class UserCardServiceImpl implements UserCardService{
 			CertFiles cf = certFilesMapper.selectByPrimaryKey(Integer.parseInt(split[1]));
 			userCard.setFrontPath(file.getFileUrl());
 			userCard.setBackPath(cf.getFileUrl());
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByName(username);
-			userCard.setUserid(u.getUserid());
+			userCard.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
 			userCard.setRealState("1");
 			userCard.setPostTime(new Date());
 			if (b) {
@@ -74,9 +71,7 @@ public class UserCardServiceImpl implements UserCardService{
 	@Override
 	public Result realInfo() throws Exception {
 		try {
-			String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User u = userMapper.findByName(username);
-			UserCard userCard = userCardMapper.selectByUserId(u.getUserid().toString());
+			UserCard userCard = userCardMapper.selectByUserId(LoginUserHelper.getUserId());
 			userCard.setFrontPath("");
 			userCard.setBackPath("");
 			String cardNumber = userCard.getCardNumber();

@@ -12,14 +12,14 @@
     <result column="salt" property="salt" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="loginColumns" >
-     userid, username, password, is_enabled, is_expired,is_credentials_expired, is_locked, salt    
-  </sql> 
-   
+     userid, username, password, is_enabled, is_expired,is_credentials_expired, is_locked, salt
+  </sql>
+
   <select id="findByUserName" resultMap="loginUserMap" parameterType="java.lang.String" >
-    select 	 
-	<include refid="loginColumns"></include>  
-    from sys_user  	
-    where username = #{username,jdbcType=VARCHAR}  
+    select
+    <include refid="loginColumns"></include>
+    from uc_user
+    where username = #{username,jdbcType=VARCHAR}
   </select>
-  
+
 </mapper>

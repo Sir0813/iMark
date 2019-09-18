@@ -3,15 +3,20 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.user.entity.PushMsg;
 import com.dm.user.entity.User;
 import com.dm.user.entity.UserCard;
 import com.dm.user.service.InformationService;
+import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -31,6 +36,9 @@ public class UserController extends BaseController {
 
 	@Autowired
 	private UserCardService userCardService;
+
+	@Autowired
+	private PushMsgService pushMsgService;
 	
 	/**
 	 * 发送验证码
@@ -221,6 +229,30 @@ public class UserController extends BaseController {
 	@RequestMapping(value="/api/dynamic/login", method = RequestMethod.POST)
 	public Result dynamicLogin(@RequestBody Map<String,Object>map) throws Exception {
 		return userService.dynamicLogin(map);
+	}
+
+	/**
+	 * 用户历史消息
+	 * @param page
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/history/info", method = RequestMethod.GET)
+	public Result historyInfo(Page<PushMsg> page) throws Exception {
+		PageInfo<PushMsg> pageInfo = pushMsgService.historyInfo(page);
+		return ResultUtil.success(pageInfo);
+	}
+
+	/**
+	 * 读取未查看消息接口
+	 * @param pushId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/readInfo", method = RequestMethod.GET)
+	public Result readInfo(String pushId) throws Exception {
+		pushMsgService.readInfo(pushId);
+		return ResultUtil.success();
 	}
 
 }

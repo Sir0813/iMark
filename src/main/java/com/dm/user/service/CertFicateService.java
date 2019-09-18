@@ -23,7 +23,7 @@ public interface CertFicateService {
 	 * @return
 	 * @throws Exception
 	 */
-	PageInfo<CertFicate> list(Page<CertFicate> page,String state) throws Exception;
+	PageInfo<CertFicate> list(Page<CertFicate> page,String state,String certName) throws Exception;
 
 	/**
 	 * 存证详情

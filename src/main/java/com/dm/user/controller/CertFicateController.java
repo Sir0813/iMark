@@ -57,8 +57,8 @@ public class CertFicateController extends BaseController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public Result list(Page<CertFicate> page, String state) throws Exception {
-		PageInfo<CertFicate> certFicateList = certFicateService.list(page,state);
+	public Result list(Page<CertFicate> page, String state, String certName) throws Exception {
+		PageInfo<CertFicate> certFicateList = certFicateService.list(page,state,certName);
 		return ResultUtil.success(certFicateList);
 	}
 
