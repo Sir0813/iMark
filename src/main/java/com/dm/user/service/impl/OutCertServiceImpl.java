@@ -1,14 +1,21 @@
 package com.dm.user.service.impl;
 
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.CertFicate;
+import com.dm.user.entity.Contact;
+import com.dm.user.entity.OutCert;
+import com.dm.user.entity.User;
 import com.dm.user.mapper.CertFicateMapper;
+import com.dm.user.mapper.ContactMapper;
 import com.dm.user.mapper.OutCertMapper;
+import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.OutCertService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.*;
 import java.util.*;
 
@@ -21,6 +28,12 @@ public class OutCertServiceImpl implements OutCertService {
 
     @Autowired
     private CertFicateMapper certFicateMapper;
+
+    @Autowired
+    private ContactMapper contactMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public String downloadOutCertTemplate(String certIds) throws Exception {
@@ -62,5 +75,29 @@ public class OutCertServiceImpl implements OutCertService {
         t.process(dataMapss, out);
         out.close();
         return resultPath;
+    }
+
+    @Override
+    public void save(OutCert outCert) throws Exception {
+        try {
+            outCert.setOutCertTime(new Date());
+            outCert.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+            outCertMapper.insertSelective(outCert);
+            List<Contact> contactList = outCert.getContactList();
+            for (int i = 0; i < contactList.size(); i++) {
+                Contact contact =  contactList.get(i);
+                User user = userMapper.findByName(contact.getContactPhone());
+                if (null!=user){
+                    contact.setUserId(user.getUserid());
+                    contact.setOutCertId(outCert.getOutCertId());
+                    contactMapper.insertSelective(contact);
+                }
+            }
+            outCertMapper.updateByPrimaryKeySelective(outCert);
+        } catch (NumberFormatException e) {
+            throw new Exception(e);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

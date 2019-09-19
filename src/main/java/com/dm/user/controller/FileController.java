@@ -46,13 +46,14 @@ public class FileController {
 	 * @param request
 	 * @param response
 	 * @param multipartFile
+	 * @param type real 实名认证上传 outcert 出证上传
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping("/real/upload")
 	public Result realUpload(HttpServletRequest request, HttpServletResponse response,
-						 @RequestParam(value = "file") MultipartFile[] multipartFile) throws Exception {
-		Map<String, Object> map = fileUtil.realUpload(request, response, multipartFile);
+						 @RequestParam(value = "file") MultipartFile[] multipartFile, String type) throws Exception {
+		Map<String, Object> map = fileUtil.realUpload(request, response, multipartFile, type);
 		if (map.containsKey("fileIds")) {
 			return ResultUtil.success(map);
 		}

@@ -194,8 +194,8 @@ public class CertFicateServiceImpl implements CertFicateService {
 							pm.setState("0");
 							pm.setIsRead("0");
 							pm.setReceive(u.getUsername());
-							String json = new Gson().toJson(pm);
 							pushMsgService.insertSelective(pm);
+							String json = new Gson().toJson(pm);
 							int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
 							if (resout==1){
 								pm.setState("1");

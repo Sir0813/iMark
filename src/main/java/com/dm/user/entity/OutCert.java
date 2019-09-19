@@ -3,6 +3,7 @@ package com.dm.user.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
+import java.util.List;
 
 public class OutCert {
     private Integer outCertId;
@@ -18,7 +19,18 @@ public class OutCert {
 
     private Integer fileId;
 
-    private Integer confirmId;
+    private String certId;
+
+    /*发送人业务字段*/
+    private List<Contact> contactList;
+
+    public List<Contact> getContactList() {
+        return contactList;
+    }
+
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+    }
 
     public Integer getOutCertId() {
         return outCertId;
@@ -68,11 +80,11 @@ public class OutCert {
         this.fileId = fileId;
     }
 
-    public Integer getConfirmId() {
-        return confirmId;
+    public String getCertId() {
+        return certId;
     }
 
-    public void setConfirmId(Integer confirmId) {
-        this.confirmId = confirmId;
+    public void setCertId(String certId) {
+        this.certId = certId == null ? null : certId.trim();
     }
 }

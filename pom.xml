@@ -28,16 +28,16 @@
 		<relativePath />
 	</parent>
 	<dependencies>
+		<dependency>
+			<groupId>com.dm.frame</groupId>
+			<artifactId>jboot</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 		<!-- word -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.28</version>
-		</dependency>
-		<dependency>
-			<groupId>com.dm.frame</groupId>
-			<artifactId>jboot</artifactId>
-			<version>1.0.2</version>
 		</dependency>
 		<!-- 发送邮件jar包 -->
 		<dependency>

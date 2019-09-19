@@ -40,6 +40,12 @@ public class FileUtil {
 
 	@Value("${upload.realFilePrefix}")
 	private String realFilePrefix;
+
+	@Value("${upload.outCertFilePath}")
+	private String outCertFilePath;
+
+	@Value("${upload.outCertFilePrefix}")
+	private String outCertFilePrefix;
 	
 	@Autowired
 	private CertFilesService certFilesService;
@@ -65,19 +71,15 @@ public class FileUtil {
 				throw new Exception();
 			}
 			CertFiles certFiles = new CertFiles();
-			boolean osWin = false;
 			String osname = System.getProperty("os.name").toLowerCase();
-			if (osname.startsWith("win")){
-				osWin = true;
-			}
 			if (suffix.equals(".mp4")||suffix.equals(".mov")){
-				String uuid = UUID.randomUUID().toString();
-				if (osWin){
-					FileUtil.fetchFrame(filePath,"D:\\upload\\vidopng\\"+uuid+".png");
-					certFiles.setFileName("http://192.168.3.101/img/vidopng/"+uuid+".png");
+				String uuid = UUID.randomUUID().toString()+".png";
+				if (osname.startsWith("win")){
+					FileUtil.fetchFrame(filePath,"D:\\upload\\vidopng\\"+uuid);
+					certFiles.setFileName("http://192.168.3.101/img/vidopng/"+uuid);
 				}else{
-					FileUtil.fetchFrame(filePath,"/opt/czt-upload/vidopng/"+uuid+".png");
-					certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/"+uuid+".png");
+					FileUtil.fetchFrame(filePath,"/opt/czt-upload/vidopng/"+uuid);
+					certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/"+uuid);
 				}
 			}else{
 				certFiles.setFileName(fileName);
@@ -205,10 +207,9 @@ public class FileUtil {
 	 */
 	@SuppressWarnings("restriction")
 	public static String imageChangeBase64(String imagePath){
-        InputStream inputStream = null;
         byte[] data = null;
         try {
-            inputStream = new FileInputStream(imagePath);
+			InputStream inputStream = new FileInputStream(imagePath);
             data = new byte[inputStream.available()];
             inputStream.read(data);
             inputStream.close();
@@ -225,9 +226,8 @@ public class FileUtil {
 		response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 		byte[] buff = new byte[1024];
 		BufferedInputStream bis = null;
-		OutputStream os = null;
 		try {
-			os = response.getOutputStream();
+			OutputStream os = response.getOutputStream();
 			bis = new BufferedInputStream(new FileInputStream(new File(filePath + fileName)));
 			int i = bis.read(buff);
 			while (i != -1) {
@@ -248,22 +248,31 @@ public class FileUtil {
 		}
 	}
 
-	public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response, MultipartFile[] multipartFile)
+	public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response, MultipartFile[] multipartFile, String type)
 			throws Exception{
 			request.setCharacterEncoding("utf-8");
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("text/html;charset=utf-8");
-			Map<String,Object>map = new HashMap<String,Object>();
-			String certIds[] = new String[multipartFile.length];
+			Map<String,Object>map = new HashMap<>();
+			String fileIds[] = new String[multipartFile.length];
 			for (int i = 0; i < multipartFile.length; i++) {
 				String fileName = multipartFile[i].getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
 				UUID randomUUID = UUID.randomUUID();
-				String filePath = realFilePath + File.separator + randomUUID+suffix;
-				String fileUrl = realFilePrefix+File.separator+randomUUID+suffix;
-				boolean uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+				String filePath = "";
+				String fileUrl = "";
+				boolean uploadBoolean = false;
+				if ("real".equals(type)){
+					filePath = realFilePath + File.separator + randomUUID+suffix;
+					fileUrl = realFilePrefix+File.separator+randomUUID+suffix;
+					uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+				}else if("outcert".equals(type)) {
+					filePath = outCertFilePath + File.separator + randomUUID+suffix;
+					fileUrl = outCertFilePrefix+File.separator+randomUUID+suffix;
+					uploadBoolean = FileUtil.uploadFile(outCertFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+				}
 				if (!uploadBoolean) {
-					throw new Exception();
+					throw new Exception("文件上传失败!");
 				}
 				CertFiles certFiles = new CertFiles();
 				certFiles.setFileName(fileName);
@@ -273,9 +282,9 @@ public class FileUtil {
 				certFiles.setFileType(suffix);
 				certFiles.setFileSeq(i+"");
 				certFilesService.insertSelective(certFiles);
-				certIds[i]=String.valueOf(certFiles.getFileId());
+				fileIds[i]=String.valueOf(certFiles.getFileId());
 			}
-			map.put("fileIds", certIds);
+			map.put("fileIds", fileIds);
 			return map;
 		}
 }
