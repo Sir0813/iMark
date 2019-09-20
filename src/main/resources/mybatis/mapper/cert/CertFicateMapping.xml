@@ -82,6 +82,7 @@
   	<include refid="Base_Column_List" />
   	from biz_certficate
   	where cert_owner = #{userId}
+    and cert_is_delete = 1
   	<choose>
   		<when test="state != null and state !=''">
   			<if test="state==0">
@@ -114,7 +115,6 @@
             </if>
         </otherwise>
   	</choose>
-  	and cert_is_delete = 1
     order by cert_post_date desc
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >

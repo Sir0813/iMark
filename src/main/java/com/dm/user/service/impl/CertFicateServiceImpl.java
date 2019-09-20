@@ -178,12 +178,14 @@ public class CertFicateServiceImpl implements CertFicateService {
 				if (null==certConfirm.getConfirmState()) {
 					certConfirm.setConfirmState(StateMsg.noConfirm);
 				}
+				User u = userMapper.findByName(certConfirm.getConfirmPhone());
+				if (null!=u){
+					certConfirm.setUserId(u.getUserid());
+				}
 				if (sendMsg) {
 					/*发消息请求确认*/
 					if (certConfirm.getConfirmState()!=StateMsg.originator) {
-						User u = userMapper.findByName(certConfirm.getConfirmPhone());
 						if (null!=u){
-                            certConfirm.setUserId(u.getUserid());
 							PushMsg pm = new PushMsg();
 							pm.setCertFicateId(certFicate.getCertId().toString());
 							pm.setTitle("存证待确认→");
@@ -219,13 +221,24 @@ public class CertFicateServiceImpl implements CertFicateService {
 			certFicate.setCertConfirmList(list);
 			if (list.size()>0){
 				list.forEach(cc->{
-					if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-						certFicate.setCertIsconf(1);//1待自己确认
-						return;
-					}
-					if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-						certFicate.setCertIsconf(2);//1待他人确认
-						return;
+					if (null!=cc.getUserId()){
+						if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+							certFicate.setCertIsconf(1);//1待自己确认
+							return;
+						}
+						if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+							certFicate.setCertIsconf(2);//1待他人确认
+							return;
+						}
+					}else{
+						if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+							certFicate.setCertIsconf(1);//1待自己确认
+							return;
+						}
+						if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+							certFicate.setCertIsconf(2);//1待他人确认
+							return;
+						}
 					}
 				});
 			}
@@ -261,7 +274,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 					ids[i]=confirmList.get(i).getCertId();
 				}
 			}
-			map.put("certid",ids);
+			if (StringUtils.isBlank(certName)){
+				map.put("certid",ids);
+			}
 			map.put("state", "null".equals(state)?"":state);
 			map.put("userId",LoginUserHelper.getUserId());
 			map.put("certName",certName);

@@ -89,9 +89,9 @@ public class OutCertServiceImpl implements OutCertService {
                 User user = userMapper.findByName(contact.getContactPhone());
                 if (null!=user){
                     contact.setUserId(user.getUserid());
-                    contact.setOutCertId(outCert.getOutCertId());
-                    contactMapper.insertSelective(contact);
                 }
+                contact.setOutCertId(outCert.getOutCertId());
+                contactMapper.insertSelective(contact);
             }
             outCertMapper.updateByPrimaryKeySelective(outCert);
         } catch (NumberFormatException e) {
