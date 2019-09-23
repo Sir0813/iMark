@@ -214,10 +214,10 @@ public class CertFicateServiceImpl implements CertFicateService {
 	}
 
 	@Override
-	public CertFicate details(Integer certFicateId) throws Exception {
+	public CertFicate details(String certFicateId) throws Exception {
 		try {
-			CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certFicateId);
-			List<CertConfirm> list = certConfirmMapper.selectByCertId(certFicateId);
+			CertFicate certFicate = certFicateMapper.selectByPrimaryKey(Integer.parseInt(certFicateId));
+			List<CertConfirm> list = certConfirmMapper.selectByCertId(Integer.parseInt(certFicateId));
 			certFicate.setCertConfirmList(list);
 			if (list.size()>0){
 				list.forEach(cc->{
@@ -258,7 +258,7 @@ public class CertFicateServiceImpl implements CertFicateService {
 	@Override
 	public PageInfo<CertFicate> list(Page<CertFicate>page,String state,String certName) throws Exception {
 		try {
-			List<CertFicate>list = null;
+			List<CertFicate>list = new ArrayList<>();
 			Map<String,Object>map = new HashMap<>();
 			Integer [] ids = null;
 			List<CertConfirm> confirmList = null;
@@ -295,13 +295,24 @@ public class CertFicateServiceImpl implements CertFicateService {
 							List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
 							if (certConfirms.size()>0){
 								certConfirms.forEach(cc->{
-									if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-										l.setCertIsconf(1);//1待自己确认
-										return;
-									}
-									if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-										l.setCertIsconf(2);//1待他人确认
-										return;
+									if (null!=cc.getUserId()){
+										if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+											l.setCertIsconf(1);//1待自己确认
+											return;
+										}
+										if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+											l.setCertIsconf(2);//1待他人确认
+											return;
+										}
+									}else{
+										if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+											l.setCertIsconf(1);//1待自己确认
+											return;
+										}
+										if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+											l.setCertIsconf(2);//1待他人确认
+											return;
+										}
 									}
 								});
 							}
@@ -310,9 +321,16 @@ public class CertFicateServiceImpl implements CertFicateService {
 							List<CertConfirm> certConfirms = certConfirmMapper.selectByCertId(l.getCertId());
 							if (certConfirms.size()>0){
 								for (CertConfirm cc : certConfirms) {
-									if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=4){
-										iterator.remove();
-										break;
+									if (null!=cc.getUserId()){
+										if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=4){
+											iterator.remove();
+											break;
+										}
+									}else{
+										if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()!=4){
+											iterator.remove();
+											break;
+										}
 									}
 								}
 							}
@@ -330,9 +348,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 	}
 
 	@Override
-	public void revoke(int certId) throws Exception {
+	public void revoke(String certId) throws Exception {
 		try {
-			certFicateMapper.updateCertRevoke(certId);
+			certFicateMapper.updateCertRevoke(Integer.parseInt(certId));
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -374,9 +392,9 @@ public class CertFicateServiceImpl implements CertFicateService {
 	}
 
     @Override
-    public ByteArrayResource getCertImg(Integer certId) throws Exception {
+    public ByteArrayResource getCertImg(String certId) throws Exception {
 	    try {
-            CertFicate certFicate = certFicateMapper.selectByPrimaryKey(certId);
+            CertFicate certFicate = certFicateMapper.selectByPrimaryKey(Integer.parseInt(certId));
             certFicate.setCertOwner(LoginUserHelper.getUserName());
 			String os = System.getProperty("os.name").toLowerCase();
 			String qrCodePath = "";String templatePath = "";

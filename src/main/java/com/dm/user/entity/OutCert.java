@@ -21,8 +21,40 @@ public class OutCert {
 
     private String certId;
 
+    /*发起人 业务字段*/
+    private String promoter;
+
+    /*出证文件路径*/
+    private String outCertExplain;
+
+    private List<CertFiles> list;
+
     /*发送人业务字段*/
     private List<Contact> contactList;
+
+    public List<CertFiles> getList() {
+        return list;
+    }
+
+    public void setList(List<CertFiles> list) {
+        this.list = list;
+    }
+
+    public String getOutCertExplain() {
+        return outCertExplain;
+    }
+
+    public void setOutCertExplain(String outCertExplain) {
+        this.outCertExplain = outCertExplain;
+    }
+
+    public String getPromoter() {
+        return promoter;
+    }
+
+    public void setPromoter(String promoter) {
+        this.promoter = promoter;
+    }
 
     public List<Contact> getContactList() {
         return contactList;

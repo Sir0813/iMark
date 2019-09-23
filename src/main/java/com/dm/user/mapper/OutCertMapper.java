@@ -3,6 +3,8 @@ package com.dm.user.mapper;
 import com.dm.user.entity.OutCert;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface OutCertMapper {
     int deleteByPrimaryKey(Integer outCertId);
@@ -16,4 +18,6 @@ public interface OutCertMapper {
     int updateByPrimaryKeySelective(OutCert record);
 
     int updateByPrimaryKey(OutCert record);
+
+    List<OutCert> list(String userId);
 }

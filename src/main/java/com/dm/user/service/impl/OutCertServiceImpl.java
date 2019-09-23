@@ -1,15 +1,13 @@
 package com.dm.user.service.impl;
 
 import com.dm.frame.jboot.user.LoginUserHelper;
-import com.dm.user.entity.CertFicate;
-import com.dm.user.entity.Contact;
-import com.dm.user.entity.OutCert;
-import com.dm.user.entity.User;
-import com.dm.user.mapper.CertFicateMapper;
-import com.dm.user.mapper.ContactMapper;
-import com.dm.user.mapper.OutCertMapper;
-import com.dm.user.mapper.UserMapper;
+import com.dm.user.entity.*;
+import com.dm.user.mapper.*;
+import com.dm.user.msg.StateMsg;
 import com.dm.user.service.OutCertService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,9 @@ public class OutCertServiceImpl implements OutCertService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CertFilesMapper certFilesMapper;
 
     @Override
     public String downloadOutCertTemplate(String certIds) throws Exception {
@@ -99,5 +100,86 @@ public class OutCertServiceImpl implements OutCertService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    @Override
+    public PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception {
+        try {
+            List<OutCert> list = new ArrayList<>();
+            PageHelper.startPage(page.getPageNum(), StateMsg.pageSize);
+            String userId = LoginUserHelper.getUserId();
+            if ("mysend".equals(state)){
+                list = outCertMapper.list(userId);
+            }else if ("tome".equals(state)){
+                List<Contact> contacts = contactMapper.selectByUserId(userId);
+                if (contacts.size()>0){
+                    for (int i = 0; i < contacts.size(); i++) {
+                        Contact contact =  contacts.get(i);
+                        OutCert outCert = outCertMapper.selectByPrimaryKey(contact.getOutCertId());
+                        list.add(outCert);
+                    }
+                }
+            }else{
+                throw new Exception("显示异常");
+            }
+            if (list.size()==0) return null;
+            PageInfo<OutCert> pageInfo = new PageInfo<>(list);
+            if (page.getPageNum()>pageInfo.getPages()) return null;
+            return pageInfo;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public OutCert details(String outCertId) throws Exception {
+        try {
+            OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
+            User user = userMapper.selectByPrimaryKey(outCert.getUserId());
+            /*发起人*/
+            outCert.setPromoter(user.getUsername());
+            CertFiles certFiles = certFilesMapper.selectByPrimaryKey(outCert.getFileId());
+            /*存证说明文件*/
+            outCert.setOutCertExplain(certFiles.getFileUrl());
+            String[] split = outCert.getCertId().split(",");
+            List<CertFicate> certFicates = certFicateMapper.selectByCertIDs(split);
+            String filesId = "";
+            for (int i = 0; i < certFicates.size(); i++) {
+                CertFicate certFicate =  certFicates.get(i);
+                String certFilesid = certFicate.getCertFilesid();
+                filesId+=certFilesid;
+            }
+            String id = distinctStringWithDot(filesId);
+            List<CertFiles> list = certFilesMapper.findByFilesIds(id.split(","));
+            for (int i = 0; i < list.size(); i++) {
+                CertFiles files =  list.get(i);
+                CertFicate certFicate = certFicateMapper.selectByPrimaryKey(files.getCertId());
+                files.setFileHash(certFicate.getCertName());
+            }
+            outCert.setList(list);
+            return outCert;
+        } catch (NumberFormatException e) {
+            throw new Exception(e);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    private static String distinctStringWithDot(String str) {
+        String[]array=str.split(",");
+        List<String> list = new ArrayList<>();
+        for(int i=0;i<array.length;i++){
+            for(int j=i+1;j<array.length;j++){
+                if(array[i].equals(array[j])){
+                    j = ++i;
+                }
+            }
+            list.add(array[i]);
+        }
+        String newStr="";
+        for(String s:list){
+            newStr=newStr+s+",";
+        }
+        return newStr;
     }
 }

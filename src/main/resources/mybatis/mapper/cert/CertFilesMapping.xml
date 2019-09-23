@@ -123,7 +123,7 @@
   </update>
 	<select id="findByFilesIds" resultMap="BaseResultMap" parameterType="java.util.List">
 		select 
-		file_id, file_path, file_name, file_url, file_type, file_hash, file_seq
+		file_id, file_path, file_name, file_url, file_type, file_hash, file_seq, cert_id
 		from biz_cert_files
 		where file_id in 
 		<foreach collection="array" item="fileid" open="(" close= ")" separator=",">

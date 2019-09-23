@@ -12,10 +12,7 @@ import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.frame.jboot.util.MD5Util;
 import com.dm.user.entity.*;
-import com.dm.user.mapper.CertConfirmMapper;
-import com.dm.user.mapper.InformationMapper;
-import com.dm.user.mapper.UserCardMapper;
-import com.dm.user.mapper.UserMapper;
+import com.dm.user.mapper.*;
 import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.PushUtil;
@@ -59,6 +56,9 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private CertConfirmMapper certConfirmMapper;
+
+	@Autowired
+	private ContactMapper contactMapper;
 
 	@Value("${email.emailContent}")
 	private String emailContent;
@@ -121,6 +121,14 @@ public class UserServiceImpl implements UserService{
 				list.forEach(l->{
 					l.setUserId(user.getUserid());
 					certConfirmMapper.updateByPrimaryKeySelective(l);
+				});
+			}
+			/*出证发送给我的添加用户ID*/
+			List<Contact>contacts = contactMapper.selectByPhone(user.getUsername());
+			if (contacts.size()>0){
+				contacts.forEach(contact -> {
+					contact.setUserId(user.getUserid());
+					contactMapper.updateByPrimaryKey(contact);
 				});
 			}
 			return ResultUtil.success();

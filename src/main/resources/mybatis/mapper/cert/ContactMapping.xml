@@ -11,6 +11,18 @@
   <sql id="Base_Column_List">
     contact_id, user_id, out_cert_id, contact_person, contact_phone
   </sql>
+  <select id="selectByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_outcert_contact
+    where contact_phone = #{username}
+  </select>
+  <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_outcert_contact
+    where user_id = #{userId}
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

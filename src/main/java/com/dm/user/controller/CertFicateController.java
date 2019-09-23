@@ -9,14 +9,14 @@ import com.dm.user.service.CertFicateService;
 import com.dm.user.util.PDFConvertUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
+@Api(description="存证")
 @RestController
 @RequestMapping("/certficate")
 public class CertFicateController extends BaseController {
@@ -27,108 +27,65 @@ public class CertFicateController extends BaseController {
 	@Autowired
 	private PDFConvertUtil pdfConvertUtil;
 
-	/**
-	 * 存证
-	 * @param certFicate
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="存证", response= ResultUtil.class)
 	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public Result save(@RequestBody CertFicate certFicate) throws Exception {
 		CertFicate cert = certFicateService.save(certFicate);
 		return ResultUtil.success(cert);
 	}
 
-	/**
-	 * 模板存证存草稿
-	 * @param certFicate
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="模板存证存草稿", response= ResultUtil.class)
 	@RequestMapping(value="/temSave",method=RequestMethod.POST)
 	public Result temSave(@RequestBody TemCertFile temCertFile) throws Exception {
 		CertFicate cert = certFicateService.temSave(temCertFile);
 		return ResultUtil.success(cert);
 	}
 
-	/**
-	 * 我的存证
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="我的存证", response= ResultUtil.class)
 	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public Result list(Page<CertFicate> page, String state, String certName) throws Exception {
+	public Result list( Page<CertFicate> page,  String state,  String certName) throws Exception {
 		PageInfo<CertFicate> certFicateList = certFicateService.list(page,state,certName);
 		return ResultUtil.success(certFicateList);
 	}
 
-	/**
-	 * 存证详情
-	 * @param certFicateId 存证ID
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="存证详情", response= ResultUtil.class)
 	@RequestMapping(value="/details",method=RequestMethod.GET)
-	public Result details(Integer certFicateId) throws Exception {
+	public Result details( String certFicateId) throws Exception {
 		CertFicate cert = certFicateService.details(certFicateId);
 		return ResultUtil.success(cert);
 	}
 	
-	/**
-	 * 撤回待他人确认存证
-	 * @param certId 存证ID
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="撤回待他人确认存证", response= ResultUtil.class)
 	@RequestMapping(value="/revoke",method=RequestMethod.GET)
-	public Result revoke(int certId) throws Exception {
+	public Result revoke(String certId) throws Exception {
 		certFicateService.revoke(certId);
 		return ResultUtil.success();
 	}
 	
-	/**
-	 * 退回待自己确认存证
-	 * @param reason 原因
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="退回待自己确认存证", response= ResultUtil.class)
 	@RequestMapping(value="/returnReason",method=RequestMethod.POST)
 	public Result returnReason(@RequestBody Map<String,Object>map) throws Exception {
 		certFicateService.returnReason(map);
 		return ResultUtil.success();
 	}
 	
-	/**
-	 * 确认待自己确认
-	 * @param map
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="确认待自己确认", response= ResultUtil.class)
 	@RequestMapping(value="/confirm",method=RequestMethod.POST)
 	public Result confirm(@RequestBody Map<String,Object>map) throws Exception {
 		certFicateService.confirm(map);
 		return ResultUtil.success();
 	}
 	
-	/**
-	 * 草稿删除
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="草稿删除", response= ResultUtil.class)
 	@RequestMapping(value="/draftDel",method=RequestMethod.POST)
 	public Result draftDel(@RequestBody CertFicate certFicate) throws Exception {
 		certFicateService.draftDel(certFicate);
 		return ResultUtil.success();
 	}
 
-	/**
-	 * 获取存证证书
-	 * @param certId 存证ID
-	 * @return
-	 * @throws Exception
-	 */
+	@ApiOperation(value="获取存证证书", response= ByteArrayResource.class)
 	@RequestMapping(value="/getCertImg", method = RequestMethod.GET, headers = "Accept=image/jpeg")
-	public ByteArrayResource getCertImg(Integer certId) throws Exception {
+	public ByteArrayResource getCertImg( String certId) throws Exception {
 		ByteArrayResource bar = certFicateService.getCertImg(certId);
 		return bar;
 	}

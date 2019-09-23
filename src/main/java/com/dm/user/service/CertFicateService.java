@@ -30,7 +30,7 @@ public interface CertFicateService {
 	 * @param certFicateId 存证ID
 	 * @return
 	 */
-	CertFicate details(Integer certFicateId) throws Exception;
+	CertFicate details(String certFicateId) throws Exception;
 
 	/**
 	 * 草稿删除
@@ -43,7 +43,7 @@ public interface CertFicateService {
 	 * 撤回待他人确认存证
 	 * @param certId 存证ID
 	 */
-	void revoke(int certId) throws Exception;
+	void revoke(String certId) throws Exception;
 
 	/**
 	 * 退回待自己确认存证
@@ -64,7 +64,7 @@ public interface CertFicateService {
 	 * @return
 	 * @throws Exception
 	 */
-    ByteArrayResource getCertImg(Integer certId) throws Exception;
+    ByteArrayResource getCertImg(String certId) throws Exception;
 
 	/**
 	 * 模板存证存草稿
