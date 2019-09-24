@@ -11,6 +11,7 @@ public class PushMsg {
 
     private String serverTime;
 
+    /*1存证通知2出证通知*/
     private String type;
 
     private String skipUrl;
@@ -24,6 +25,16 @@ public class PushMsg {
 
     /* 1已读取 0 未读取*/
     private String isRead;
+
+    private Integer userId;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public String getIsRead() {
         return isRead;

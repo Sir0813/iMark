@@ -13,4 +13,6 @@ public interface OutCertService {
     PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception;
 
     OutCert details(String outCertId) throws Exception;
+
+    String downZip(String outCertId) throws Exception;
 }

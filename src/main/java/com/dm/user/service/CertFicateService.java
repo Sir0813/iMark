@@ -7,6 +7,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.springframework.core.io.ByteArrayResource;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CertFicateService {
@@ -79,4 +80,15 @@ public interface CertFicateService {
 	 * @throws Exception
 	 */
 	TemFile selectByCertId(String certId) throws Exception;
+
+	/**
+	 * 根据ID和状态查询
+	 * @param certId
+	 * @return
+	 */
+    CertFicate selectByIdAndState(Integer certId) throws Exception;
+
+	List<CertFicate> selectByCertIDs(String[] split) throws Exception;
+
+	CertFicate selectByPrimaryKey(Integer certId) throws Exception;
 }

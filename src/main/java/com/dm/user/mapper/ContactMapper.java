@@ -22,4 +22,6 @@ public interface ContactMapper {
     List<Contact> selectByUserId(String userId);
 
     List<Contact> selectByPhone(String username);
+
+    List<Contact> historyInfo(String userName);
 }

@@ -1,6 +1,7 @@
 package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
+import com.dm.user.entity.Information;
 
 import java.util.Map;
 
@@ -14,4 +15,9 @@ public interface InformationService {
 
 	Result changePhone(Map<String, Object> map) throws Exception;
 
+    void insertSelective(Information info) throws Exception;
+
+	Information selectByPhone(Map<String, Object> map) throws Exception;
+
+	void updateByPrimaryKeySelective(Information information) throws Exception;
 }

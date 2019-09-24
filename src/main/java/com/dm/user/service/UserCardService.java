@@ -8,4 +8,6 @@ public interface UserCardService {
     Result authentication(UserCard userCard) throws Exception;
 
     Result realInfo() throws Exception;
+
+    UserCard selectByUserId(String toString) throws Exception;
 }

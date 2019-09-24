@@ -7,8 +7,8 @@ import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.Information;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.InformationMapper;
-import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.InformationService;
+import com.dm.user.service.UserService;
 import com.dm.user.util.RandomCode;
 import com.dm.user.util.SendMailSmtp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,13 @@ import java.util.Map;
 
 @Service
 @Transactional(rollbackFor=Exception.class)
-public class InformationServiceImpl implements InformationService{
+public class InformationServiceImpl<insertSelective> implements InformationService{
 
 	@Autowired
 	private InformationMapper informationMapper;
 	
 	@Autowired
-	private UserMapper userMapper;
+	private UserService userService;
 	
 	@Autowired
 	private SendMailSmtp sendMailSmtp;
@@ -74,13 +74,13 @@ public class InformationServiceImpl implements InformationService{
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
-			User user = userMapper.selectByEamil(map.get("email").toString());
+			User user = userService.selectByEamil(map.get("email").toString());
 			if (null!=user){
 				return ResultUtil.info("email.code.have.code","email.code.have.msg");
 			}
-			User u = userMapper.findByName(LoginUserHelper.getUserName());
+			User u = userService.findByName(LoginUserHelper.getUserName());
 			u.setEmail(map.get("email").toString());
-			userMapper.updateByPrimaryKeySelective(u);
+			userService.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");
 			informationMapper.updateByPrimaryKeySelective(info);
 			return ResultUtil.success();
@@ -109,7 +109,7 @@ public class InformationServiceImpl implements InformationService{
 	@Override
 	public Result changePhone(Map<String, Object> map) throws Exception {
 		try {
-			User user = userMapper.findByName(map.get("newPhone").toString());
+			User user = userService.findByName(map.get("newPhone").toString());
 			if (null!=user) {
 				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
@@ -119,9 +119,9 @@ public class InformationServiceImpl implements InformationService{
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
-			User u = userMapper.findByName(LoginUserHelper.getUserName());
+			User u = userService.findByName(LoginUserHelper.getUserName());
 			u.setUsername(map.get("newPhone").toString());
-			userMapper.updateByPrimaryKeySelective(u);
+			userService.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");
 			informationMapper.updateByPrimaryKeySelective(info);
 			return ResultUtil.success();
@@ -129,8 +129,35 @@ public class InformationServiceImpl implements InformationService{
 			throw new Exception(e);
 		}
 	}
-	
-	private Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+
+	@Override
+	public void insertSelective(Information info) throws Exception {
+		try {
+			informationMapper.insertSelective(info);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public Information selectByPhone(Map<String, Object> map) throws Exception {
+		try {
+			return informationMapper.selectByPhone(map);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public void updateByPrimaryKeySelective(Information information) throws Exception {
+		try {
+			informationMapper.updateByPrimaryKeySelective(information);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	private Result checkVeriCode(Information info, Map<String, Object> map) throws Exception {
 		try {
 			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
 				return ResultUtil.info("email.code.error.code","email.code.error.msg");

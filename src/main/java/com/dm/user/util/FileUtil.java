@@ -23,8 +23,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Component
 public class FileUtil {
@@ -198,6 +201,57 @@ public class FileUtil {
 		ImageIO.write(bi, "jpg", targetFile);
 		ff.flush();
 		ff.stop();
+	}
+
+	/**
+	 * 打包下载
+	 * @param sourceFilePath 指定文件路径
+	 * @param zipFilePath    打成压缩包的路径
+	 * @param fileName       文件名称
+	 * @return
+	 */
+	public static boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
+		FileInputStream fis ;
+		BufferedInputStream bis = null;
+		FileOutputStream fos ;
+		ZipOutputStream zos =null;
+		try {
+			File zipFile = new File(zipFilePath + File.separator + fileName + ".zip");
+			if (files.size() == 0) {
+				return false;
+			} else {
+				fos = new FileOutputStream(zipFile);
+				zos = new ZipOutputStream(new BufferedOutputStream(fos));
+				byte[] bufs = new byte[1024 * 10];
+				for (int i = 0; i < files.size(); i++) {
+					//创建ZIP实体，并添加进压缩包
+					ZipEntry zipEntry = new ZipEntry(files.get(i).getName());
+					zos.putNextEntry(zipEntry);
+					//读取待压缩的文件并写进压缩包里
+					fis = new FileInputStream(files.get(i));
+					bis = new BufferedInputStream(fis, 1024 * 10);
+					int read = 0;
+					while ((read = bis.read(bufs, 0, 1024 * 10)) != -1) {
+						zos.write(bufs, 0, read);
+					}
+				}
+				return true;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (null != bis) bis.close();
+				if (null != zos) zos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	/**

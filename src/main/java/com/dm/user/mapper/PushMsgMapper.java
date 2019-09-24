@@ -20,7 +20,7 @@ public interface PushMsgMapper {
 
     List<PushMsg> selectByReceiveAndState(String username);
 
-    List<PushMsg> historyInfo(String userName);
+    List<PushMsg> historyInfo(String userId);
 
     void updateByRead(String pushId);
 }

@@ -48,4 +48,11 @@ public class OutCertController extends BaseController {
         return ResultUtil.success(outCert);
     }
 
+    @ApiOperation(value="出证文件打包下载", response= ResultUtil.class)
+    @RequestMapping(value = "/cert/downZip", method = RequestMethod.GET)
+    public Result downZip( String outCertId) throws Exception {
+        String downPath = outCertService.downZip(outCertId);
+        return ResultUtil.success(downPath);
+    }
+
 }

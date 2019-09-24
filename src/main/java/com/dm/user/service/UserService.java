@@ -79,4 +79,18 @@ public interface UserService {
 	 * @throws Exception
 	 */
     Result dynamicLogin(Map<String, Object> map) throws Exception;
+
+	/**
+	 * 根据手机号查找用户
+	 * @param confirmPhone
+	 * @return
+	 * @throws Exception
+	 */
+    User findByName(String confirmPhone) throws Exception;
+
+	User selectByEamil(String email) throws Exception;
+
+	void updateByPrimaryKeySelective(User u) throws Exception;
+
+	User selectByPrimaryKey(Integer userId) throws Exception;
 }

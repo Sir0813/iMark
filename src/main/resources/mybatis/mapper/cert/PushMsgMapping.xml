@@ -12,15 +12,16 @@
     <result column="receive" property="receive" jdbcType="VARCHAR" />
     <result column="state" property="state" jdbcType="VARCHAR" />
     <result column="is_read" property="isRead" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state, is_read
+    push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state, is_read, user_id
   </sql>
   <select id="historyInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from biz_push
-    where receive = #{userName}
+    where user_id = #{userId}
     order by server_time desc
   </select>
   <select id="selectByReceiveAndState" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -80,6 +81,9 @@
       <if test="isRead != null" >
         is_read,
       </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="certFicateId != null" >
@@ -108,6 +112,9 @@
       </if>
       <if test="isRead != null" >
         #{isRead,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -140,6 +147,9 @@
       </if>
       <if test="isRead != null" >
         is_read = #{isRead,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
       </if>
     </set>
     where push_id = #{pushId,jdbcType=INTEGER}

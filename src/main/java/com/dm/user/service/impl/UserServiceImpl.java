@@ -13,8 +13,7 @@ import com.dm.frame.jboot.util.DateUtil;
 import com.dm.frame.jboot.util.MD5Util;
 import com.dm.user.entity.*;
 import com.dm.user.mapper.*;
-import com.dm.user.service.PushMsgService;
-import com.dm.user.service.UserService;
+import com.dm.user.service.*;
 import com.dm.user.util.PushUtil;
 import com.dm.user.util.RandomCode;
 import com.google.gson.Gson;
@@ -40,10 +39,10 @@ public class UserServiceImpl implements UserService{
     private LoginUserService loginUserService;
 	
 	@Autowired
-	private InformationMapper informationMapper;
+	private InformationService informationService;
 	
 	@Autowired
-	private UserCardMapper userCardMapper;
+	private UserCardService userCardService;
 
 	@Autowired
 	private PushMsgService pushMsgService;
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService{
 	private LoginUserDetailsService loginUserDetailsService;
 
 	@Autowired
-	private CertConfirmMapper certConfirmMapper;
+	private CertConfirmService certConfirmService;
 
 	@Autowired
 	private ContactMapper contactMapper;
@@ -79,7 +78,7 @@ public class UserServiceImpl implements UserService{
 			info.setInfoSenddate(date);
 			info.setInfoExpireddate(new Date(date.getTime()+expired));
 			info.setInfoState("0");
-			informationMapper.insertSelective(info);
+			informationService.insertSelective(info);
 			return String.valueOf(randomNumber);
 		} catch (Exception e) {
 			throw new Exception(e);
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService{
 			Map<String, Object> map = new HashMap<>();
 			map.put("email", user.getUsername());
 			map.put("veriCode", user.getUsercode());
-			Information information = informationMapper.selectByPhone(map);
+			Information information = informationService.selectByPhone(map);
 			Result result = checkVeriCode(information,map);
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
@@ -113,14 +112,14 @@ public class UserServiceImpl implements UserService{
 			String md5Password = MD5Util.encode(user.getPassword()+user.getSalt());
 			user.setPassword(md5Password);
 			user.setCreatedDate(DateUtil.getSystemDateStr());
-			informationMapper.updateByPrimaryKeySelective(information);
+			informationService.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
 			/*待自己确认 需要更新注册用户ID*/
-			List<CertConfirm>list = certConfirmMapper.selectByPhone(user.getUsername());
+			List<CertConfirm>list = certConfirmService.selectByPhone(user.getUsername());
 			if (list.size()>0){
 				list.forEach(l->{
 					l.setUserId(user.getUserid());
-					certConfirmMapper.updateByPrimaryKeySelective(l);
+					certConfirmService.updateByPrimaryKeySelective(l);
 				});
 			}
 			/*出证发送给我的添加用户ID*/
@@ -130,6 +129,15 @@ public class UserServiceImpl implements UserService{
 					contact.setUserId(user.getUserid());
 					contactMapper.updateByPrimaryKey(contact);
 				});
+			}
+			/*历史消息添加用户ID*/
+			List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(user.getUsername());
+			if (pushMsgs.size()>0){
+				for (int i = 0; i < pushMsgs.size(); i++) {
+					PushMsg pushMsg =  pushMsgs.get(i);
+					pushMsg.setUserId(user.getUserid());
+					pushMsgService.updateByPrimaryKeySelective(pushMsg);
+				}
 			}
 			return ResultUtil.success();
 		} catch (Exception e) {
@@ -165,7 +173,7 @@ public class UserServiceImpl implements UserService{
 		try {
 			Map<String,Object> map = new HashMap<>();
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
-			UserCard userCard = userCardMapper.selectByUserId(user.getUserid().toString());
+			UserCard userCard = userCardService.selectByUserId(user.getUserid().toString());
 			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
 			map.put("userName", LoginUserHelper.getUserName());
 			map.put("realName", null==userCard?"":userCard.getRealName());
@@ -260,13 +268,13 @@ public class UserServiceImpl implements UserService{
 			}
 			map.put("email", map.get("phone").toString());
 			map.put("veriCode", map.get("veriCode").toString());
-			Information information = informationMapper.selectByPhone(map);
+			Information information = informationService.selectByPhone(map);
 			Result result = checkVeriCode(information, map);
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
 			}
 			information.setInfoState("1");
-			informationMapper.updateByPrimaryKeySelective(information);
+			informationService.updateByPrimaryKeySelective(information);
 			return ResultUtil.success();
 		} catch (Exception e) {
 			throw new Exception(e);
@@ -281,7 +289,7 @@ public class UserServiceImpl implements UserService{
 		}
 		map.put("email", map.get("username").toString());
 		map.put("veriCode", map.get("password").toString());
-		Information information = informationMapper.selectByPhone(map);
+		Information information = informationService.selectByPhone(map);
 		Result result = checkVeriCode(information, map);
 		if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 			return result;
@@ -295,7 +303,43 @@ public class UserServiceImpl implements UserService{
 		Authentication authentication = new UsernamePasswordAuthenticationToken(loginUserDetails, encodePwd, authorities);
 		String token = this.jwtTokenProvider.createToken(authentication);
 		information.setInfoState("1");
-		informationMapper.updateByPrimaryKeySelective(information);
+		informationService.updateByPrimaryKeySelective(information);
 		return ResultUtil.success(token);
+	}
+
+	@Override
+	public User findByName(String confirmPhone) throws Exception {
+		try {
+			return userMapper.findByName(confirmPhone);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public User selectByEamil(String email) throws Exception {
+		try {
+			return userMapper.selectByEamil(email);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public void updateByPrimaryKeySelective(User u) throws Exception {
+		try {
+			userMapper.updateByPrimaryKeySelective(u);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public User selectByPrimaryKey(Integer userId) throws Exception {
+		try {
+			return userMapper.selectByPrimaryKey(userId);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
 	}
 }

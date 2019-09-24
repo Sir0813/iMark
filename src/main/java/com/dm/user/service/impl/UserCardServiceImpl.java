@@ -5,9 +5,8 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.CertFiles;
 import com.dm.user.entity.UserCard;
-import com.dm.user.mapper.CertFilesMapper;
 import com.dm.user.mapper.UserCardMapper;
-import com.dm.user.mapper.UserMapper;
+import com.dm.user.service.CertFilesService;
 import com.dm.user.service.UserCardService;
 import com.dm.user.util.ShaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,7 @@ public class UserCardServiceImpl implements UserCardService{
 	private UserCardMapper userCardMapper;
 
 	@Autowired
-	private CertFilesMapper certFilesMapper;
-
-	@Autowired
-	private UserMapper userMapper;
+	private CertFilesService certFilesService;
 
 	@Override
 	public Result authentication(UserCard userCard) throws Exception {
@@ -40,18 +36,18 @@ public class UserCardServiceImpl implements UserCardService{
 			boolean b = userCard.getCardid()!=null?true:false;
 			if(b){
 				UserCard card = userCardMapper.selectByPrimaryKey(userCard.getCardid());
-				CertFiles c = certFilesMapper.selectByUrl(card.getFrontPath());
-				CertFiles certFiles = certFilesMapper.selectByUrl(card.getBackPath());
+				CertFiles c = certFilesService.selectByUrl(card.getFrontPath());
+				CertFiles certFiles = certFilesService.selectByUrl(card.getBackPath());
 				File file = new File(c.getFilePath());
 				File f = new File(certFiles.getFilePath());
 				file.delete();
 				f.delete();
-				certFilesMapper.deleteByPrimaryKey(c.getFileId());
-				certFilesMapper.deleteByPrimaryKey(certFiles.getFileId());
+				certFilesService.deleteByPrimaryKey(c.getFileId());
+				certFilesService.deleteByPrimaryKey(certFiles.getFileId());
 			}
 			String[] split = userCard.getFrontPath().split(",");
-			CertFiles file = certFilesMapper.selectByPrimaryKey(Integer.parseInt(split[0]));
-			CertFiles cf = certFilesMapper.selectByPrimaryKey(Integer.parseInt(split[1]));
+			CertFiles file = certFilesService.selectByPrimaryKey(Integer.parseInt(split[0]));
+			CertFiles cf = certFilesService.selectByPrimaryKey(Integer.parseInt(split[1]));
 			userCard.setFrontPath(file.getFileUrl());
 			userCard.setBackPath(cf.getFileUrl());
 			userCard.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
@@ -78,6 +74,15 @@ public class UserCardServiceImpl implements UserCardService{
 			String starString = ShaUtil.getStarString(cardNumber, 1, cardNumber.length() - 1);
 			userCard.setCardNumber(starString);
 			return ResultUtil.success(userCard);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+
+	@Override
+	public UserCard selectByUserId(String toString) throws Exception {
+		try {
+			return userCardMapper.selectByUserId(toString);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}

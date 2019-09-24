@@ -6,14 +6,15 @@ import com.dm.fchain.sdk.exception.GlobalException;
 import com.dm.fchain.sdk.helper.CryptoHelper;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.CertFiles;
-import com.dm.user.mapper.CertFicateMapper;
-import com.dm.user.mapper.CertFilesMapper;
 import com.dm.user.mapper.CertVerifyMapper;
+import com.dm.user.service.CertFicateService;
+import com.dm.user.service.CertFilesService;
 import com.dm.user.service.CertVerifyService;
 import com.dm.user.util.ShaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.File;
 import java.util.List;
 
@@ -25,10 +26,10 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
     private CertVerifyMapper certVerifyMapper;
 
     @Autowired
-    private CertFilesMapper certFilesMapper;
+    private CertFilesService certFilesService;
 
     @Autowired
-    private CertFicateMapper certFicateMapper;
+    private CertFicateService certFicateService;
 
     @Autowired
     private CIDService cidService;
@@ -36,15 +37,15 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
     @Override
     public boolean verifyCert(CertFicate certFicate) throws Exception {
         try {
-            CertFicate cf = certFicateMapper.selectByIdAndState(certFicate.getCertId());
+            CertFicate cf = certFicateService.selectByIdAndState(certFicate.getCertId());
             String[] filesId = certFicate.getCertFilesid().split(",");
-            List<CertFiles> certFiles = certFilesMapper.findByFilesIds(filesId);
+            List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
             if (null==cf) {
                 deleteCertFile(certFiles);
                 return false;
             }
             String[] ids = cf.getCertFilesid().split(",");
-            List<CertFiles> fileList = certFilesMapper.findByFilesIds(ids);
+            List<CertFiles> fileList = certFilesService.findByFilesIds(ids);
             String fhash = "";
             String chash = "";
             for (CertFiles files : fileList) {
@@ -76,11 +77,12 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
         }
     }
 
-    private void deleteCertFile(List<CertFiles> certFiles) {
-        certFiles.forEach(c->{
+    private void deleteCertFile(List<CertFiles> certFiles) throws Exception {
+        for (int i = 0; i < certFiles.size(); i++) {
+            CertFiles c =  certFiles.get(i);
             File file = new File(c.getFilePath());
             file.delete();
-            certFilesMapper.deleteByPrimaryKey(c.getFileId());
-        });
+            certFilesService.deleteByPrimaryKey(c.getFileId());
+        }
     }
 }
