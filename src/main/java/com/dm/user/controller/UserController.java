@@ -70,8 +70,8 @@ public class UserController extends BaseController {
 	@ApiOperation(value="极光推送获取用户 推送ID", response= ResultUtil.class)
 	@RequestMapping(value="/user/getRegistrationId", method = RequestMethod.POST)
 	public Result getRegistrationId(@RequestBody Map<String,Object>map) throws Exception{
-		userService.getRegistrationId(map);
-		return ResultUtil.success();
+		String userId = userService.getRegistrationId(map);
+		return ResultUtil.success(userId);
 	}
 
 	@ApiOperation(value="获取离线推送消息", response= ResultUtil.class)

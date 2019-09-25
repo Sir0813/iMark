@@ -47,7 +47,7 @@ public interface UserService {
 	 * 极光绑定关系
 	 * @param map
 	 */
-	void getRegistrationId(Map<String, Object> map) throws Exception;
+	String getRegistrationId(Map<String, Object> map) throws Exception;
 
 	/**
 	 * 我的-个人信息(修改)
@@ -93,4 +93,5 @@ public interface UserService {
 	void updateByPrimaryKeySelective(User u) throws Exception;
 
 	User selectByPrimaryKey(Integer userId) throws Exception;
+
 }

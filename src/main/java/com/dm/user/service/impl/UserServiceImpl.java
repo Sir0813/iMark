@@ -12,7 +12,8 @@ import com.dm.frame.jboot.user.service.LoginUserService;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.frame.jboot.util.MD5Util;
 import com.dm.user.entity.*;
-import com.dm.user.mapper.*;
+import com.dm.user.mapper.ContactMapper;
+import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.*;
 import com.dm.user.util.PushUtil;
 import com.dm.user.util.RandomCode;
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService{
 	
 	@Value("${email.expired}")
 	private long expired;
-	
+
 	@Override
 	public String sendVeriCode(String phone) throws Exception {
 		try {
@@ -213,12 +214,13 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void getRegistrationId(Map<String,Object>map) throws Exception {
+	public String getRegistrationId(Map<String,Object>map) throws Exception {
 		try {
 			String registrationId = map.get("registrationId").toString();
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			user.setUsercode(registrationId);
 			userMapper.updateByPrimaryKeySelective(user);
+			return user.getUserid().toString();
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -342,4 +344,5 @@ public class UserServiceImpl implements UserService{
 			throw new Exception(e);
 		}
 	}
+
 }
