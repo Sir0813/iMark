@@ -99,21 +99,21 @@ public class OutCertServiceImpl implements OutCertService {
             for (int i = 0; i < contactList.size(); i++) {
                 Contact contact =  contactList.get(i);
                 User user = userService.findByName(contact.getContactPhone());
+                PushMsg pm = new PushMsg();
+                pm.setTitle("出证→");
+                pm.setContent("您有一条新的出证待查看→【"+outCert.getOutCertName()+"】");
+                pm.setCertName(outCert.getOutCertName());
+                pm.setServerTime(DateUtil.timeToString2(new Date()));
+                pm.setType("2");
+                pm.setState("0");
+                pm.setIsRead("0");
+                pm.setReceive(contact.getContactPhone());
+                pm.setCertFicateId(String.valueOf(outCert.getOutCertId()));
+                pushMsgService.insertSelective(pm);
                 if (null!=user){
                     contact.setUserId(user.getUserid());
                     /*出证通知*/
-                    PushMsg pm = new PushMsg();
-                    pm.setTitle("出证→");
-                    pm.setContent("您有一条新的出证待查看→【"+outCert.getOutCertName()+"】");
-                    pm.setCertName(outCert.getOutCertName());
-                    pm.setServerTime(DateUtil.timeToString2(new Date()));
-                    pm.setType("2");
-                    pm.setState("0");
-                    pm.setIsRead("0");
-                    pm.setReceive(contact.getContactPhone());
-                    pm.setCertFicateId(String.valueOf(outCert.getOutCertId()));
                     pm.setUserId(user.getUserid());
-                    pushMsgService.insertSelective(pm);
                     String json = new Gson().toJson(pm);
                     int resout = PushUtil.getInstance().sendToRegistrationId(contact.getContactPhone(), pm.getTitle(), json);
                     if (resout==1){

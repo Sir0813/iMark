@@ -186,19 +186,19 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 				if (sendMsg) {
 					/*发消息请求确认*/
 					if (certConfirm.getConfirmState()!=StateMsg.originator) {
+						PushMsg pm = new PushMsg();
+						pm.setCertFicateId(certFicate.getCertId().toString());
+						pm.setTitle("存证→");
+						pm.setContent("您有一条新的存证待查看→【"+certFicate.getCertName()+"】");
+						pm.setCertName(certFicate.getCertName());
+						pm.setServerTime(DateUtil.timeToString2(new Date()));
+						pm.setType("1");
+						pm.setState("0");
+						pm.setIsRead("0");
+						pm.setReceive(certConfirm.getConfirmPhone());
+						pushMsgService.insertSelective(pm);
 						if (null!=u){
-							PushMsg pm = new PushMsg();
-							pm.setCertFicateId(certFicate.getCertId().toString());
-							pm.setTitle("存证→");
-							pm.setContent("您有一条新的存证待查看→【"+certFicate.getCertName()+"】");
-							pm.setCertName(certFicate.getCertName());
-							pm.setServerTime(DateUtil.timeToString2(new Date()));
-							pm.setType("1");
-							pm.setState("0");
-							pm.setIsRead("0");
-							pm.setReceive(u.getUsername());
 							pm.setUserId(u.getUserid());
-							pushMsgService.insertSelective(pm);
 							String json = new Gson().toJson(pm);
 							int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
 							if (resout==1){

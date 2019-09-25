@@ -18,6 +18,7 @@
     <include refid="Base_Column_List" />
     from biz_out_cert
     where user_id = #{userId}
+    order by out_cert_time desc
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
