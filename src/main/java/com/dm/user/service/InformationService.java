@@ -5,6 +5,10 @@ import com.dm.user.entity.Information;
 
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public interface InformationService {
 
 	Result sendEmailCode(Map<String, Object> map) throws Exception;

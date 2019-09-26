@@ -1,5 +1,9 @@
 package com.dm.user.entity;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class PushMsg {
     private Integer pushId;
 
@@ -11,19 +15,19 @@ public class PushMsg {
 
     private String serverTime;
 
-    /*1存证通知2出证通知*/
+    /** 1存证通知2出证通知 */
     private String type;
 
     private String skipUrl;
 
     private String receive;
 
-    /* 0推送失败 1 推送成功*/
+    /** 0推送失败 1 推送成功 */
     private String state;
 
     private String certName;
 
-    /* 1已读取 0 未读取*/
+    /** 1已读取 0 未读取 */
     private String isRead;
 
     private Integer userId;

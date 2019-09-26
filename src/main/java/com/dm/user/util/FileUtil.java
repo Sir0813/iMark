@@ -6,6 +6,7 @@ import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.CertFiles;
 import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
+import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -29,6 +30,10 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Component
 public class FileUtil {
 
@@ -61,23 +66,23 @@ public class FileUtil {
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("text/html;charset=utf-8");
-		Map<String,Object>map = new HashMap<String,Object>();
-		String certIds[] = new String[multipartFile.length];
+		Map<String,Object>map = new HashMap<String,Object>(16);
+		String[] certIds = new String[multipartFile.length];
 		for (int i = 0; i < multipartFile.length; i++) {
 			String fileName = multipartFile[i].getOriginalFilename();
 			String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
-			UUID randomUUID = UUID.randomUUID();
-			String filePath = uploadFilePath + File.separator + randomUUID+suffix;
-			String fileUrl = filePrefix+File.separator+randomUUID+suffix;
-			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+			UUID randomUuid = UUID.randomUUID();
+			String filePath = uploadFilePath + File.separator + randomUuid+suffix;
+			String fileUrl = filePrefix+File.separator+randomUuid+suffix;
+			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUuid+suffix, multipartFile[i]);
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
 			CertFiles certFiles = new CertFiles();
 			String osname = System.getProperty("os.name").toLowerCase();
-			if (suffix.equals(".mp4")||suffix.equals(".mov")){
+			if (".mp4".equals(suffix)||".mov".equals(suffix)){
 				String uuid = UUID.randomUUID().toString()+".png";
-				if (osname.startsWith("win")){
+				if (osname.startsWith(StateMsg.OS_NAME)){
 					FileUtil.fetchFrame(filePath,"D:\\upload\\vidopng\\"+uuid);
 					certFiles.setFileName("http://192.168.3.101/img/vidopng/"+uuid);
 				}else{
@@ -107,9 +112,9 @@ public class FileUtil {
 			response.setContentType("text/html;charset=utf-8");
 			String fileName = multipartFile.getOriginalFilename();
 			String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
-			UUID randomUUID = UUID.randomUUID();
-			String fileUrl = filePrefix+File.separator+randomUUID+suffix;
-			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUUID+suffix, multipartFile);
+			UUID randomUuid = UUID.randomUUID();
+			String fileUrl = filePrefix+File.separator+randomUuid+suffix;
+			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUuid+suffix, multipartFile);
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
@@ -173,7 +178,6 @@ public class FileUtil {
 	 */
 	public static void fetchFrame(String videofile, String framefile)
 			throws Exception {
-		//long start = System.currentTimeMillis();
 		File targetFile = new File(framefile);
 		FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
 		ff.start();
@@ -210,7 +214,7 @@ public class FileUtil {
 	 * @param fileName       文件名称
 	 * @return
 	 */
-	public static boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
+	public boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
 		FileInputStream fis ;
 		BufferedInputStream bis = null;
 		FileOutputStream fos ;
@@ -245,8 +249,12 @@ public class FileUtil {
 			throw new RuntimeException(e);
 		} finally {
 			try {
-				if (null != bis) bis.close();
-				if (null != zos) zos.close();
+				if (null != bis) {
+					bis.close();
+				}
+				if (null != zos) {
+					zos.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
@@ -307,23 +315,23 @@ public class FileUtil {
 			request.setCharacterEncoding("utf-8");
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("text/html;charset=utf-8");
-			Map<String,Object>map = new HashMap<>();
-			String fileIds[] = new String[multipartFile.length];
+			Map<String,Object>map = new HashMap<>(16);
+			String[] fileIds = new String[multipartFile.length];
 			for (int i = 0; i < multipartFile.length; i++) {
 				String fileName = multipartFile[i].getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
-				UUID randomUUID = UUID.randomUUID();
+				String fileNewName = UUID.randomUUID().toString()+suffix;
 				String filePath = "";
 				String fileUrl = "";
 				boolean uploadBoolean = false;
 				if ("real".equals(type)){
-					filePath = realFilePath + File.separator + randomUUID+suffix;
-					fileUrl = realFilePrefix+File.separator+randomUUID+suffix;
-					uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+					filePath = realFilePath + File.separator + fileNewName;
+					fileUrl = realFilePrefix+File.separator+fileNewName;
+					uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, fileNewName, multipartFile[i]);
 				}else if("outcert".equals(type)) {
-					filePath = outCertFilePath + File.separator + randomUUID+suffix;
-					fileUrl = outCertFilePrefix+File.separator+randomUUID+suffix;
-					uploadBoolean = FileUtil.uploadFile(outCertFilePath+File.separator, randomUUID+suffix, multipartFile[i]);
+					filePath = outCertFilePath + File.separator + fileNewName;
+					fileUrl = outCertFilePrefix+File.separator+fileNewName;
+					uploadBoolean = FileUtil.uploadFile(outCertFilePath+File.separator, fileNewName, multipartFile[i]);
 				}
 				if (!uploadBoolean) {
 					throw new Exception("文件上传失败!");

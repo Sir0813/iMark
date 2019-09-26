@@ -16,8 +16,12 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Component
-public class PDFConvertUtil {
+public class PdfConvertUtil {
 
     @Autowired
     private CertFilesService certFilesService;
@@ -44,17 +48,17 @@ public class PDFConvertUtil {
             String outputFile;
             String fontPath;
             CertFiles certFiles = new CertFiles();
-            String s = UUID.randomUUID().toString();
+            String s = UUID.randomUUID().toString()+".pdf";
             if (osname.startsWith("win")) {
-                outputFile = "D:\\upload\\" + s + ".pdf";
+                outputFile = "D:\\upload\\" + s;
                 fontPath = "C:\\Windows\\Fonts\\simsun.ttc";
-                certFiles.setFilePath("D:\\upload\\"+s+".pdf");
-                certFiles.setFileUrl("http://192.168.3.101/img/"+s+".pdf");
+                certFiles.setFilePath("D:\\upload\\"+s);
+                certFiles.setFileUrl("http://192.168.3.101/img/"+s);
             } else {
-                outputFile = "/opt/czt-upload/userTemplate/" + s + ".pdf";
+                outputFile = "/opt/czt-upload/userTemplate/" + s;
                 fontPath = "/opt/jdk1.8.0_221/jre/lib/fonts/simsun.ttc";
-                certFiles.setFilePath("/opt/czt-upload/userTemplate/"+s+".pdf");
-                certFiles.setFileUrl("http://114.244.37.10:7080/img/userTemplate/"+s+".pdf");
+                certFiles.setFilePath("/opt/czt-upload/userTemplate/"+s);
+                certFiles.setFileUrl("http://114.244.37.10:7080/img/userTemplate/"+s);
             }
             OutputStream os = new FileOutputStream(outputFile);
             ITextRenderer render = new ITextRenderer();
@@ -64,7 +68,7 @@ public class PDFConvertUtil {
             render.layout();
             render.createPDF(os);
             os.close();
-            certFiles.setFileName(s + ".pdf");
+            certFiles.setFileName(s);
             certFiles.setFileType("pdf");
             certFiles.setFileSeq("1");
             certFiles.setCertId(certId);

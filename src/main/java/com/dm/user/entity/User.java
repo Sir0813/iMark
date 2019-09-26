@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class User {
     private Integer userid;
 

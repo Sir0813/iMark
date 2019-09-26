@@ -16,7 +16,7 @@
     app_id, app_name, app_content, app_version, app_size, app_reserve, app_platform, 
     app_update_time, app_version_code
   </sql>
-  <select id="appVersion" parameterType="com.dm.user.entity.App" resultMap="BaseResultMap">
+  <select id="getAppVersion" parameterType="com.dm.user.entity.App" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
     from biz_app
     where app_platform = #{appPlatform}

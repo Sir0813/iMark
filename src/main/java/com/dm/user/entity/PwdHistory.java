@@ -2,6 +2,10 @@ package com.dm.user.entity;
 
 import java.util.Date;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class PwdHistory {
 	private String password;
 

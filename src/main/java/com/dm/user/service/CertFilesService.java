@@ -4,6 +4,10 @@ import com.dm.user.entity.CertFiles;
 
 import java.util.List;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public interface CertFilesService {
 
 	void insertSelective(CertFiles certFiles) throws Exception;

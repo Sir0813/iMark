@@ -10,6 +10,9 @@ import com.dm.user.service.CertConfirmService;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor=Exception.class)
 public class CertConfirmServiceImpl implements CertConfirmService{

@@ -10,6 +10,10 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @RestControllerAdvice
 public class UploadFailException {
 

@@ -18,10 +18,12 @@ import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.*;
 import java.util.*;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class OutCertServiceImpl implements OutCertService {
@@ -54,7 +56,7 @@ public class OutCertServiceImpl implements OutCertService {
         List<Map<String,String>> newlist = new ArrayList<>();
         for (int i = 0; i < certFicates.size(); i++) {
             CertFicate certFicate =  certFicates.get(i);
-            Map<String,String> dataMap = new HashMap<>();
+            Map<String,String> dataMap = new HashMap<>(16);
             dataMap.put("name", certFicate.getCertName());
             dataMap.put("time", certFicate.getCertDate().toString());
             dataMap.put("certno", certFicate.getCertChainno());
@@ -62,24 +64,23 @@ public class OutCertServiceImpl implements OutCertService {
             dataMap.put("from", "iMark");
             newlist.add(dataMap);
         }
-        Map<String, Object> dataMapss = new HashMap<>();
+        Map<String, Object> dataMapss = new HashMap<>(16);
         dataMapss.put("listarray", newlist);
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setDefaultEncoding("utf-8");
-        //指定模板路径的第二种方式,我的路径是D:/      还有其他方式
-        // 输出文档路径及名称
-        String str = UUID.randomUUID().toString()+".doc";
+        String fileSuffix = ".doc";
+        String fileName = UUID.randomUUID().toString()+fileSuffix;
         String osname = System.getProperty("os.name").toLowerCase();
         File outFile;
         String resultPath = "";
-        if (osname.startsWith("win")){
+        if (osname.startsWith(StateMsg.OS_NAME)){
             configuration.setDirectoryForTemplateLoading(new File("D:\\upload\\"));
-            outFile = new File("D:\\upload\\"+str);
-            resultPath = "http://192.168.3.101/img/"+str;
+            outFile = new File("D:\\upload\\"+fileName);
+            resultPath = "http://192.168.3.101/img/"+fileName;
         }else{
             configuration.setDirectoryForTemplateLoading(new File("/opt/czt-upload/outcert/"));
-            outFile = new File("/opt/czt-upload/outcert/"+str);
-            resultPath = "http://114.244.37.10:7080/img/outcert/"+str;
+            outFile = new File("/opt/czt-upload/outcert/"+fileName);
+            resultPath = "http://114.244.37.10:7080/img/outcert/"+fileName;
         }
         //以utf-8的编码读取ftl文件
         Template t =  configuration.getTemplate("outcert.ftl","utf-8");
@@ -100,8 +101,8 @@ public class OutCertServiceImpl implements OutCertService {
                 Contact contact =  contactList.get(i);
                 User user = userService.findByName(contact.getContactPhone());
                 PushMsg pm = new PushMsg();
-                pm.setTitle("出证→");
-                pm.setContent("您有一条新的出证待查看→【"+outCert.getOutCertName()+"】");
+                pm.setTitle(StateMsg.OUT_CERT_TITLE);
+                pm.setContent(StateMsg.OUT_CERT_CONTENT.replace("outCertName",outCert.getOutCertName()));
                 pm.setCertName(outCert.getOutCertName());
                 pm.setServerTime(DateUtil.timeToString2(new Date()));
                 pm.setType("2");
@@ -136,11 +137,13 @@ public class OutCertServiceImpl implements OutCertService {
     public PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception {
         try {
             List<OutCert> list = new ArrayList<>();
-            PageHelper.startPage(page.getPageNum(), StateMsg.pageSize);
+            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
             String userId = LoginUserHelper.getUserId();
-            if ("mysend".equals(state)){
+            String mySend = "mysend";
+            String toMe = "tome";
+            if (mySend.equals(state)){
                 list = outCertMapper.list(userId);
-            }else if ("tome".equals(state)){
+            }else if (toMe.equals(state)){
                 List<Contact> contacts = contactMapper.selectByUserId(userId);
                 if (contacts.size()>0){
                     for (int i = 0; i < contacts.size(); i++) {
@@ -150,11 +153,15 @@ public class OutCertServiceImpl implements OutCertService {
                     }
                 }
             }else{
-                throw new Exception("显示异常");
+                return null;
             }
-            if (list.size()==0) return null;
+            if (list.size()==0) {
+                return null;
+            }
             PageInfo<OutCert> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum()>pageInfo.getPages()) return null;
+            if (page.getPageNum()>pageInfo.getPages()) {
+                return null;
+            }
             return pageInfo;
         } catch (Exception e) {
             throw new Exception(e);
@@ -223,7 +230,7 @@ public class OutCertServiceImpl implements OutCertService {
             String zipFilePath = "";
             String downloadPath = "";
             String path = UUID.randomUUID().toString();
-            if (osname.startsWith("win")){
+            if (osname.startsWith(StateMsg.OS_NAME)){
                 zipFilePath = "D:\\upload";
                 downloadPath = "http://192.168.3.101/img/"+path+".zip";
             }else{
@@ -251,10 +258,10 @@ public class OutCertServiceImpl implements OutCertService {
             }
             list.add(array[i]);
         }
-        String newStr="";
+        StringBuffer sb = new StringBuffer();
         for(String s:list){
-            newStr=newStr+s+",";
+            sb.append(s+",");
         }
-        return newStr;
+        return sb.toString();
     }
 }

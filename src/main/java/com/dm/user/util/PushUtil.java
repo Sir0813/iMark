@@ -18,8 +18,11 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Component
-@SuppressWarnings("unchecked")
 public class PushUtil{
 
 	private static PushUtil instance;

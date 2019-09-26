@@ -12,6 +12,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Api(description="出证")
 @RestController
 @RequestMapping(value = "/out")

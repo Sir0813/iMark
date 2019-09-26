@@ -2,7 +2,6 @@ package com.dm.user.service.impl;
 
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.PushMsg;
-import com.dm.user.mapper.ContactMapper;
 import com.dm.user.mapper.PushMsgMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.PushMsgService;
@@ -15,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PushMsgServiceImpl implements PushMsgService {
 
     @Autowired
     private PushMsgMapper pushMsgMapper;
-
-    @Autowired
-    private ContactMapper contactMapper;
 
     @Override
     public void insertSelective(PushMsg pm) {
@@ -48,13 +47,15 @@ public class PushMsgServiceImpl implements PushMsgService {
     @Override
     public PageInfo<PushMsg> historyInfo(Page<PushMsg> page) throws Exception {
         try {
-            PageHelper.startPage(page.getPageNum(), StateMsg.pageSize);
+            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
             List<PushMsg> list = pushMsgMapper.historyInfo(LoginUserHelper.getUserId());
-            if (list.size()==0)
+            if (list.size()==0) {
                 return null;
+            }
             PageInfo<PushMsg> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum()>pageInfo.getPages())
+            if (page.getPageNum()>pageInfo.getPages()) {
                 return null;
+            }
             return pageInfo;
         } catch (Exception e) {
             throw new Exception(e);

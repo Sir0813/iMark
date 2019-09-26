@@ -4,6 +4,10 @@ import com.dm.user.entity.CertConfirm;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public interface CertConfirmService {
 
     void deleteByCertId(Integer certId) throws Exception;

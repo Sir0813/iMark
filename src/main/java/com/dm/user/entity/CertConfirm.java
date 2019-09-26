@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class CertConfirm {
     private Integer confirmId;
 
@@ -14,7 +18,7 @@ public class CertConfirm {
 
     private String confirmPerson;
 
-    /*0已确认1未确认*/
+    /** 0已确认1未确认 */
     private Integer confirmState;
 
     private Integer result;

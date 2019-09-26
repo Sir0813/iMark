@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+/**
+ * @author cui
+ */
 @Configuration
 public class MultipartConfig {
 
@@ -14,9 +17,10 @@ public class MultipartConfig {
     public MultipartResolver multipartResolver(){
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("UTF-8");
-        //resolveLazily属性启用是为了推迟文件解析，自定义捕获文件大小异常
-        resolver.setMaxUploadSize(524288000l);//1MB=1048576字节(b) 500M
-        resolver.setMaxUploadSizePerFile(52428800l);
+        // resolveLazily属性启用是为了推迟文件解析，自定义捕获文件大小异常
+        resolver.setMaxUploadSize(524288000L);
+        // 1MB=1048576字节(b) 500M
+        resolver.setMaxUploadSizePerFile(52428800L);
         resolver.setResolveLazily(true);
         return resolver;
     }

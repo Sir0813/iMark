@@ -29,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor=Exception.class)
 public class UserServiceImpl implements UserService{
@@ -71,12 +74,12 @@ public class UserServiceImpl implements UserService{
 		try {
 			Information info = new Information();
 			Date date = new Date();
-			Map<String,Object> map = new HashMap<>();
+			Map<String,Object> map = new HashMap<>(16);
 			map.put("email",phone);
 			Information information = informationService.selectByPhone(map);
 			if (null!=information){
 				if (!date.after(new Date(information.getInfoSenddate().getTime()+60000))){
-					return ResultUtil.error("发送频繁,请稍后再试");
+					return ResultUtil.info("error.code","veri.send.frequent.msg");
 				}
 			}
 			long randomNumber = RandomCode.generateRandomNumber(6);
@@ -103,7 +106,7 @@ public class UserServiceImpl implements UserService{
 			if (StringUtils.isBlank(user.getPassword())) {
 				return ResultUtil.info("register.no.password.code","register.no.password.msg");
 			}
-			Map<String, Object> map = new HashMap<>();
+			Map<String, Object> map = new HashMap<>(16);
 			map.put("email", user.getUsername());
 			map.put("veriCode", user.getUsercode());
 			Information information = informationService.selectByPhone(map);
@@ -123,7 +126,7 @@ public class UserServiceImpl implements UserService{
 			user.setCreatedDate(DateUtil.getSystemDateStr());
 			informationService.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
-			/*待自己确认 需要更新注册用户ID*/
+			// 待自己确认 需要更新注册用户ID
 			List<CertConfirm>list = certConfirmService.selectByPhone(user.getUsername());
 			if (list.size()>0){
 				list.forEach(l->{
@@ -131,7 +134,7 @@ public class UserServiceImpl implements UserService{
 					certConfirmService.updateByPrimaryKeySelective(l);
 				});
 			}
-			/*出证发送给我的添加用户ID*/
+			// 出证发送给我的添加用户ID
 			List<Contact>contacts = contactMapper.selectByPhone(user.getUsername());
 			if (contacts.size()>0){
 				contacts.forEach(contact -> {
@@ -139,7 +142,7 @@ public class UserServiceImpl implements UserService{
 					contactMapper.updateByPrimaryKey(contact);
 				});
 			}
-			/*历史消息添加用户ID*/
+			// 历史消息添加用户ID
 			List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(user.getUsername());
 			if (pushMsgs.size()>0){
 				for (int i = 0; i < pushMsgs.size(); i++) {
@@ -180,7 +183,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result userInfo() throws Exception {
 		try {
-			Map<String,Object> map = new HashMap<>();
+			Map<String,Object> map = new HashMap<>(16);
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			UserCard userCard = userCardService.selectByUserId(user.getUserid().toString());
 			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());

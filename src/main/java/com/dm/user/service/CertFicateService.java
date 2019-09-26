@@ -10,82 +10,32 @@ import org.springframework.core.io.ByteArrayResource;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public interface CertFicateService {
 
-	/**
-	 * 存证
-	 * @param certFicate
-	 * @throws Exception
-	 */
-	CertFicate save(CertFicate certFicate) throws Exception;
+	CertFicate saveCert(CertFicate certFicate) throws Exception;
 
-	/**
-	 * 我的存证全部存证列表
-	 * @return
-	 * @throws Exception
-	 */
-	PageInfo<CertFicate> list(Page<CertFicate> page,String state,String certName) throws Exception;
+	PageInfo<CertFicate> listCerts(Page<CertFicate> page,String state,String certName) throws Exception;
 
-	/**
-	 * 存证详情
-	 * @param certFicateId 存证ID
-	 * @return
-	 */
-	CertFicate details(String certFicateId) throws Exception;
+	CertFicate certDetails(String certFicateId) throws Exception;
 
-	/**
-	 * 草稿删除
-	 * @param certFicate
-	 * @return
-	 */
 	void draftDel(CertFicate certFicate) throws Exception;
 
-	/**
-	 * 撤回待他人确认存证
-	 * @param certId 存证ID
-	 */
-	void revoke(String certId) throws Exception;
+	void certRevoke(String certId) throws Exception;
 
-	/**
-	 * 退回待自己确认存证
-	 * @param reason 原因
-	 * @throws Exception 
-	 */
 	void returnReason(Map<String,Object>map) throws Exception;
 
-	/**
-	 * 确认待自己确认
-	 * @param map
-	 */
 	void confirm(Map<String, Object> map) throws Exception;
 
-	/**
-	 * 获取证书文件
-	 * @param certId
-	 * @return
-	 * @throws Exception
-	 */
     ByteArrayResource getCertImg(String certId) throws Exception;
 
-	/**
-	 * 模板存证存草稿
-	 * @param temFile
-	 * @return
-	 */
-	CertFicate temSave(TemCertFile temCertFile) throws Exception;
+	CertFicate saveTemplate(TemCertFile temCertFile) throws Exception;
 
-	/**
-	 * 获取模板草稿
-	 * @return
-	 * @throws Exception
-	 */
 	TemFile selectByCertId(String certId) throws Exception;
 
-	/**
-	 * 根据ID和状态查询
-	 * @param certId
-	 * @return
-	 */
     CertFicate selectByIdAndState(Integer certId) throws Exception;
 
 	List<CertFicate> selectByCertIDs(String[] split) throws Exception;

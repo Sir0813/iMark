@@ -21,7 +21,10 @@ public class SendMsgConfig {
 	 * 响应数据类型, JSON或XML
 	 */
 	public static final String RESP_DATA_TYPE = "JSON";
-	
+
+	/**
+	 * 短信内容
+	 */
 	public static final String SMSCONTENT = "【北京迪曼森科技有限公司】您的验证码为#num，该验证码5分钟内有效。请勿泄漏于他人。";
 	
 }

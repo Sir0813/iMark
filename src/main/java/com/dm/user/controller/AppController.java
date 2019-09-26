@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Api(description="APP版本")
 @RestController
 @RequestMapping("/api")
@@ -24,7 +28,7 @@ public class AppController extends BaseController {
     @ApiOperation(value="APP获取最新版本", response= ResultUtil.class)
     @RequestMapping(value = "/appVersion" , method = RequestMethod.POST)
     public Result appVersion(@RequestBody App app) throws Exception{
-        return appService.appVersion(app);
+        return appService.getAppVersion(app);
     }
 
 }

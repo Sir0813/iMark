@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class OpinionServiceImpl implements OpinionService {

@@ -1,7 +1,8 @@
 package com.dm.user.util;
 
-import java.util.Date;
-import java.util.Properties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Session;
@@ -9,9 +10,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.util.Date;
+import java.util.Properties;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Component
 public class SendMailSmtp extends Authenticator{
 	
@@ -44,7 +49,8 @@ public class SendMailSmtp extends Authenticator{
 			transport.connect(smtp, address,  pwd);
 			Message message = new MimeMessage(session);
 			message.setSentDate(new Date());
-			String nick="";//邮件主题下面的姓名  
+			// 邮件主题下面的姓名
+			String nick="";
 	        message.setFrom(new InternetAddress(nick+" <"+address+">")); 
 	        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toAddress));  
 			message.setSubject(MimeUtility.encodeText(emailSbuject, "gb2312", "b"));

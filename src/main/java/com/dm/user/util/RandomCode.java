@@ -2,6 +2,10 @@ package com.dm.user.util;
 
 import java.util.Random;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class RandomCode {
 
 	public static String getCode() {

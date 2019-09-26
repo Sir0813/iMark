@@ -13,6 +13,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class CertImgUtil {
 
     /**
@@ -26,14 +30,16 @@ public class CertImgUtil {
     public static ByteArrayResource createStringMark(CertFicate certFicate,String path, String qrPath) throws IOException, FontFormatException {
         File file = new File(path);
         Image img = ImageIO.read(file);
-        int width = img.getWidth(null);//水印宽度
-        int height = img.getHeight(null);//水印高
+        int width = img.getWidth(null);
+        int height = img.getHeight(null);
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = bi.createGraphics();
         Graphics graphics = bi.getGraphics();
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);//设置抗锯齿
+        // 设置抗锯齿
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
-        g.setPaint(new Color(0,0,0,64));//阴影颜色
+        // 阴影颜色
+        g.setPaint(new Color(0,0,0,64));
         g.setPaint(Color.BLACK);
         g.setFont(new Font("黑体", Font.PLAIN, 35));
         g.drawString("文件存证证书", (int) 185, (int) 100);
@@ -55,7 +61,8 @@ public class CertImgUtil {
         String certAddress = certFicate.getCertAddress();
         String address = ""; String address2 = "";
         if (StringUtils.isNotBlank(certAddress)){
-            if (certAddress.length()>22){
+            int maxLength = 22;
+            if (certAddress.length()>maxLength){
                 address = certAddress.substring(0,22);
                 address2 = certAddress.substring(22,certAddress.length());
             }

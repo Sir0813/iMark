@@ -1,5 +1,9 @@
 package com.dm.user.entity;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class CustomMessageDomain {
 
 	/** 设备标识 用户ID 别名 */

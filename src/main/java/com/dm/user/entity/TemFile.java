@@ -1,5 +1,9 @@
 package com.dm.user.entity;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class TemFile {
     private Integer temId;
 

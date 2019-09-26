@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.util.List;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CertVerifyServiceImpl  implements CertVerifyService {
@@ -62,13 +65,15 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             String realHash = CryptoHelper.hash(cf.getCertHash()+cf.getCertId());
             if (fileList.size()==1){
                 String confirmHash = CryptoHelper.hash(chash+certFicate.getCertId());
-                if (!realHash.equals(confirmHash))
-                return false;
+                if (!realHash.equals(confirmHash)) {
+                    return false;
+                }
             }
             String result = cidService.query(realHash);
             JSONObject jsonObject = JSONObject.parseObject(result);
-            if (jsonObject.get("code").toString().equals("200")&&jsonObject.get("msg").toString().equals("Success"))
-            return true;
+            if ("200".equals(jsonObject.get("code").toString())&&"Success".equals(jsonObject.get("msg").toString())) {
+                return true;
+            }
             return false;
         } catch (GlobalException e) {
             throw new Exception(e.getMessage());

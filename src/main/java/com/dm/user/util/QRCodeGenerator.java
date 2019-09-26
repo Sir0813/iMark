@@ -17,13 +17,17 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class QRCodeGenerator {
     private static final String QR_CODE_IMAGE_PATH = "D:\\QRCode.png";
 
     public static void generateQRCodeImage(String text, String filePath) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
-        Map hints = new HashMap();
+        Map hints = new HashMap(16);
 
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         //设置二维码四周白色区域的大小
@@ -52,8 +56,9 @@ public class QRCodeGenerator {
         resMatrix.clear();
         for (int i = 0; i < resWidth; i++) {
             for (int j = 0; j < resHeight; j++) {
-                if (matrix.get(i + rec[0], j + rec[1]))
+                if (matrix.get(i + rec[0], j + rec[1])) {
                     resMatrix.set(i, j);
+                }
             }
         }
         return resMatrix;

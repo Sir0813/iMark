@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class ShaUtil {
 
 	/**
@@ -41,7 +45,7 @@ public class ShaUtil {
 			try {
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
 				messageDigest.update(strText);
-				byte byteBuffer[] = messageDigest.digest();
+				byte[] byteBuffer = messageDigest.digest();
 				StringBuffer strHexString = new StringBuffer();
 				for (int i = 0; i < byteBuffer.length; i++) {
 					String hex = Integer.toHexString(0xff & byteBuffer[i]);

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class AppServiceImpl implements AppService {
@@ -17,10 +20,10 @@ public class AppServiceImpl implements AppService {
     private AppMapper appMapper;
 
     @Override
-    public Result appVersion(App app) throws Exception {
+    public Result getAppVersion(App app) throws Exception {
         try {
-            App app1 = appMapper.appVersion(app);
-            return ResultUtil.success(app1);
+            App appObject = appMapper.getAppVersion(app);
+            return ResultUtil.success(appObject);
         } catch (Exception e) {
             throw new Exception();
         }

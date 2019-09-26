@@ -1,5 +1,9 @@
 package com.dm.user.entity;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class CertTemplate {
     private Integer templateId;
 
@@ -7,7 +11,7 @@ public class CertTemplate {
 
     private String templateUrl;
 
-    /*1劳动模板2租赁模板*/
+    /** 1劳动模板2租赁模板 */
     private String templateType;
 
     private String templatePath;

@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class OutCert {
     private Integer outCertId;
 
@@ -21,15 +25,15 @@ public class OutCert {
 
     private String certId;
 
-    /*发起人 业务字段*/
+    /** 发起人 业务字段 */
     private String promoter;
 
-    /*出证文件路径*/
+    /** 出证文件路径 */
     private String outCertExplain;
 
     private List<CertFiles> list;
 
-    /*发送人业务字段*/
+    /** 发送人业务字段 */
     private List<Contact> contactList;
 
     public List<CertFiles> getList() {

@@ -9,6 +9,9 @@ import com.dm.user.service.CertFilesService;
 
 import java.util.List;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPrimaryKey> implements CertFilesService {

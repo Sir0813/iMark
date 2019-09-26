@@ -6,6 +6,10 @@ import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public interface PushMsgService {
 
     void insertSelective(PushMsg pm) throws Exception;

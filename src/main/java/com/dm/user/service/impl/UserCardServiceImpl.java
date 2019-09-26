@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.util.Date;
 
+/**
+ * @author cui
+ */
 @Service
 @Transactional(rollbackFor=Exception.class)
 public class UserCardServiceImpl implements UserCardService{

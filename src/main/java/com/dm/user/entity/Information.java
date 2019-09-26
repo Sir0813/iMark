@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class Information {
     private Integer infoId;
 
@@ -16,7 +20,7 @@ public class Information {
 
     private String infoUser;
 
-    /*0发送成功未进行认证（有效）1发送成功已经认证（无效）*/
+    /** 0发送成功未进行认证（有效）1发送成功已经认证（无效）*/
     private String infoState;
 
     private String infoPhone;

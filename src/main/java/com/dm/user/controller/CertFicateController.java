@@ -6,16 +6,23 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.TemCertFile;
 import com.dm.user.service.CertFicateService;
-import com.dm.user.util.PDFConvertUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 @Api(description="存证")
 @RestController
 @RequestMapping("/certficate")
@@ -24,41 +31,38 @@ public class CertFicateController extends BaseController {
 	@Autowired
 	private CertFicateService certFicateService;
 
-	@Autowired
-	private PDFConvertUtil pdfConvertUtil;
-
 	@ApiOperation(value="存证", response= ResultUtil.class)
 	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public Result save(@RequestBody CertFicate certFicate) throws Exception {
-		CertFicate cert = certFicateService.save(certFicate);
+	public Result saveCert(@RequestBody CertFicate certFicate) throws Exception {
+		CertFicate cert = certFicateService.saveCert(certFicate);
 		return ResultUtil.success(cert);
 	}
 
 	@ApiOperation(value="模板存证存草稿", response= ResultUtil.class)
 	@RequestMapping(value="/temSave",method=RequestMethod.POST)
-	public Result temSave(@RequestBody TemCertFile temCertFile) throws Exception {
-		CertFicate cert = certFicateService.temSave(temCertFile);
+	public Result saveTemplate(@RequestBody TemCertFile temCertFile) throws Exception {
+		CertFicate cert = certFicateService.saveTemplate(temCertFile);
 		return ResultUtil.success(cert);
 	}
 
 	@ApiOperation(value="我的存证", response= ResultUtil.class)
 	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public Result list( Page<CertFicate> page,  String state,  String certName) throws Exception {
-		PageInfo<CertFicate> certFicateList = certFicateService.list(page,state,certName);
+	public Result listCerts( Page<CertFicate> page,  String state,  String certName) throws Exception {
+		PageInfo<CertFicate> certFicateList = certFicateService.listCerts(page,state,certName);
 		return ResultUtil.success(certFicateList);
 	}
 
 	@ApiOperation(value="存证详情", response= ResultUtil.class)
 	@RequestMapping(value="/details",method=RequestMethod.GET)
-	public Result details( String certFicateId) throws Exception {
-		CertFicate cert = certFicateService.details(certFicateId);
+	public Result certDetails( String certFicateId) throws Exception {
+		CertFicate cert = certFicateService.certDetails(certFicateId);
 		return ResultUtil.success(cert);
 	}
 	
 	@ApiOperation(value="撤回待他人确认存证", response= ResultUtil.class)
 	@RequestMapping(value="/revoke",method=RequestMethod.GET)
-	public Result revoke(String certId) throws Exception {
-		certFicateService.revoke(certId);
+	public Result certRevoke(String certId) throws Exception {
+		certFicateService.certRevoke(certId);
 		return ResultUtil.success();
 	}
 	
