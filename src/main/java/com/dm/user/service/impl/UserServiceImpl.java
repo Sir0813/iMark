@@ -67,10 +67,18 @@ public class UserServiceImpl implements UserService{
 	private long expired;
 
 	@Override
-	public String sendVeriCode(String phone) throws Exception {
+	public Result sendVeriCode(String phone) throws Exception {
 		try {
 			Information info = new Information();
 			Date date = new Date();
+			Map<String,Object> map = new HashMap<>();
+			map.put("email",phone);
+			Information information = informationService.selectByPhone(map);
+			if (null!=information){
+				if (!date.after(new Date(information.getInfoSenddate().getTime()+60000))){
+					return ResultUtil.error("发送频繁,请稍后再试");
+				}
+			}
 			long randomNumber = RandomCode.generateRandomNumber(6);
 			String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
 			info.setInfoCode(String.valueOf(randomNumber));
@@ -80,7 +88,7 @@ public class UserServiceImpl implements UserService{
 			info.setInfoExpireddate(new Date(date.getTime()+expired));
 			info.setInfoState("0");
 			informationService.insertSelective(info);
-			return String.valueOf(randomNumber);
+			return ResultUtil.success(String.valueOf(randomNumber));
 		} catch (Exception e) {
 			throw new Exception(e);
 		}

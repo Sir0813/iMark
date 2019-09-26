@@ -4,10 +4,12 @@ import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
-import com.dm.user.entity.Information;
-import com.dm.user.entity.User;
+import com.dm.user.entity.*;
+import com.dm.user.mapper.ContactMapper;
 import com.dm.user.mapper.InformationMapper;
+import com.dm.user.service.CertConfirmService;
 import com.dm.user.service.InformationService;
+import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.RandomCode;
 import com.dm.user.util.SendMailSmtp;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -31,6 +34,15 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 	
 	@Autowired
 	private SendMailSmtp sendMailSmtp;
+
+	@Autowired
+	private CertConfirmService certConfirmService;
+
+	@Autowired
+	private PushMsgService pushMsgService;
+
+	@Autowired
+	private ContactMapper contactMapper;
 	
 	@Value("${email.subject}")
 	private String subject;
@@ -124,6 +136,31 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 			userService.updateByPrimaryKeySelective(u);
 			info.setInfoState("1");
 			informationMapper.updateByPrimaryKeySelective(info);
+			/*待自己确认 需要更新注册用户ID*/
+			List<CertConfirm>list = certConfirmService.selectByPhone(u.getUsername());
+			if (list.size()>0){
+				list.forEach(l->{
+					l.setUserId(u.getUserid());
+					certConfirmService.updateByPrimaryKeySelective(l);
+				});
+			}
+			/*出证发送给我的添加用户ID*/
+			List<Contact> contacts = contactMapper.selectByPhone(u.getUsername());
+			if (contacts.size()>0){
+				contacts.forEach(contact -> {
+					contact.setUserId(u.getUserid());
+					contactMapper.updateByPrimaryKey(contact);
+				});
+			}
+			/*历史消息添加用户ID*/
+			List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(u.getUsername());
+			if (pushMsgs.size()>0){
+				for (int i = 0; i < pushMsgs.size(); i++) {
+					PushMsg pushMsg =  pushMsgs.get(i);
+					pushMsg.setUserId(u.getUserid());
+					pushMsgService.updateByPrimaryKeySelective(pushMsg);
+				}
+			}
 			return ResultUtil.success();
 		} catch (Exception e) {
 			throw new Exception(e);

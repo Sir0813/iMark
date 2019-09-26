@@ -45,8 +45,7 @@ public class UserController extends BaseController {
 	@ApiOperation(value="发送验证码", response= ResultUtil.class)
 	@RequestMapping(value="/api/sendVeriCode", method = RequestMethod.GET)
 	public Result sendVeriCode( String phone) throws Exception {
-		String sendVeriCode = userService.sendVeriCode(phone);
-		return ResultUtil.success(sendVeriCode);
+		return userService.sendVeriCode(phone);
 	}
 	
 	@ApiOperation(value="用户注册", response= ResultUtil.class)

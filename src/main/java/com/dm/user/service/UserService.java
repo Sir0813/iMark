@@ -27,7 +27,7 @@ public interface UserService {
 	 * 发送短信验证码
 	 * @throws Exception
 	 */
-	String sendVeriCode(String phone) throws Exception;
+	Result sendVeriCode(String phone) throws Exception;
 
 	/**
 	 * 我的-个人信息

@@ -27,8 +27,7 @@ public class UploadFailException {
     public Result Exception(HttpServletRequest req, Exception ex) {
         logger.error("error URL ===>>"+req.getRequestURL()
                 +"<===>error msg ===>>"+ex.getMessage());
-        Result result = ResultUtil.error("URL===>>"+req.getRequestURL()
-                    +"<===>msg===>>"+ex.getMessage());
+        Result result = ResultUtil.error("系统异常，请稍后再试");
         return result;
     }
 	
