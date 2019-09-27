@@ -273,6 +273,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			map.put("state", "null".equals(state)?"":state);
 			map.put("userId",LoginUserHelper.getUserId());
 			map.put("certName",certName);
+			// 待自己确认
 			if (state!=null&&"6".equals(state)){
 				if (ids==null) {
 					return null;
@@ -282,57 +283,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			}else{
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
 				list = certFicateMapper.list(map);
-                if (list.size()>0){
-					Iterator<CertFicate> iterator = list.iterator();
-					while (iterator.hasNext()){
-						CertFicate l = iterator.next();
-						if (l.getCertStatus()==4){
-							//待他人确认和待自己确认
-							List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
-							if (certConfirms.size()>0){
-								certConfirms.forEach(cc->{
-									if (null!=cc.getUserId()){
-										if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-											l.setCertIsconf(1);//1待自己确认
-											return;
-										}
-										if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-											l.setCertIsconf(2);//1待他人确认
-											return;
-										}
-									}else{
-										if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-											l.setCertIsconf(1);//1待自己确认
-											return;
-										}
-										if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-											l.setCertIsconf(2);//1待他人确认
-											return;
-										}
-									}
-								});
-							}
-						}else if(l.getCertStatus()==6) {
-						    /*撤销的存证 确认人方不显示该存证*/
-							List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
-							if (certConfirms.size()>0){
-								for (CertConfirm cc : certConfirms) {
-									if (null!=cc.getUserId()){
-										if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=4){
-											iterator.remove();
-											break;
-										}
-									}else{
-										if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()!=4){
-											iterator.remove();
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-                }
+				certConfirmState(list,state);
 			}
 			if (list.size()==0) {
 				return null;
@@ -344,6 +295,67 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			return pageInfo;
 		} catch (Exception e) {
 			throw new Exception(e);
+		}
+	}
+
+	private void certConfirmState(List<CertFicate>list, String state) throws Exception {
+		if (list.size()>0){
+			Iterator<CertFicate> iterator = list.iterator();
+			while (iterator.hasNext()){
+				CertFicate l = iterator.next();
+				if (l.getCertStatus()==StateMsg.OTHERS_CONFIRM){
+					//待他人确认和待自己确认
+					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
+					if (certConfirms.size()>0){
+						certConfirms.forEach(cc->{
+							if (null!=cc.getUserId()){
+								// 用户确认人添加自己去除重复
+								if (StringUtils.isNotBlank(state)){
+									if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+										iterator.remove();
+										return;
+									}
+								}
+								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+									l.setCertIsconf(1);//1待自己确认
+									return;
+								}
+								if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
+									l.setCertIsconf(2);//1待他人确认
+									return;
+								}
+							}else{
+								if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+									l.setCertIsconf(1);//1待自己确认
+									return;
+								}
+								if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
+									l.setCertIsconf(2);//1待他人确认
+									return;
+								}
+							}
+						});
+					}
+				}else if(l.getCertStatus()==6) {
+					/*撤销的存证 确认人方不显示该存证*/
+					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
+					if (certConfirms.size()>0){
+						for (CertConfirm cc : certConfirms) {
+							if (null!=cc.getUserId()){
+								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=4){
+									iterator.remove();
+									break;
+								}
+							}else{
+								if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()!=4){
+									iterator.remove();
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
