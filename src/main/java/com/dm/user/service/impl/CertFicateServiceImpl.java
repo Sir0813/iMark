@@ -192,7 +192,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 							pm.setUserId(u.getUserid());
 							String json = new Gson().toJson(pm);
 							int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
-							if (resout==1){
+							if (1==resout){
 								pm.setState("1");
 							}
 							pushMsgService.updateByPrimaryKeySelective(pm);

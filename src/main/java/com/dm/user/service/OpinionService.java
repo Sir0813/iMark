@@ -8,5 +8,10 @@ import com.dm.user.entity.Opinion;
  */
 public interface OpinionService {
 
+    /**
+     * 意见反馈提交
+     * @param opinion
+     * @throws Exception
+     */
     void opinionSubmit(Opinion opinion) throws Exception;
 }

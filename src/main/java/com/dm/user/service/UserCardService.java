@@ -9,9 +9,26 @@ import com.dm.user.entity.UserCard;
  */
 public interface UserCardService {
 
+    /**
+     * 实名认证提交
+     * @param userCard
+     * @return
+     * @throws Exception
+     */
     Result authentication(UserCard userCard) throws Exception;
 
+    /**
+     * 实名信息查看
+     * @return
+     * @throws Exception
+     */
     Result realInfo() throws Exception;
 
-    UserCard selectByUserId(String toString) throws Exception;
+    /**
+     * 根据用户ID查询
+     * @param toString
+     * @return
+     * @throws Exception
+     */
+    UserCard selectByUserId(String userId) throws Exception;
 }
