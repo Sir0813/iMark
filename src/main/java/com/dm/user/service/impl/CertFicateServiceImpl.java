@@ -342,7 +342,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 					if (certConfirms.size()>0){
 						for (CertConfirm cc : certConfirms) {
 							if (null!=cc.getUserId()){
-								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=4){
+								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=StateMsg.ORIGINATOR&&cc.getConfirmState()!=StateMsg.REVOKE_CONFIRM){
 									iterator.remove();
 									break;
 								}

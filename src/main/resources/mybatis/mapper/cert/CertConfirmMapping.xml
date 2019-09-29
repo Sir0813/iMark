@@ -45,10 +45,12 @@
   <update id="updateByCertId" parameterType="java.util.Map">
   	update biz_cert_confirm
   	<set>
-  		return_reason = #{reason}
+  		return_reason = #{reason},
+        confirm_state = 2
   	</set>
   	where cert_id = #{certId}
   	and confirm_phone = #{confirmPhone}
+  	and confirm_state !=4
   </update>
   <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select

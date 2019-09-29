@@ -18,7 +18,7 @@ public class CertConfirm {
 
     private String confirmPerson;
 
-    /** 0已确认1未确认 */
+    /** 0已确认1未确认2退回3撤回4发起人 */
     private Integer confirmState;
 
     private Integer result;
