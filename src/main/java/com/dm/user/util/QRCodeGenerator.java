@@ -30,9 +30,9 @@ public class QRCodeGenerator {
         Map hints = new HashMap(16);
 
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        //设置二维码四周白色区域的大小
+        // 设置二维码四周白色区域的大小
         hints.put(EncodeHintType.MARGIN,0);
-        //设置二维码的容错性
+        // 设置二维码的容错性
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
 
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 120, 120,hints);
@@ -86,7 +86,8 @@ public class QRCodeGenerator {
         }
         String content = "";
         EnumMap<DecodeHintType, Object> hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
-        hints.put(DecodeHintType.CHARACTER_SET, "UTF-8"); // 指定编码方式,防止中文乱码
+        // 指定编码方式,防止中文乱码
+        hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
         try {
             BufferedImage image = ImageIO.read(new FileInputStream(filePath));
             LuminanceSource source = new BufferedImageLuminanceSource(image);

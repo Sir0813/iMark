@@ -18,7 +18,7 @@ email:
   smtp: smtp.163.com
   pwd: jq390813
   subject: 【迪曼森】
-  emailContent: 【存证平台】您的验证码是：$code$，验证码五分钟内有效，请勿提供给他人可能导致账号被盗。请勿泄露，谨防被骗。
+  emailContent: 【iMark】您的验证码是：$code$，验证码五分钟内有效，请勿提供给他人可能导致账号被盗。请勿泄露，谨防被骗。
   expired: 300000 #毫秒
 #极光推送服务
 jpush:

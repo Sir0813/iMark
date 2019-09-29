@@ -26,7 +26,7 @@ public interface UserCardService {
 
     /**
      * 根据用户ID查询
-     * @param toString
+     * @param userId
      * @return
      * @throws Exception
      */

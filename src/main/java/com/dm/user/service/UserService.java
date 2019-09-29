@@ -22,14 +22,17 @@ public interface UserService {
 
 	/**
 	 * 重置密码
-	 * @param passwordReset 密码对象
+	 * @param map passwordReset 密码对象
 	 * @return
+	 * @throws Exception
 	 */
 	Result resetPassword(Map<String,Object>map) throws Exception;
 
 	/**
 	 * 发送短信验证码
+	 * @param phone
 	 * @throws Exception
+	 * @return
 	 */
 	Result sendVeriCode(String phone) throws Exception;
 
@@ -50,12 +53,15 @@ public interface UserService {
 	/**
 	 * 极光绑定关系
 	 * @param map
+	 * @throws Exception
+	 * @return String
 	 */
 	String getRegistrationId(Map<String, Object> map) throws Exception;
 
 	/**
 	 * 我的-个人信息(修改)
-	 * @return
+	 * @param user
+	 * @return Result
 	 * @throws Exception
 	 */
 	Result userUpdate(User user)throws Exception;

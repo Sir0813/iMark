@@ -1,5 +1,9 @@
 package com.dm.user.config;
 
+/**
+ * @author cui
+ * @date 2019-09-26
+ */
 public class SendMsgConfig {
 
 	/**
