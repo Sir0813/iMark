@@ -14,9 +14,6 @@ import cn.jpush.api.push.model.notification.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
-import java.io.FileInputStream;
-import java.util.Map;
 
 /**
  * @author cui
@@ -36,25 +33,17 @@ public class PushUtil{
      * @throws Exception
      */
     private PushUtil() throws Exception {
-    	String appKey = null;
-    	String masterSecret = null;
-    	Yaml yaml = new Yaml();
+    	String appKey = "f0e7dec1b2aefc534e08fe18";
+    	String masterSecret = "2464890880bcd3f52e00c1d7";
+    	/*Yaml yaml = new Yaml();
         String url = PushUtil.class.getClassLoader().getResource("config/application-dev.yml").getPath();
         Map<String,Object> map = yaml.loadAs(new FileInputStream(url), Map.class);
         appKey = ((Map<String, Object>) map.get("jpush")).get("appKey").toString();
         masterSecret = ((Map<String, Object>) map.get("jpush")).get("masterSecret").toString();
     	if (appKey == null || masterSecret == null) {
             throw new Exception("极光推送账户初始化失败");
-        }
+        }*/
         jpushClient = new JPushClient(masterSecret, appKey);
-    }
-
-    public void bindMobil(String registrationId,String mobile){
-        try {
-            //jpushClient.bindMobile(registrationId, mobile);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     public static PushUtil getInstance() throws Exception {

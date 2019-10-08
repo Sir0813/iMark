@@ -1,26 +1,41 @@
-#application开发环境配置
+# application开发环境配置
 server:
-   port: 9080    #不指定默认为8080
+   # 不指定默认为8080
+   port: 9080
 spring:
    profiles:
-      #配置扩展profiles
+      # 配置扩展 profiles 文件
       include: sys,mybatis,socket,proDS,common
 upload:
-   certFilePath: /opt/czt-upload/certfile #文件夹要赋予权限才能保存文件
+   # 存证文件存储路径
+   certFilePath: /opt/czt-upload/certfile
+   # 存证文件访问路径
    certFilePrefix: http://114.244.37.10:7080/img/certfile
+   # 实名图片存储路径
    realFilePath: /opt/czt-upload/realfile
+   # 实名图片访问路径
    realFilePrefix: http://114.244.37.10:7080/img/realfile
+   # 出证文件存储路径
    outCertFilePath: /opt/czt-upload/outcert/file
+   # 出证文件访问下载路径
    outCertFilePrefix: http://114.244.37.10:7080/img/outcert/file
-#邮箱设置
+# 邮箱设置
 email:
+  # 发送人邮箱地址
   address: 18811012959@163.com
+  # 发送人邮箱smtp
   smtp: smtp.163.com
+  # 发送人邮箱授权码
   pwd: jq390813
+  # 邮箱主题
   subject: 【迪曼森】
+  # 邮箱发送内容
   emailContent: 【iMark】您的验证码是：$code$，验证码五分钟内有效，请勿提供给他人可能导致账号被盗。请勿泄露，谨防被骗。
-  expired: 300000 #毫秒
-#极光推送服务
+  # 邮件过期时间 (单位毫秒)
+  expired: 300000
+# 极光推送服务
 jpush:
+  # 极光推送 appKey
   appKey: f0e7dec1b2aefc534e08fe18
+  # 极光推送 秘钥
   masterSecret: 2464890880bcd3f52e00c1d7

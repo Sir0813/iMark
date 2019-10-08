@@ -1,5 +1,6 @@
 package com.dm.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
 import com.dm.fchain.sdk.model.TransactionResult;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -191,9 +191,14 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 						if (null!=u){
 							pm.setUserId(u.getUserid());
 							String json = new Gson().toJson(pm);
-							int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
-							if (1==resout){
-								pm.setState("1");
+							String aliases = HttpSendUtil.getData("aliases", u.getUsername());
+							JSONObject jsonObject = JSONObject.parseObject(aliases);
+							String registration_ids = jsonObject.get("registration_ids").toString();
+							if (!"[]".equals(registration_ids)){
+								int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
+								if (1==resout){
+									pm.setState("1");
+								}
 							}
 							pushMsgService.updateByPrimaryKeySelective(pm);
 						}

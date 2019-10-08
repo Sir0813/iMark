@@ -1,5 +1,6 @@
 package com.dm.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
@@ -15,6 +16,7 @@ import com.dm.user.entity.*;
 import com.dm.user.mapper.ContactMapper;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.service.*;
+import com.dm.user.util.HttpSendUtil;
 import com.dm.user.util.PushUtil;
 import com.dm.user.util.RandomCode;
 import com.google.gson.Gson;
@@ -232,6 +234,9 @@ public class UserServiceImpl implements UserService{
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			user.setUsercode(registrationId);
 			userMapper.updateByPrimaryKeySelective(user);
+			JSONObject json = new JSONObject();
+			json.put("alias",user.getUsername());
+			HttpSendUtil.postData("devices/" + registrationId, json);
 			return user.getUserid().toString();
 		} catch (Exception e) {
 			throw new Exception(e);

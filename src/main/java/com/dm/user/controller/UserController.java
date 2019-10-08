@@ -3,6 +3,7 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.PushMsg;
 import com.dm.user.entity.User;
 import com.dm.user.entity.UserCard;
@@ -11,6 +12,7 @@ import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
+import com.dm.user.util.HttpSendUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -161,6 +163,13 @@ public class UserController extends BaseController {
 	@RequestMapping(value="/user/readInfo", method = RequestMethod.GET)
 	public Result readInfo(String pushId) throws Exception {
 		pushMsgService.readInfo(pushId);
+		return ResultUtil.success();
+	}
+
+	@ApiOperation(value="退出登录", response= ResultUtil.class)
+	@RequestMapping(value="/user/logout", method = RequestMethod.GET)
+	public Result logout() throws Exception {
+		HttpSendUtil.deleteData("aliases", LoginUserHelper.getUserName());
 		return ResultUtil.success();
 	}
 

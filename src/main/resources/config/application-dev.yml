@@ -1,27 +1,42 @@
-#application开发环境配置
+# application开发环境配置
 server:
-   port: 8080    #不指定默认为8080
+   # 不指定默认为8080
+   port: 8080
 spring:
    profiles:
-      #配置扩展profiles
+      # 配置扩展profiles
       include: sys,mybatis,socket,devDS,devRedis,common
 upload:
+   # 存证文件存储路径
    certFilePath: D:\upload\cert
+   # 存证文件访问路径
    certFilePrefix: http://192.168.3.101/img/cert
+   # 实名图片存储路径
    realFilePath: D:\upload\realfile
+   # 实名图片访问路径
    realFilePrefix: http://192.168.3.101/img/realfile
+   # 出证文件存储路径
    outCertFilePath: D:\upload\outcert
+   # 出证文件访问下载路径
    outCertFilePrefix: http://192.168.3.101/img/outcert
-#邮箱设置
+# 邮箱设置
 email:
+  # 发送人邮箱地址
   address: 18811012959@163.com
+  # 邮箱 smtp
   smtp: smtp.163.com
+  # 发送人邮箱秘钥
   pwd: jq390813
+  # 邮箱主题
   subject: 【迪曼森】
+  # 邮箱发送内容
   emailContent: 【iMark】您的验证码是：$code$，验证码五分钟内有效，请勿提供给他人可能导致账号被盗。请勿泄露，谨防被骗。
-  expired: 300000 #毫秒
+  # 邮件过期时间 (单位毫秒)
+  expired: 300000
 #极光推送服务
 jpush:
+  # 极光推送 appKey
   appKey: f0e7dec1b2aefc534e08fe18
+  # 极光推送秘钥
   masterSecret: 2464890880bcd3f52e00c1d7
 
