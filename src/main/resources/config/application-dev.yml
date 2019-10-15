@@ -19,6 +19,10 @@ upload:
    outCertFilePath: D:\upload\outcert
    # 出证文件访问下载路径
    outCertFilePrefix: http://192.168.3.101/img/outcert
+   # 用户头像存储路径
+   headFilePath: D:\upload\headfile
+   # 用户头像访问路径
+   headFilePrefix: http://192.168.3.101/img/headfile
 # 邮箱设置
 email:
   # 发送人邮箱地址

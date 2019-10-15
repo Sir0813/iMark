@@ -64,5 +64,5 @@ swagger:
   version: 1.0.0   #接口版本
   license: licese  #许可证名称
   licenseUrl: http://localhost   #许可证地址
-  basePackage: com.dm
+  basePackage: com.dm # 扫描的基础包
   token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODgxMjM0NTY3OCIsImV4cCI6MTU2OTU2NzYwNCwidXNlcmlkIjoiNzAiLCJpYXQiOjE1NjkyMDc2MDR9.hZTmo2ToI2na0SHwZ7l54RUg9vChcoiDX-wXA6XXaquvOCBY5qEX2ReGALNtYTkzsyt1d2VhCgvTQgTzavulhA   #登录后获取的token，也就是需要先启动登录后，把token赋值到这，再重新启动，只为测试使用。

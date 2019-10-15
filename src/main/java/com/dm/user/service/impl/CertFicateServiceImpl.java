@@ -225,7 +225,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 							return;
 						}
 						if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(2);//1待他人确认
+							certFicate.setCertIsconf(2);//2待他人确认
 							return;
 						}
 					}else{
@@ -234,7 +234,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 							return;
 						}
 						if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(2);//1待他人确认
+							certFicate.setCertIsconf(2);//2待他人确认
 							return;
 						}
 					}

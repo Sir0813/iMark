@@ -38,10 +38,10 @@ import java.util.zip.ZipOutputStream;
 public class FileUtil {
 
 	@Value("${upload.certFilePath}")
-	private String uploadFilePath;
+	private String certFilePath;
 	
 	@Value("${upload.certFilePrefix}")
-	private String filePrefix;
+	private String certFilePrefix;
 
 	@Value("${upload.realFilePath}")
 	private String realFilePath;
@@ -54,7 +54,13 @@ public class FileUtil {
 
 	@Value("${upload.outCertFilePrefix}")
 	private String outCertFilePrefix;
-	
+
+	@Value("${upload.headFilePrefix}")
+	private String headFilePrefix;
+
+	@Value("${upload.headFilePath}")
+	private String headFilePath;
+
 	@Autowired
 	private CertFilesService certFilesService;
 	
@@ -72,9 +78,9 @@ public class FileUtil {
 			String fileName = multipartFile[i].getOriginalFilename();
 			String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
 			UUID randomUuid = UUID.randomUUID();
-			String filePath = uploadFilePath + File.separator + randomUuid+suffix;
-			String fileUrl = filePrefix+File.separator+randomUuid+suffix;
-			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUuid+suffix, multipartFile[i]);
+			String filePath = certFilePath + File.separator + randomUuid+suffix;
+			String fileUrl = certFilePrefix+File.separator+randomUuid+suffix;
+			boolean uploadBoolean = FileUtil.uploadFile(certFilePath+File.separator, randomUuid+suffix, multipartFile[i]);
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
@@ -113,12 +119,26 @@ public class FileUtil {
 			String fileName = multipartFile.getOriginalFilename();
 			String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
 			UUID randomUuid = UUID.randomUUID();
-			String fileUrl = filePrefix+File.separator+randomUuid+suffix;
-			boolean uploadBoolean = FileUtil.uploadFile(uploadFilePath+File.separator, randomUuid+suffix, multipartFile);
+			String fileUrl = headFilePrefix + File.separator + randomUuid+suffix;
+			boolean uploadBoolean = FileUtil.uploadFile(headFilePath + File.separator, randomUuid + suffix, multipartFile);
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
+			CertFiles certFiles = new CertFiles();
+			certFiles.setFileName(fileName);
+			certFiles.setFileUrl(fileUrl);
+			certFiles.setFilePath(headFilePath + File.separator + randomUuid + suffix);
+			certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+			certFiles.setFileType(suffix);
+			certFiles.setFileSeq("0");
+			certFilesService.insertSelective(certFiles);
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
+			CertFiles cf = certFilesService.selectByUrl(user.getHeadPhoto());
+			if (null!=cf) {
+                File file = new File(cf.getFilePath());
+                file.delete();
+                certFilesService.deleteByPrimaryKey(cf.getFileId());
+            }
 			user.setHeadPhoto(fileUrl);
 			userMapper.updateByPrimaryKeySelective(user);
 			return ResultUtil.success();

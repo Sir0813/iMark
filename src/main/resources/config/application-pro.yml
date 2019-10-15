@@ -19,6 +19,10 @@ upload:
    outCertFilePath: /opt/czt-upload/outcert/file
    # 出证文件访问下载路径
    outCertFilePrefix: http://114.244.37.10:7080/img/outcert/file
+   # 用户头像存储路径
+   headFilePath: /opt/czt-upload/headfile
+   # 用户头像访问路径
+   headFilePrefix: http://114.244.37.10:7080/img/headfile
 # 邮箱设置
 email:
   # 发送人邮箱地址
