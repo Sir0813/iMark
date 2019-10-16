@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService{
 			user.setUsercode("");
 			String md5Password = MD5Util.encode(user.getPassword()+user.getSalt());
 			user.setPassword(md5Password);
-			user.setCreatedDate(DateUtil.getSystemDateStr());
+			user.setCreatedDate(DateUtil.timeToString2(new Date()));
 			informationService.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
 			// 待自己确认 需要更新注册用户ID
