@@ -34,7 +34,7 @@ public class CertFicateController extends BaseController {
 	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public Result saveCert(@RequestBody CertFicate certFicate) throws Exception {
 		CertFicate cert = certFicateService.saveCert(certFicate);
-		return ResultUtil.success(cert);
+		return null == cert ? ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg"):ResultUtil.success(cert);
 	}
 
 	@ApiOperation(value="模板存证存草稿", response= ResultUtil.class)

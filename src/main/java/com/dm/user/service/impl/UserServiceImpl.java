@@ -73,8 +73,19 @@ public class UserServiceImpl implements UserService{
 	private long expired;
 
 	@Override
-	public Result sendVeriCode(String phone) throws Exception {
+	public Result sendVeriCode(String phone, String type) throws Exception {
 		try {
+		    if ("register".equals(type)){
+                User u = userMapper.findByName(phone);
+                if (null!=u) {
+                    return ResultUtil.info("register.has.name.code","register.has.name.msg");
+                }
+            } else if ("forgetPwd".equals(type)) {
+                User user = userMapper.findByName(phone);
+                if (null==user) {
+                    return ResultUtil.info("login.account.no.code","login.account.no.msg");
+                }
+            }
 			Information info = new Information();
 			Date date = new Date();
 			Map<String,Object> map = new HashMap<>(16);
@@ -103,12 +114,6 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result userRegister(User user) throws Exception {
 		try {
-			if (StringUtils.isBlank(user.getUsername())) {
-				return ResultUtil.info("register.no.name.code","register.no.name.msg");
-			}
-			if (StringUtils.isBlank(user.getPassword())) {
-				return ResultUtil.info("register.no.password.code","register.no.password.msg");
-			}
 			Map<String, Object> map = new HashMap<>(16);
 			map.put("email", user.getUsername());
 			map.put("veriCode", user.getUsercode());
@@ -116,10 +121,6 @@ public class UserServiceImpl implements UserService{
 			Result result = checkVeriCode(information,map);
 			if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
 				return result;
-			}
-			User u = userMapper.findByName(user.getUsername());
-			if (null!=u) {
-				return ResultUtil.info("register.has.name.code","register.has.name.msg");
 			}
 			information.setInfoState("1");
 			user.setSalt(RandomCode.getCode());
@@ -281,10 +282,6 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result nextOperate(Map<String, Object> map) throws Exception {
 		try {
-			User user = userMapper.findByName(map.get("phone").toString());
-			if (null==user) {
-				return ResultUtil.info("login.account.no.code","login.account.no.msg");
-			}
 			map.put("email", map.get("phone").toString());
 			map.put("veriCode", map.get("veriCode").toString());
 			Information information = informationService.selectByPhone(map);

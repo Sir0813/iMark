@@ -70,12 +70,6 @@ public interface CertFicateMapper {
 	List<CertFicate> selectByIDs(Integer[] ids);
 
     /**
-     * 修改根据存证ID
-     * @param certFicate
-     */
-	void updateByCertId(CertFicate certFicate);
-
-    /**
      * 根据ID修改撤回原因
      * @param certId
      */

@@ -8,7 +8,11 @@ import com.dm.fchain.sdk.msg.Result;
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.*;
-import com.dm.user.mapper.*;
+import com.dm.user.mapper.CertFicateMapper;
+import com.dm.user.mapper.TemFileMapper;
+import com.dm.user.msg.CertStateEnum;
+import com.dm.user.msg.CertTypeEnum;
+import com.dm.user.msg.ConfirmEnum;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
 import com.dm.user.util.*;
@@ -64,11 +68,11 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 		try {
 			boolean sendMsg = false;
             certFicate.setCertOwner(LoginUserHelper.getUserId());
-			certFicate.setCertIsDelete(1);
+			certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
 			List<CertFiles> certFiles = null;
 			// 模板存证
-			if (certFicate.getCertType()==7){
-				if (certFicate.getCertStatus()==StateMsg.TO_CERT){
+			if (certFicate.getCertType()== CertTypeEnum.TEMPLATE.getCode()){
+				if (certFicate.getCertStatus()== CertStateEnum.TO_CERT.getCode()){
 					TemFile temFile = certFicateService.selectByCertId(certFicate.getCertId().toString());
 					Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
 					certFicate.setCertFilesid(fileId.toString());
@@ -77,6 +81,9 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			}else{
 				certFiles = getHash(certFicate);
 			}
+			if (null == certFiles) {
+				return null;
+			}
 			certFicate.setCertPostDate(new Date());
 			if (null!=certFicate.getCertId()){
 				certFicateMapper.updateByPrimaryKeySelective(certFicate);
@@ -84,7 +91,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 				certFicateMapper.insertSelective(certFicate);
 			}
 			// 存证入链
-			if (StateMsg.TO_CERT==certFicate.getCertStatus()) {
+			if (CertStateEnum.TO_CERT.getCode()==certFicate.getCertStatus()) {
 				// 对接存证sdk
                 String dataHash = CryptoHelper.hash(certFicate.getCertHash()+certFicate.getCertId());
 				Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), "");
@@ -96,14 +103,14 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 					throw new Exception(result.getMsg());
 				}
 				certFicate.setCertDate(new Date());
-				certFicate.setCertStatus(certFicate.getCertIsconf()==1?StateMsg.OTHERS_CONFIRM:StateMsg.CERT_SUCCESS);
+				certFicate.setCertStatus(certFicate.getCertIsconf()==1?CertStateEnum.OTHERS_CONFIRM.getCode():CertStateEnum.CERT_SUCCESS.getCode());
 				sendMsg = true;
 			}else {
-				certFicate.setCertStatus(StateMsg.NO_CERT);
+				certFicate.setCertStatus(CertStateEnum.NO_CERT.getCode());
 			}
 			DecimalFormat df = new DecimalFormat("000000");
-			String ID = df.format(certFicate.getCertId());
-			certFicate.setCertCode("DMS01"+ID);
+			String id = df.format(certFicate.getCertId());
+			certFicate.setCertCode("DMS01"+id);
 			certFicateMapper.updateByPrimaryKeySelective(certFicate);
 			/*需要他人确认*/
 			if (certFicate.getCertIsconf()==1) {
@@ -115,7 +122,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 					cf.setCertId(certFicate.getCertId());
 					certFilesService.updateByPrimaryKeySelective(cf);
 					/*文件不保存至证云链 将文件删除*/
-					if("0".equals(certFicate.getCertFileIsSave())){
+					if(StateMsg.CERT_FILE_IS_DELETE.equals(certFicate.getCertFileIsSave())){
 						File file = new File(cf.getFilePath());
 						file.delete();
 						certFilesService.deleteByCertId(certFicate.getCertId());
@@ -130,6 +137,9 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 
 	private List<CertFiles> getHash(CertFicate certFicate) throws Exception{
 		try {
+			if (StringUtils.isBlank(certFicate.getCertFilesid())) {
+				return null;
+			}
 			String[] filesId = certFicate.getCertFilesid().split(",");
 			List<CertFiles>certFiles = certFilesService.findByFilesIds(filesId);
 			StringBuffer hash = new StringBuffer();
@@ -160,7 +170,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			}
 			CertConfirm cc = new CertConfirm();
 			cc.setConfirmDate(new Date());
-			cc.setConfirmState(StateMsg.ORIGINATOR);
+			cc.setConfirmState(ConfirmEnum.ORIGINATOR.getCode());
 			cc.setConfirmPhone(username);
 			cc.setConfirmPerson(username);
 			cc.setUserId(userId);
@@ -168,7 +178,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			for (CertConfirm certConfirm : certFicate.getCertConfirmList()) {
 				certConfirm.setCertId(certFicate.getCertId());
 				if (null==certConfirm.getConfirmState()) {
-					certConfirm.setConfirmState(StateMsg.NO_CONFIRM);
+					certConfirm.setConfirmState(ConfirmEnum.NO_CONFIRM.getCode());
 				}
 				User u = userService.findByName(certConfirm.getConfirmPhone());
 				if (null!=u){
@@ -176,7 +186,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 				}
 				if (sendMsg) {
 					/*发消息请求确认*/
-					if (certConfirm.getConfirmState()!=StateMsg.ORIGINATOR) {
+					if (certConfirm.getConfirmState()!= ConfirmEnum.ORIGINATOR.getCode()) {
 						PushMsg pm = new PushMsg();
 						pm.setCertFicateId(certFicate.getCertId().toString());
 						pm.setTitle(StateMsg.SAVE_CERT_TITLE);
@@ -193,8 +203,8 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 							String json = new Gson().toJson(pm);
 							String aliases = HttpSendUtil.getData("aliases", u.getUsername());
 							JSONObject jsonObject = JSONObject.parseObject(aliases);
-							String registration_ids = jsonObject.get("registration_ids").toString();
-							if (!"[]".equals(registration_ids)){
+							String registrationIds = jsonObject.get("registration_ids").toString();
+							if (!"[]".equals(registrationIds)){
 								int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
 								if (1==resout){
 									pm.setState("1");
@@ -221,20 +231,20 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 				list.forEach(cc->{
 					if (null!=cc.getUserId()){
 						if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(1);//1待自己确认
+							certFicate.setCertIsconf(1);//1待自己确认 仅前端判断用
 							return;
 						}
 						if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(2);//2待他人确认
+							certFicate.setCertIsconf(2);//2待他人确认 仅前端判断用
 							return;
 						}
 					}else{
 						if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(1);//1待自己确认
+							certFicate.setCertIsconf(1);
 							return;
 						}
 						if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-							certFicate.setCertIsconf(2);//2待他人确认
+							certFicate.setCertIsconf(2);
 							return;
 						}
 					}
@@ -262,7 +272,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			List<CertConfirm> confirmList = null;
 			if (StringUtils.isBlank(state)){
 				confirmList = certConfirmService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-			}else if("6".equals(state)){
+			}else if(StateMsg.CONFIRM_TO_ME.equals(state)){
 			    //待自己确认
 				confirmList = certConfirmService.selectByuserIdAndState(LoginUserHelper.getUserId(),"1");
 			}
@@ -279,7 +289,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			map.put("userId",LoginUserHelper.getUserId());
 			map.put("certName",certName);
 			// 待自己确认
-			if (state!=null&&"6".equals(state)){
+			if (state!=null&&StateMsg.CONFIRM_TO_ME.equals(state)){
 				if (ids==null) {
 					return null;
 				}
@@ -308,7 +318,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			Iterator<CertFicate> iterator = list.iterator();
 			while (iterator.hasNext()){
 				CertFicate l = iterator.next();
-				if (l.getCertStatus()==StateMsg.OTHERS_CONFIRM){
+				if (l.getCertStatus()==CertStateEnum.OTHERS_CONFIRM.getCode()){
 					//待他人确认和待自己确认
 					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
 					if (certConfirms.size()>0){
@@ -322,32 +332,33 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 									}
 								}
 								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-									l.setCertIsconf(1);//1待自己确认
+									l.setCertIsconf(1);//1待自己确认 仅前端判断用
 									return;
 								}
 								if (cc.getUserId()!=Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()==1){
-									l.setCertIsconf(2);//1待他人确认
+									l.setCertIsconf(2);//1待他人确认 仅前端判断用
 									return;
 								}
 							}else{
 								if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-									l.setCertIsconf(1);//1待自己确认
+									l.setCertIsconf(1);
 									return;
 								}
 								if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName())&&cc.getConfirmState()==1){
-									l.setCertIsconf(2);//1待他人确认
+									l.setCertIsconf(2);
 									return;
 								}
 							}
 						});
 					}
-				}else if(l.getCertStatus()==6) {
+				}else if(l.getCertStatus().equals(Integer.valueOf(StateMsg.CONFIRM_TO_ME))) {
 					/*撤销的存证 确认人方不显示该存证*/
 					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
 					if (certConfirms.size()>0){
 						for (CertConfirm cc : certConfirms) {
 							if (null!=cc.getUserId()){
-								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=StateMsg.ORIGINATOR&&cc.getConfirmState()!=StateMsg.REVOKE_CONFIRM){
+								if (cc.getUserId()==Integer.parseInt(LoginUserHelper.getUserId())&&cc.getConfirmState()!=
+										ConfirmEnum.ORIGINATOR.getCode()&&cc.getConfirmState()!= ConfirmEnum.REVOKE_CONFIRM.getCode()){
 									iterator.remove();
 									break;
 								}
@@ -377,7 +388,8 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 	public void draftDel(CertFicate certFicate) throws Exception {
 		try {
 			certFicate.setCertDelDate(new Date());
-			certFicateMapper.updateByCertId(certFicate);
+			certFicate.setCertIsDelete(StateMsg.CERT_IS_DELETE);
+			certFicateMapper.updateByPrimaryKeySelective(certFicate);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -397,7 +409,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 	@Override
 	public void confirm(Map<String, Object> map) throws Exception {
 		try {
-			map.put("confirmPhone", LoginUserHelper.getUserName());
+			map.put("userId", LoginUserHelper.getUserId());
 			certConfirmService.updateConfirmState(map);
 			List<CertConfirm> confirmList = certConfirmService.selectByState(map);
 			if (confirmList.size()==0) {
@@ -446,11 +458,11 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 				certFicate = new CertFicate();
 				TemFile temFile = new TemFile();
 				certFicate.setCertOwner(LoginUserHelper.getUserId());
-				certFicate.setCertFileIsSave("1");
-				certFicate.setCertIsDelete(1);
-				certFicate.setCertStatus(0);
+				certFicate.setCertFileIsSave(StateMsg.CERT_FILE_NOT_DELETE);
+				certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
+				certFicate.setCertStatus(CertStateEnum.NO_CERT.getCode());
 				certFicate.setCertName("模板存证");
-				certFicate.setCertType(7);
+				certFicate.setCertType(CertTypeEnum.TEMPLATE.getCode());
 				certFicateMapper.insertSelective(certFicate);
 				temFile.setCertId(certFicate.getCertId());
 				temFile.setTemFileText(temCertFile.getTemFile().getTemFileText());

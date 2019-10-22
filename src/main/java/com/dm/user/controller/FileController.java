@@ -40,7 +40,7 @@ public class FileController {
 		if (map.containsKey("fileIds")) {
 			return ResultUtil.success(map);
 		}
-		return ResultUtil.error();
+		return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
 	}
 
 	@ApiOperation(value="实名认证/出证上传图片", response= ResultUtil.class)

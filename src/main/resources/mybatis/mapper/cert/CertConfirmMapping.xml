@@ -37,16 +37,18 @@
   <update id="updateConfirmState" parameterType="java.util.Map">
   	update biz_cert_confirm
   	<set>
-  		confirm_state = 0
+  		confirm_state = 0,
+        confirm_date = now()
   	</set>
   	where cert_id = #{certId}
-  	and confirm_phone = #{confirmPhone}
+  	and user_id = #{userId}
   </update>
   <update id="updateByCertId" parameterType="java.util.Map">
   	update biz_cert_confirm
   	<set>
   		return_reason = #{reason},
-        confirm_state = 2
+        confirm_state = 2,
+        confirm_date = now()
   	</set>
   	where cert_id = #{certId}
   	and confirm_phone = #{confirmPhone}

@@ -8,9 +8,11 @@ import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
+import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
+import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,6 @@ import sun.misc.BASE64Encoder;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
@@ -69,14 +70,22 @@ public class FileUtil {
 
 	public Map<String,Object> uploadFile(HttpServletRequest request, HttpServletResponse response,
 			MultipartFile[] multipartFile) throws Exception {
+		Map<String,Object>map = new HashMap<String,Object>(16);
+		if (multipartFile.length == 0){
+			map.put("nofile", "请选择文件");
+			return map;
+		}
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("text/html;charset=utf-8");
-		Map<String,Object>map = new HashMap<String,Object>(16);
 		String[] certIds = new String[multipartFile.length];
 		for (int i = 0; i < multipartFile.length; i++) {
 			String fileName = multipartFile[i].getOriginalFilename();
-			String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+			int indexOf = fileName.lastIndexOf(".");
+			String suffix = "";
+			if (indexOf>=0) {
+				suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+			}
 			UUID randomUuid = UUID.randomUUID();
 			String filePath = certFilePath + File.separator + randomUuid+suffix;
 			String fileUrl = certFilePrefix+File.separator+randomUuid+suffix;
@@ -198,33 +207,52 @@ public class FileUtil {
 	 */
 	public static void fetchFrame(String videofile, String framefile)
 			throws Exception {
-		File targetFile = new File(framefile);
-		FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
-		ff.start();
-		int lenght = ff.getLengthInFrames();
-		int i = 0;
-		Frame f = null;
-		while (i < lenght) {
-			// 过滤前5帧，避免出现全黑的图片，依自己情况而定
-			f = ff.grabFrame();
-			if ((i > 3) && (f.image != null)) {
-				break;
+		try{
+			FFmpegFrameGrabber ff = FFmpegFrameGrabber.createDefault(videofile);
+			ff.start();
+			String rotate =ff.getVideoMetadata("rotate");
+			Frame f;
+			int i = 0;
+			while (i <1) {
+				f =ff.grabImage();
+				opencv_core.IplImage src = null;
+				if(null !=rotate &&rotate.length() > 1) {
+					OpenCVFrameConverter.ToIplImage converter =new OpenCVFrameConverter.ToIplImage();
+					src =converter.convert(f);
+					f =converter.convert(rotate(src, Integer.valueOf(rotate)));
+				}
+				doExecuteFrame(f,framefile);
+				i++;
 			}
-			i++;
+			ff.stop();
+		}catch (Exception e){
+			e.printStackTrace();
 		}
-		int owidth = f.imageWidth;
-		int oheight = f.imageHeight;
-		// 对截取的帧进行等比例缩放
-		int width = 800;
-		int height = (int) (((double) width / owidth) * oheight);
-		Java2DFrameConverter converter = new Java2DFrameConverter();
-		BufferedImage fecthedImage = converter.getBufferedImage(f);
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-		bi.getGraphics().drawImage(fecthedImage.getScaledInstance(width,height, Image.SCALE_SMOOTH),
-				0, 0, null);
-		ImageIO.write(bi, "jpg", targetFile);
-		ff.flush();
-		ff.stop();
+	}
+
+	/*
+	 * 旋转角度的
+	 */
+	public static opencv_core.IplImage rotate(opencv_core.IplImage src, int angle) {
+		opencv_core.IplImage img = opencv_core.IplImage.create(src.height(), src.width(), src.depth(), src.nChannels());
+		opencv_core.cvTranspose(src, img);
+		opencv_core.cvFlip(img, img, angle);
+		return img;
+	}
+
+	public static void doExecuteFrame(Frame f, String targerFilePath) {
+		if (null ==f ||null ==f.image) {
+			return;
+		}
+		Java2DFrameConverter converter =new Java2DFrameConverter();
+		String imageMat ="jpg";
+		BufferedImage bi =converter.getBufferedImage(f);
+		File output =new File(targerFilePath);
+		try {
+			ImageIO.write(bi,imageMat,output);
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

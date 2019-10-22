@@ -1,7 +1,6 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**

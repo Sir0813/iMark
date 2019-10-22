@@ -34,7 +34,7 @@ public interface UserService {
 	 * @throws Exception
 	 * @return
 	 */
-	Result sendVeriCode(String phone) throws Exception;
+	Result sendVeriCode(String phone, String type) throws Exception;
 
 	/**
 	 * 我的-个人信息

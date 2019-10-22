@@ -27,7 +27,7 @@ public interface CertFicateService {
 	/**
 	 * 存证列表
 	 * @param page
-	 * @param state
+	 * @param state 6 代表待自己确认
 	 * @param certName
 	 * @return
 	 * @throws Exception
@@ -58,7 +58,7 @@ public interface CertFicateService {
 
 	/**
 	 * 退回待自己确认存证
-	 * @param map certId 存证ID
+	 * @param map certId 存证ID  reason  退回原因
 	 * @throws Exception
 	 */
 	void returnReason(Map<String,Object>map) throws Exception;

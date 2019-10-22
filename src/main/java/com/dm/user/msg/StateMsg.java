@@ -5,43 +5,7 @@ package com.dm.user.msg;
  * @date 2019-09-26
  */
 public final class StateMsg {
-	
-	/** 未存证 草稿 */
-	public static final int NO_CERT = 0;
 
-	/** 存证中 */
-	public static final int TO_CERT = 1;
-
-	/** 存证成功 */
-	public static final int CERT_SUCCESS = 2;
-
-	/** 存证失败 */
-	public static final int CERT_FAIL = 3;
-
-	/** 待他人确认 */
-	public static final int OTHERS_CONFIRM = 4;
-
-	/** 已退回 */
-	public static final int IS_RETURN = 5;
-
-	/** 已撤回 */
-	public static final int IS_REVOKE = 6;
-
-	/** 已确认 */
-	public static final int IS_CONFIRM = 0;
-
-	/** 未确认 */
-	public static final int NO_CONFIRM = 1;
-
-	/** 已退回 */
-	public static final int RETURN_CONFIRM = 2;
-
-	/** 已撤回 */
-	public static final int REVOKE_CONFIRM = 3;
-
-	/** 发起人 */
-	public static final int ORIGINATOR = 4;
-	
 	/** 每页条数 */
 	public static final int PAGE_SIZE = 10;
 
@@ -60,4 +24,18 @@ public final class StateMsg {
 	/** 出证描述 */
 	public static final String OUT_CERT_CONTENT = "您有一条新的出证待查看→【outCertName】";
 
+	/** 存证不删除 */
+	public static final int CERT_NOT_DELETE = 1;
+
+	/** 存证删除 物理删除 */
+	public static final int CERT_IS_DELETE = 0;
+
+	/** 存证文件删除 */
+	public static final String CERT_FILE_IS_DELETE = "0";
+
+	/** 存证文件保留 */
+	public static final String CERT_FILE_NOT_DELETE = "1";
+
+	/** 待自己确认 */
+	public static final String CONFIRM_TO_ME = "6";
 }

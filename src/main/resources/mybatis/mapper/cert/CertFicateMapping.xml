@@ -48,13 +48,6 @@
   		</set>
   	where cert_id = #{certId,jdbcType=INTEGER}
   </update>
-  <update id="updateByCertId" parameterType="com.dm.user.entity.CertFicate">
-  	update biz_certficate
-  	<set>
-		cert_is_delete = 0,
-  	</set>
-  	where cert_id = #{certId,jdbcType=INTEGER}
-  </update>
   <select id="selectByIDs" parameterType="java.util.List" resultMap="BaseResultMap">
 	  select 
 	  <include refid="Base_Column_List"></include>

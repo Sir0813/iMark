@@ -50,8 +50,8 @@ public class UserController extends BaseController {
 	
 	@ApiOperation(value="发送验证码", response= ResultUtil.class)
 	@RequestMapping(value="/api/sendVeriCode", method = RequestMethod.GET)
-	public Result sendVeriCode( String phone) throws Exception {
-		return userService.sendVeriCode(phone);
+	public Result sendVeriCode(String phone, String type) throws Exception {
+		return userService.sendVeriCode(phone, type);
 	}
 	
 	@ApiOperation(value="用户注册", response= ResultUtil.class)
@@ -60,7 +60,7 @@ public class UserController extends BaseController {
 		return userService.userRegister(user);
 	}
 
-	@ApiOperation(value="找回密码 下一步 (验证验证码)", response= ResultUtil.class)
+	@ApiOperation(value="找回密码 下一步", response= ResultUtil.class)
 	@RequestMapping(value="/api/nextOperate", method = RequestMethod.POST)
 	public Result nextOperate(@RequestBody Map<String,Object>map) throws Exception {
 		return userService.nextOperate(map);
