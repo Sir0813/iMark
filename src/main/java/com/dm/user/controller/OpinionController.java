@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import javax.validation.Valid;
 
 /**
  * @author cui
@@ -27,7 +28,7 @@ public class OpinionController extends BaseController {
 
     @ApiOperation(value="意见反馈提交", response= ResultUtil.class)
     @RequestMapping(value = "/submit" ,method = RequestMethod.POST)
-    public Result opinionSubmit(@RequestBody Opinion opinion) throws Exception {
+    public Result opinionSubmit(@Valid @RequestBody Opinion opinion) throws Exception {
         opinionService.opinionSubmit(opinion);
         return ResultUtil.success();
     }

@@ -20,8 +20,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -56,7 +58,7 @@ public class UserController extends BaseController {
 	
 	@ApiOperation(value="用户注册", response= ResultUtil.class)
 	@RequestMapping(value="/api/register", method = RequestMethod.POST)
-	public Result register(@RequestBody User user) throws Exception {
+	public Result register(@Valid @RequestBody User user) throws Exception {
 		return userService.userRegister(user);
 	}
 
@@ -93,7 +95,7 @@ public class UserController extends BaseController {
 
 	@ApiOperation(value="个人信息(修改)", response= ResultUtil.class)
 	@RequestMapping(value="/user/update", method=RequestMethod.POST)
-	public Result userUpdate(@RequestBody  User user) throws Exception {
+	public Result userUpdate(@RequestBody User user) throws Exception {
 		return userService.userUpdate(user);
 	}
 
@@ -106,7 +108,7 @@ public class UserController extends BaseController {
 	
 	@ApiOperation(value="重置密码", response= ResultUtil.class)
 	@RequestMapping(value="/user/resetPassword", method = RequestMethod.POST)
-	public Result resetPassword(@RequestBody Map<String,Object>map) throws Exception {
+	public Result resetPassword(@Valid @RequestBody Map<String,Object>map) throws Exception {
 		return userService.resetPassword(map);
 	}
 	
@@ -118,7 +120,7 @@ public class UserController extends BaseController {
 	
 	@ApiOperation(value="绑定邮箱", response= ResultUtil.class)
 	@RequestMapping(value="/user/bindEmail", method = RequestMethod.POST)
-	public Result bindEmail(@RequestBody Map<String,Object>map) throws Exception {
+	public Result bindEmail(@Valid @RequestBody Map<String,Object>map) throws Exception {
 		return informationService.bindEmail(map);
 	}
 	
@@ -136,7 +138,7 @@ public class UserController extends BaseController {
 
 	@ApiOperation(value="实名认证提交", response= ResultUtil.class)
 	@RequestMapping(value="/user/authentication", method = RequestMethod.POST)
-	public Result authentication(@RequestBody UserCard userCard) throws Exception {
+	public Result authentication(@Valid @RequestBody UserCard userCard) throws Exception {
 		return userCardService.authentication(userCard);
 	}
 

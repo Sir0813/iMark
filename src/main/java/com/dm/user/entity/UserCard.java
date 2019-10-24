@@ -1,7 +1,9 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -11,15 +13,12 @@ import java.util.Date;
 public class UserCard {
     private Integer cardid;
 
+    @NotBlank(message = "真实姓名不能为空")
     private String realName;
 
-    private String cardType;
-
+    @NotBlank(message = "证件号码不能为空")
+    @Pattern(regexp = "^\\d{17}[\\d|x]|\\d{15}$", message = "请正确输入证件号码")
     private String cardNumber;
-
-    private String frontPath;
-
-    private String backPath;
 
     private Integer userid;
 
@@ -30,6 +29,30 @@ public class UserCard {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date realTime;
+
+    @NotNull(message = "证件开始有效期不能为空")
+    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
+    private Date validityStartTime;
+
+    @NotNull(message = "证件结束有效期不能为空")
+    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
+    private Date validityEndTime;
+
+    public Date getValidityStartTime() {
+        return validityStartTime;
+    }
+
+    public void setValidityStartTime(Date validityStartTime) {
+        this.validityStartTime = validityStartTime;
+    }
+
+    public Date getValidityEndTime() {
+        return validityEndTime;
+    }
+
+    public void setValidityEndTime(Date validityEndTime) {
+        this.validityEndTime = validityEndTime;
+    }
 
     public Integer getCardid() {
         return cardid;
@@ -47,36 +70,12 @@ public class UserCard {
         this.realName = realName == null ? null : realName.trim();
     }
 
-    public String getCardType() {
-        return cardType;
-    }
-
-    public void setCardType(String cardType) {
-        this.cardType = cardType == null ? null : cardType.trim();
-    }
-
     public String getCardNumber() {
         return cardNumber;
     }
 
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber == null ? null : cardNumber.trim();
-    }
-
-    public String getFrontPath() {
-        return frontPath;
-    }
-
-    public void setFrontPath(String frontPath) {
-        this.frontPath = frontPath == null ? null : frontPath.trim();
-    }
-
-    public String getBackPath() {
-        return backPath;
-    }
-
-    public void setBackPath(String backPath) {
-        this.backPath = backPath == null ? null : backPath.trim();
     }
 
     public Integer getUserid() {

@@ -11,10 +11,6 @@ upload:
    certFilePath: D:\upload\cert
    # 存证文件访问路径
    certFilePrefix: http://192.168.3.101/img/cert
-   # 实名图片存储路径
-   realFilePath: D:\upload\realfile
-   # 实名图片访问路径
-   realFilePrefix: http://192.168.3.101/img/realfile
    # 出证文件存储路径
    outCertFilePath: D:\upload\outcert
    # 出证文件访问下载路径

@@ -26,7 +26,7 @@ public class OutCertController extends BaseController {
 
     @ApiOperation(value="动态下载出证模板", response= ResultUtil.class)
     @RequestMapping(value = "/cert/template", method = RequestMethod.GET)
-    public Result downloadOutCertTemplate( String certIds) throws Exception {
+    public Result downloadOutCertTemplate(String certIds) throws Exception {
         String downloadPath = outCertService.downloadOutCertTemplate (certIds);
         return ResultUtil.success(downloadPath);
     }
@@ -40,21 +40,21 @@ public class OutCertController extends BaseController {
 
     @ApiOperation(value="出证列表", response= ResultUtil.class)
     @RequestMapping(value = "/cert/list", method = RequestMethod.GET)
-    public Result list( Page<OutCert> page, String state) throws Exception {
+    public Result list(Page<OutCert> page, String state) throws Exception {
         PageInfo<OutCert> list = outCertService.list(page,state);
         return ResultUtil.success(list);
     }
 
     @ApiOperation(value="出证详情", response= ResultUtil.class)
     @RequestMapping(value = "/cert/details", method = RequestMethod.GET)
-    public Result details( String outCertId) throws Exception {
+    public Result details(String outCertId) throws Exception {
         OutCert outCert = outCertService.details(outCertId);
         return ResultUtil.success(outCert);
     }
 
     @ApiOperation(value="出证文件打包下载", response= ResultUtil.class)
     @RequestMapping(value = "/cert/downZip", method = RequestMethod.GET)
-    public Result downZip( String outCertId) throws Exception {
+    public Result downZip(String outCertId) throws Exception {
         String downPath = outCertService.downZip(outCertId);
         return ResultUtil.success(downPath);
     }

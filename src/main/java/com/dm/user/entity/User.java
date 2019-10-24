@@ -2,6 +2,9 @@ package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -13,12 +16,16 @@ public class User {
 
     private String usercode;
 
+    @NotBlank(message = "用户名称不能为空")
+    @Pattern(regexp = "^0?(13|14|15|17|18|19)[0-9]{9}$", message = "请输入正确用户名称")
     private String username;
 
     private String mobile;
 
+    @Email(regexp = "^\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}$", message = "请输入正确邮箱地址")
     private String email;
 
+    @NotBlank(message = "密码不能为空")
     private String password;
 
     private String sex;

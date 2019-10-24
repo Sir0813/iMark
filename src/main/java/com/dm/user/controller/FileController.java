@@ -43,7 +43,7 @@ public class FileController {
 		return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
 	}
 
-	@ApiOperation(value="实名认证/出证上传图片", response= ResultUtil.class)
+	@ApiOperation(value="出证上传图片", response= ResultUtil.class)
 	@RequestMapping(value = "/real/upload", method = RequestMethod.POST)
 	public Result realUpload(HttpServletRequest request, HttpServletResponse response,
 						 @RequestParam(value = "file") MultipartFile[] multipartFile, String type) throws Exception {

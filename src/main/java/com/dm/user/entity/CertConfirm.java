@@ -1,6 +1,10 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -15,6 +19,8 @@ public class CertConfirm {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date confirmDate;
 
+    @NotBlank(message = "联系人姓名不能为空")
+    @Size(min = 1, max = 30, message = "联系人姓名过长")
     private String confirmPerson;
 
     /** 0已确认1未确认2退回3撤回4发起人 */
@@ -24,8 +30,12 @@ public class CertConfirm {
 
     private String reasonCode;
 
+    @NotBlank(message = "联系人手机号不能为空")
+    @Pattern(regexp = "^0?(13|14|15|17|18|19)[0-9]{9}$", message = "请输入正确的联系人手机号")
     private String confirmPhone;
 
+    @NotBlank(message = "退回原因不能为空")
+    @Size(max = 50, message = "退回原因最多50个字符")
     private String returnReason;
 
     private Integer userId;

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -32,7 +34,7 @@ public class CertFicateController extends BaseController {
 
 	@ApiOperation(value="存证", response= ResultUtil.class)
 	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public Result saveCert(@RequestBody CertFicate certFicate) throws Exception {
+	public Result saveCert(@Valid @RequestBody CertFicate certFicate) throws Exception {
 		CertFicate cert = certFicateService.saveCert(certFicate);
 		return null == cert ? ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg"):ResultUtil.success(cert);
 	}
@@ -46,14 +48,14 @@ public class CertFicateController extends BaseController {
 
 	@ApiOperation(value="我的存证", response= ResultUtil.class)
 	@RequestMapping(value="/list",method=RequestMethod.GET)
-	public Result listCerts( Page<CertFicate> page,  String state,  String certName) throws Exception {
+	public Result listCerts( Page<CertFicate> page,  String state, String certName) throws Exception {
 		PageInfo<CertFicate> certFicateList = certFicateService.listCerts(page,state,certName);
 		return ResultUtil.success(certFicateList);
 	}
 
 	@ApiOperation(value="存证详情", response= ResultUtil.class)
 	@RequestMapping(value="/details",method=RequestMethod.GET)
-	public Result certDetails( String certFicateId) throws Exception {
+	public Result certDetails(String certFicateId) throws Exception {
 		CertFicate cert = certFicateService.certDetails(certFicateId);
 		return ResultUtil.success(cert);
 	}
@@ -67,7 +69,7 @@ public class CertFicateController extends BaseController {
 	
 	@ApiOperation(value="退回待自己确认存证", response= ResultUtil.class)
 	@RequestMapping(value="/returnReason",method=RequestMethod.POST)
-	public Result returnReason(@RequestBody Map<String,Object>map) throws Exception {
+	public Result returnReason(@Valid @RequestBody Map<String,Object>map) throws Exception {
 		certFicateService.returnReason(map);
 		return ResultUtil.success();
 	}

@@ -2,6 +2,8 @@ package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -11,6 +13,8 @@ import java.util.Date;
 public class Opinion {
     private Integer opinionId;
 
+    @NotBlank(message = "请输入意见或建议")
+    @Size(min = 1, max = 80, message = "意见或建议长度在1-80之间")
     private String content;
 
     private String fileId;

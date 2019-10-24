@@ -34,4 +34,5 @@ public class OpinionServiceImpl implements OpinionService {
             throw new Exception(e);
         }
     }
+
 }

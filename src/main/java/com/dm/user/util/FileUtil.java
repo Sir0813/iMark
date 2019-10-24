@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,12 +42,6 @@ public class FileUtil {
 	
 	@Value("${upload.certFilePrefix}")
 	private String certFilePrefix;
-
-	@Value("${upload.realFilePath}")
-	private String realFilePath;
-
-	@Value("${upload.realFilePrefix}")
-	private String realFilePrefix;
 
 	@Value("${upload.outCertFilePath}")
 	private String outCertFilePath;
@@ -372,11 +365,7 @@ public class FileUtil {
 				String filePath = "";
 				String fileUrl = "";
 				boolean uploadBoolean = false;
-				if ("real".equals(type)){
-					filePath = realFilePath + File.separator + fileNewName;
-					fileUrl = realFilePrefix+File.separator+fileNewName;
-					uploadBoolean = FileUtil.uploadFile(realFilePath+File.separator, fileNewName, multipartFile[i]);
-				}else if("outcert".equals(type)) {
+				if("outcert".equals(type)) {
 					filePath = outCertFilePath + File.separator + fileNewName;
 					fileUrl = outCertFilePrefix+File.separator+fileNewName;
 					uploadBoolean = FileUtil.uploadFile(outCertFilePath+File.separator, fileNewName, multipartFile[i]);

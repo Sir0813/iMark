@@ -1,6 +1,11 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -21,11 +26,14 @@ public class CertFicate {
 
     private String certOwner;
 
+    @NotBlank(message = "存证名称不能为空")
+    @Size(max = 15, message = "存证名称最多15个字符")
     private String certName;
 
     private String certDescribe;
 
     /** 0未存证(草稿) 1存证中 2存证成功(入链成功) 3存证失败 4待他人确认 5已退回 6已撤回 */
+    @NotNull(message = "存证状态不能为空")
     private Integer certStatus;
 
     /** 存证是否删除 0 删除 1 未删除 逻辑删除 */
@@ -38,6 +46,7 @@ public class CertFicate {
     private Date certDelDate;
 
     /** 存证类型 1文件存证 2 拍照存证 3 相册存证 4 录像存证 5 录音存证 6 录屏存证 7 模板存证 */
+    @NotNull(message = "存证类型不能为空")
     private Integer certType;
 
     private String certHash;
@@ -50,6 +59,7 @@ public class CertFicate {
     private String certFileIsSave;
 
     /** 确认人业务字段 */
+    @Valid
     private List<CertConfirm> certConfirmList;
 
     /** 文件业务字段 */

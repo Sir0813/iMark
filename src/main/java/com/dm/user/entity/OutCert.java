@@ -2,6 +2,8 @@ package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +17,12 @@ public class OutCert {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date outCertTime;
 
+    @NotBlank(message = "出证名称不能为空")
+    @Size(max = 15, message = "出证名称最多15个字符")
     private String outCertName;
 
+    @NotBlank(message = "出证说明不能为空")
+    @Size(max = 50, message = "出证说明最多50个字符")
     private String outCertDesc;
 
     private Integer userId;
