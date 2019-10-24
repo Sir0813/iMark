@@ -22,7 +22,7 @@ public class User {
 
     private String mobile;
 
-    @Email(regexp = "^\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}$", message = "请输入正确邮箱地址")
+    @Email(regexp = "^[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?$", message = "请输入正确邮箱地址")
     private String email;
 
     @NotBlank(message = "密码不能为空")

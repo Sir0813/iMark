@@ -17,7 +17,7 @@ public class UserCard {
     private String realName;
 
     @NotBlank(message = "证件号码不能为空")
-    @Pattern(regexp = "^\\d{17}[\\d|x]|\\d{15}$", message = "请正确输入证件号码")
+    @Pattern(regexp = "^(\\d{6})(\\d{4})(\\d{2})(\\d{2})(\\d{3})([0-9]|X)$", message = "请正确输入证件号码")
     private String cardNumber;
 
     private Integer userid;
