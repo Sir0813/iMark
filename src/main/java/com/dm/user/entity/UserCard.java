@@ -31,26 +31,24 @@ public class UserCard {
     private Date realTime;
 
     @NotNull(message = "证件开始有效期不能为空")
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
-    private Date validityStartTime;
+    private String validityStartTime;
 
     @NotNull(message = "证件结束有效期不能为空")
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
-    private Date validityEndTime;
+    private String validityEndTime;
 
-    public Date getValidityStartTime() {
+    public String getValidityStartTime() {
         return validityStartTime;
     }
 
-    public void setValidityStartTime(Date validityStartTime) {
+    public void setValidityStartTime(String validityStartTime) {
         this.validityStartTime = validityStartTime;
     }
 
-    public Date getValidityEndTime() {
+    public String getValidityEndTime() {
         return validityEndTime;
     }
 
-    public void setValidityEndTime(Date validityEndTime) {
+    public void setValidityEndTime(String validityEndTime) {
         this.validityEndTime = validityEndTime;
     }
 

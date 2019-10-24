@@ -9,8 +9,8 @@
     <result column="real_state" property="realState" jdbcType="VARCHAR" />
     <result column="post_time" property="postTime" jdbcType="TIMESTAMP" />
     <result column="real_time" property="realTime" jdbcType="TIMESTAMP" />
-    <result column="validity_start_time" property="validityStartTime" jdbcType="TIMESTAMP" />
-    <result column="validity_end_time" property="validityEndTime" jdbcType="TIMESTAMP" />
+    <result column="validity_start_time" property="validityStartTime" jdbcType="VARCHAR" />
+    <result column="validity_end_time" property="validityEndTime" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     cardid, real_name, card_number, userid, real_state, validity_start_time, validity_end_time,
@@ -19,8 +19,9 @@
   <select id="selectByCardNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"></include>
-    from sys_user_cardupdateByPrimaryKeySelective
+    from sys_user_card
     where card_number = #{cardNumber}
+    and real_state = 2
   </select>
   <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select 
@@ -86,10 +87,10 @@
         #{realTime,jdbcType=TIMESTAMP},
       </if>
       <if test="validityStartTime != null" >
-        #{validityStartTime,jdbcType=TIMESTAMP},
+        #{validityStartTime,jdbcType=VARCHAR},
       </if>
       <if test="validityEndTime != null" >
-        #{validityEndTime,jdbcType=TIMESTAMP},
+        #{validityEndTime,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -115,10 +116,10 @@
         real_time = #{realTime,jdbcType=TIMESTAMP},
       </if>
       <if test="validityStartTime != null" >
-        validity_Start_Time = #{validityStartTime,jdbcType=TIMESTAMP},
+        validity_Start_Time = #{validityStartTime,jdbcType=VARCHAR},
       </if>
       <if test="validityEndTime != null" >
-        validity_End_Time = #{validityEndTime,jdbcType=TIMESTAMP},
+        validity_End_Time = #{validityEndTime,jdbcType=VARCHAR},
       </if>
     </set>
     where cardid = #{cardid,jdbcType=INTEGER}

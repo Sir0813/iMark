@@ -6,7 +6,6 @@ import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.UserCard;
 import com.dm.user.mapper.UserCardMapper;
 import com.dm.user.msg.UserCardEnum;
-import com.dm.user.service.CertFilesService;
 import com.dm.user.service.UserCardService;
 import com.dm.user.util.ShaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ public class UserCardServiceImpl implements UserCardService{
 	@Autowired
 	private UserCardMapper userCardMapper;
 
-	@Autowired
-	private CertFilesService certFilesService;
-
 	@Override
 	public Result authentication(UserCard userCard) throws Exception {
 		try {
@@ -36,7 +32,6 @@ public class UserCardServiceImpl implements UserCardService{
                 return ResultUtil.info("card.code.error.code","card.code.error.msg");
             }
 			userCard.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
-			userCard.setRealState(UserCardEnum.REAL_SUBMIT.getCode());
 			userCard.setPostTime(new Date());
 			// 实名认证成功
 			if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
@@ -55,6 +50,9 @@ public class UserCardServiceImpl implements UserCardService{
 	public Result realInfo() throws Exception {
 		try {
 			UserCard userCard = userCardMapper.selectByUserId(LoginUserHelper.getUserId());
+			if (null == userCard){
+				return ResultUtil.success();
+			}
 			// 身份证号保密显示
 			String cardNumber = userCard.getCardNumber();
 			String starString = ShaUtil.getStarString(cardNumber, 1, cardNumber.length() - 1);

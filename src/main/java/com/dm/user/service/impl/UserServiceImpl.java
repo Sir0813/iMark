@@ -15,6 +15,7 @@ import com.dm.frame.jboot.util.MD5Util;
 import com.dm.user.entity.*;
 import com.dm.user.mapper.ContactMapper;
 import com.dm.user.mapper.UserMapper;
+import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
 import com.dm.user.util.HttpSendUtil;
 import com.dm.user.util.PushUtil;
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result sendVeriCode(String phone, String type) throws Exception {
 		try {
-		    if ("register".equals(type)){
+		    /*if ("register".equals(type)){
                 User u = userMapper.findByName(phone);
                 if (null!=u) {
                     return ResultUtil.info("register.has.name.code","register.has.name.msg");
@@ -85,7 +86,25 @@ public class UserServiceImpl implements UserService{
                 if (null==user) {
                     return ResultUtil.info("login.account.no.code","login.account.no.msg");
                 }
-            }
+            }*/
+			User u = userMapper.findByName(phone);
+		    switch (type){
+				case StateMsg.REGISTER :
+					if (null!=u) {
+						return ResultUtil.info("register.has.name.code","register.has.name.msg");
+					}
+					break;
+				case StateMsg.FORGETPWD :
+					if (null==u) {
+						return ResultUtil.info("login.account.no.code","login.account.no.msg");
+					}
+					break;
+				case StateMsg.LOGIN :
+					if (null==u) {
+						return ResultUtil.info("login.account.no.code","login.account.no.msg");
+					}
+					break;
+			}
 			Information info = new Information();
 			Date date = new Date();
 			Map<String,Object> map = new HashMap<>(16);
@@ -114,6 +133,10 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result userRegister(User user) throws Exception {
 		try {
+			User u = userMapper.findByName(user.getUsername());
+			if (null!=u) {
+				return ResultUtil.info("register.has.name.code","register.has.name.msg");
+			}
 			Map<String, Object> map = new HashMap<>(16);
 			map.put("email", user.getUsername());
 			map.put("veriCode", user.getUsercode());
@@ -155,7 +178,14 @@ public class UserServiceImpl implements UserService{
 					pushMsgService.updateByPrimaryKeySelective(pushMsg);
 				}
 			}
-			return ResultUtil.success();
+			// 注册成功直接登录
+			Collection<GrantedAuthority> authorities = this.loginUserDetailsService.loadAuthority(user.getUsername());
+			LoginUserDetails loginUserDetails = new LoginUserDetails();
+			loginUserDetails.setUsername(user.getUsername());
+			loginUserDetails.setUserid(user.getUserid().toString());
+			Authentication authentication = new UsernamePasswordAuthenticationToken(loginUserDetails, md5Password, authorities);
+			String token = this.jwtTokenProvider.createToken(authentication);
+			return ResultUtil.success(token);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -269,6 +299,9 @@ public class UserServiceImpl implements UserService{
 	public Result retrievePwd(Map<String, Object> map) throws Exception {
 		try {
 			User user = userMapper.findByName(map.get("phone").toString());
+			if (null==user) {
+				return ResultUtil.info("login.account.no.code","login.account.no.msg");
+			}
 			user.setSalt(RandomCode.getCode());
 			String md5Password = MD5Util.encode(map.get("password").toString()+user.getSalt());
 			user.setPassword(md5Password);

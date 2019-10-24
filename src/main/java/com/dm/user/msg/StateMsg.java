@@ -38,4 +38,13 @@ public final class StateMsg {
 
 	/** 待自己确认 */
 	public static final String CONFIRM_TO_ME = "6";
+
+	/** 注册 */
+	public static final String REGISTER = "register";
+
+	/** 找回密码 */
+	public static final String FORGETPWD = "forgetPwd";
+
+	/** 登录 */
+	public static final String LOGIN = "login";
 }

@@ -26,6 +26,8 @@ public class User {
     private String email;
 
     @NotBlank(message = "密码不能为空")
+    @Pattern(regexp = "^(?![A-Za-z]+$)(?![A-Z\\d]+$)(?![A-Z\\W]+$)(?![a-z\\d]+$)(?![a-z\\W]+$)(?![\\d\\W]+$)\\S{6,18}$",
+            message = "密码必须符合由数字,大写字母,小写字母,特殊符,至少其中三种组成密码")
     private String password;
 
     private String sex;
