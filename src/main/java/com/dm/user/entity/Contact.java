@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
  * @date 2019-09-26
  */
 public class Contact {
+
     private Integer contactId;
 
     private Integer userId;

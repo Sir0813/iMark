@@ -1,7 +1,6 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.List;
  * @date 2019-09-26
  */
 public class OutCert {
+
     private Integer outCertId;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")

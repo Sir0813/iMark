@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author cui
  * @date 2019-09-26
  */
-@Api(description="APP版本")
+@Api(description = "APP版本")
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api")
 public class AppController extends BaseController {
 
     @Autowired

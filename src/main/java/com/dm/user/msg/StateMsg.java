@@ -47,4 +47,7 @@ public final class StateMsg {
 
 	/** 登录 */
 	public static final String LOGIN = "login";
+
+	/** 退回存证字段为空 */
+	public static final String REASONMSG = "请输入退回原因";
 }

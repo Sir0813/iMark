@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
  * @author cui
  * @date 2019-09-26
  */
-@Api(description="上传")
+@Api(description = "上传")
 @RestController
 @RequestMapping
 public class FileController {
@@ -32,7 +31,7 @@ public class FileController {
 	@Autowired
 	private CertFicateService certFicateService;
 
-	@ApiOperation(value="文件上传", response= ResultUtil.class)
+	@ApiOperation(value = "文件上传", response = ResultUtil.class)
 	@RequestMapping(value = "/api/upload", method = RequestMethod.POST)
 	public Result upload(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "file") MultipartFile[] multipartFile) throws Exception {
@@ -43,7 +42,7 @@ public class FileController {
 		return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
 	}
 
-	@ApiOperation(value="出证上传图片", response= ResultUtil.class)
+	@ApiOperation(value = "出证上传图片", response = ResultUtil.class)
 	@RequestMapping(value = "/real/upload", method = RequestMethod.POST)
 	public Result realUpload(HttpServletRequest request, HttpServletResponse response,
 						 @RequestParam(value = "file") MultipartFile[] multipartFile, String type) throws Exception {

@@ -18,15 +18,15 @@ import javax.validation.Valid;
  * @author cui
  * @date 2019-09-26
  */
-@Api(description="意见反馈")
+@Api(description = "意见反馈")
 @RestController
-@RequestMapping("/opinion")
+@RequestMapping(value = "/opinion")
 public class OpinionController extends BaseController {
 
     @Autowired
     private OpinionService opinionService;
 
-    @ApiOperation(value="意见反馈提交", response= ResultUtil.class)
+    @ApiOperation(value = "意见反馈提交", response = ResultUtil.class)
     @RequestMapping(value = "/submit" ,method = RequestMethod.POST)
     public Result opinionSubmit(@Valid @RequestBody Opinion opinion) throws Exception {
         opinionService.opinionSubmit(opinion);

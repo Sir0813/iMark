@@ -5,6 +5,7 @@ package com.dm.user.entity;
  * @date 2019-09-26
  */
 public class CertTemplate {
+
     private Integer templateId;
 
     private String templateTitle;

@@ -11,6 +11,7 @@ import java.util.Date;
  * @date 2019-09-26
  */
 public class UserCard {
+
     private Integer cardid;
 
     @NotBlank(message = "真实姓名不能为空")

@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
  * @author cui
  * @date 2019-09-26
  */
-@Api(description="验证")
+@Api(description = "验证")
 @RestController
-@RequestMapping("/verify")
+@RequestMapping(value = "/verify")
 public class CertVerifyController extends BaseController {
 
     @Autowired
     private CertVerifyService certVerifyService;
 
-    @ApiOperation(value="存证校验", response= ResultUtil.class)
+    @ApiOperation(value = "存证校验", response = ResultUtil.class)
     @RequestMapping(value = "/cert" ,method = RequestMethod.POST)
     public Result verifyCert(@RequestBody CertFicate certFicate) throws Exception{
         boolean b = certVerifyService.verifyCert(certFicate);

@@ -1,7 +1,6 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,6 +13,7 @@ import java.util.List;
  * @date 2019-09-26
  */
 public class CertFicate {
+
     private Integer certId;
 
     /** 存证入链时间 */

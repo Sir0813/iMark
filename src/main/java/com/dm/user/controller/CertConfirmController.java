@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2019-09-26
  */
 @RestController
-@RequestMapping("/confirm")
+@RequestMapping(value = "/confirm")
 public class CertConfirmController extends BaseController{
 
 	@Autowired

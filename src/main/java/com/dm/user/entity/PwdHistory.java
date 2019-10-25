@@ -7,6 +7,7 @@ import java.util.Date;
  * @date 2019-09-26
  */
 public class PwdHistory {
+
 	private String password;
 
 	private Date pwdDate;

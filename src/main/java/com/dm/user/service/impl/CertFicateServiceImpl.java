@@ -71,11 +71,12 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
 			List<CertFiles> certFiles = null;
 			// 模板存证
-			if (certFicate.getCertType()== CertTypeEnum.TEMPLATE.getCode()){
-				if (certFicate.getCertStatus()== CertStateEnum.TO_CERT.getCode()){
+			if (certFicate.getCertType() == CertTypeEnum.TEMPLATE.getCode()){
+				if (certFicate.getCertStatus() == CertStateEnum.TO_CERT.getCode()){
 					TemFile temFile = certFicateService.selectByCertId(certFicate.getCertId().toString());
 					Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
 					certFicate.setCertFilesid(fileId.toString());
+					// 生成文件hash
 					certFiles = getHash(certFicate);
 				}
 			}else{
@@ -112,7 +113,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			String id = df.format(certFicate.getCertId());
 			certFicate.setCertCode("DMS01"+id);
 			certFicateMapper.updateByPrimaryKeySelective(certFicate);
-			/*需要他人确认*/
+			// 添加发起人 推送存证消息
 			if (certFicate.getCertIsconf()==1) {
 				certIsConfirm(LoginUserHelper.getUserName(),sendMsg,certFicate,Integer.parseInt(LoginUserHelper.getUserId()));
 			}
@@ -121,7 +122,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 					CertFiles cf =  certFiles.get(i);
 					cf.setCertId(certFicate.getCertId());
 					certFilesService.updateByPrimaryKeySelective(cf);
-					/*文件不保存至证云链 将文件删除*/
+					// 文件不保存至证云链 将文件删除
 					if(StateMsg.CERT_FILE_IS_DELETE.equals(certFicate.getCertFileIsSave())){
 						File file = new File(cf.getFilePath());
 						file.delete();
@@ -135,6 +136,12 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 		return certFicate;
 	}
 
+	/**
+	 * 生成文件hash
+	 * @param certFicate
+	 * @return
+	 * @throws Exception
+	 */
 	private List<CertFiles> getHash(CertFicate certFicate) throws Exception{
 		try {
 			if (StringUtils.isBlank(certFicate.getCertFilesid())) {
@@ -162,6 +169,14 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 		}
 	}
 
+	/**
+	 * 添加确认人信息 发送推送消息
+	 * @param username 用户名称
+	 * @param sendMsg 是否发送通知
+	 * @param certFicate 存证实例
+	 * @param userId 用户ID
+	 * @throws Exception 异常信息
+	 */
 	private void certIsConfirm(String username,boolean sendMsg,CertFicate certFicate,Integer userId) throws Exception {
 		try {
 			/*添加发起人*/
@@ -273,7 +288,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 			if (StringUtils.isBlank(state)){
 				confirmList = certConfirmService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
 			}else if(StateMsg.CONFIRM_TO_ME.equals(state)){
-			    //待自己确认
+			    // 待自己确认
 				confirmList = certConfirmService.selectByuserIdAndState(LoginUserHelper.getUserId(),"1");
 			}
 			if (confirmList!=null&&confirmList.size()>0){
@@ -316,9 +331,9 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 	private void certConfirmState(List<CertFicate>list, String state) throws Exception {
 		if (list.size()>0){
 			Iterator<CertFicate> iterator = list.iterator();
-			while (iterator.hasNext()){
+			while(iterator.hasNext()){
 				CertFicate l = iterator.next();
-				if (l.getCertStatus()==CertStateEnum.OTHERS_CONFIRM.getCode()){
+				if (l.getCertStatus().equals(CertStateEnum.OTHERS_CONFIRM.getCode())){
 					//待他人确认和待自己确认
 					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
 					if (certConfirms.size()>0){
@@ -352,7 +367,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 						});
 					}
 				}else if(l.getCertStatus().equals(Integer.valueOf(StateMsg.CONFIRM_TO_ME))) {
-					/*撤销的存证 确认人方不显示该存证*/
+					// 撤销的存证 确认人方不显示该存证
 					List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
 					if (certConfirms.size()>0){
 						for (CertConfirm cc : certConfirms) {
@@ -398,6 +413,9 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
 	@Override
 	public void returnReason(Map<String,Object>map) throws Exception {
 		try {
+			if (null == map.get("reason") || StringUtils.isBlank(map.get("reason").toString())){
+				throw new Exception(StateMsg.REASONMSG);
+			}
 			map.put("confirmPhone", LoginUserHelper.getUserName());
 			certConfirmService.updateByCertId(map);
 			certFicateMapper.updateReasonByCertId(Integer.parseInt(map.get("certId").toString()));

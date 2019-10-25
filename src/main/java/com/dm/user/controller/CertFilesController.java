@@ -11,7 +11,7 @@ import com.dm.user.service.CertFilesService;
  * @date 2019-09-26
  */
 @RestController
-@RequestMapping("/certFile")
+@RequestMapping(value = "/certFile")
 public class CertFilesController extends BaseController{
 
 	@Autowired

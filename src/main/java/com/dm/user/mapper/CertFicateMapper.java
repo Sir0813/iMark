@@ -2,7 +2,6 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.CertFicate;
 import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
 import java.util.Map;
 
