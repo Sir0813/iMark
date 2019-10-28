@@ -11,6 +11,7 @@ public interface CertTemplateService {
 
     /**
      * 存证模板列表
+     *
      * @return
      * @throws Exception
      */
@@ -18,6 +19,7 @@ public interface CertTemplateService {
 
     /**
      * 根据类型获取模板
+     *
      * @param type
      * @return
      * @throws Exception
@@ -26,6 +28,7 @@ public interface CertTemplateService {
 
     /**
      * 模板编辑
+     *
      * @param certId
      * @return
      * @throws Exception

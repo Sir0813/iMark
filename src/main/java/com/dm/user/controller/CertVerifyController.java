@@ -26,8 +26,8 @@ public class CertVerifyController extends BaseController {
     private CertVerifyService certVerifyService;
 
     @ApiOperation(value = "存证校验", response = ResultUtil.class)
-    @RequestMapping(value = "/cert" ,method = RequestMethod.POST)
-    public Result verifyCert(@RequestBody CertFicate certFicate) throws Exception{
+    @RequestMapping(value = "/cert", method = RequestMethod.POST)
+    public Result verifyCert(@RequestBody CertFicate certFicate) throws Exception {
         boolean b = certVerifyService.verifyCert(certFicate);
         return ResultUtil.success(b);
     }

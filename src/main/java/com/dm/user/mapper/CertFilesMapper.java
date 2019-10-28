@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.CertFiles;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ import java.util.List;
 public interface CertFilesMapper {
     /**
      * 根据ID修改
+     *
      * @param fileId
      * @return
      */
@@ -19,6 +21,7 @@ public interface CertFilesMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +29,7 @@ public interface CertFilesMapper {
 
     /**
      * 根据ID查询
+     *
      * @param fileId
      * @return
      */
@@ -33,6 +37,7 @@ public interface CertFilesMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -40,19 +45,22 @@ public interface CertFilesMapper {
 
     /**
      * 根据文件ID批量查询
+     *
      * @param filesId
      * @return
      */
-	List<CertFiles> findByFilesIds(String[] filesId);
+    List<CertFiles> findByFilesIds(String[] filesId);
 
     /**
      * 根据存证ID删除
+     *
      * @param certId
      */
     void deleteByCertId(Integer certId);
 
     /**
      * 根据URL查询
+     *
      * @param frontPath
      * @return
      */

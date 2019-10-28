@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/confirm")
-public class CertConfirmController extends BaseController{
+public class CertConfirmController extends BaseController {
 
-	@Autowired
-	private CertConfirmService certConfirmService;
+    @Autowired
+    private CertConfirmService certConfirmService;
 
 }

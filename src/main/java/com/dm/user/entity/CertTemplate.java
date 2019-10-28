@@ -12,7 +12,9 @@ public class CertTemplate {
 
     private String templateUrl;
 
-    /** 1劳动模板2租赁模板 */
+    /**
+     * 1劳动模板2租赁模板
+     */
     private String templateType;
 
     private String templatePath;

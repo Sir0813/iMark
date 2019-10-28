@@ -7,6 +7,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -31,11 +32,11 @@ public class QRCodeGenerator {
 
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         // 设置二维码四周白色区域的大小
-        hints.put(EncodeHintType.MARGIN,0);
+        hints.put(EncodeHintType.MARGIN, 0);
         // 设置二维码的容错性
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
 
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 120, 120,hints);
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 120, 120, hints);
 
         deleteWhite(bitMatrix);
 
@@ -47,8 +48,8 @@ public class QRCodeGenerator {
 
     /**
      * 删除白边
-     * */
-    private  static BitMatrix deleteWhite(BitMatrix matrix) {
+     */
+    private static BitMatrix deleteWhite(BitMatrix matrix) {
         int[] rec = matrix.getEnclosingRectangle();
         int resWidth = rec[2] + 1;
         int resHeight = rec[3] + 1;
@@ -78,6 +79,7 @@ public class QRCodeGenerator {
 
     /**
      * 解析二维码图片
+     *
      * @param filePath 图片路径
      */
     public static String decodeQR(String filePath) {

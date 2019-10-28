@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.Contact;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public interface ContactMapper {
 
     /**
      * 删除
+     *
      * @param contactId
      * @return
      */
@@ -20,6 +22,7 @@ public interface ContactMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -27,6 +30,7 @@ public interface ContactMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -34,6 +38,7 @@ public interface ContactMapper {
 
     /**
      * 根据ID查询
+     *
      * @param contactId
      * @return
      */
@@ -41,6 +46,7 @@ public interface ContactMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -48,6 +54,7 @@ public interface ContactMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -55,6 +62,7 @@ public interface ContactMapper {
 
     /**
      * 根据用户ID查询
+     *
      * @param userId
      * @return
      */
@@ -62,6 +70,7 @@ public interface ContactMapper {
 
     /**
      * 根据用户名称查询
+     *
      * @param username
      * @return
      */

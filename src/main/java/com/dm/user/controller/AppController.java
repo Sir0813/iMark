@@ -25,9 +25,9 @@ public class AppController extends BaseController {
     @Autowired
     private AppService appService;
 
-    @ApiOperation(value="APP获取最新版本", response= ResultUtil.class)
-    @RequestMapping(value = "/appVersion" , method = RequestMethod.POST)
-    public Result appVersion(@RequestBody App app) throws Exception{
+    @ApiOperation(value = "APP获取最新版本", response = ResultUtil.class)
+    @RequestMapping(value = "/appVersion", method = RequestMethod.POST)
+    public Result appVersion(@RequestBody App app) throws Exception {
         return appService.getAppVersion(app);
     }
 

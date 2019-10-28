@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.Information;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.Map;
 
 /**
@@ -13,6 +14,7 @@ public interface InformationMapper {
 
     /**
      * 删除
+     *
      * @param infoId
      * @return
      */
@@ -20,6 +22,7 @@ public interface InformationMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -27,6 +30,7 @@ public interface InformationMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -34,6 +38,7 @@ public interface InformationMapper {
 
     /**
      * 根据ID查询
+     *
      * @param infoId
      * @return
      */
@@ -41,6 +46,7 @@ public interface InformationMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -48,6 +54,7 @@ public interface InformationMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -55,8 +62,9 @@ public interface InformationMapper {
 
     /**
      * 根据手机号查询
+     *
      * @param map
      * @return
      */
-	Information selectByPhone(Map<String, Object> map);
+    Information selectByPhone(Map<String, Object> map);
 }

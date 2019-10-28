@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -14,7 +15,7 @@ public class OutCert {
 
     private Integer outCertId;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date outCertTime;
 
     @NotBlank(message = "出证名称不能为空")
@@ -31,15 +32,21 @@ public class OutCert {
 
     private String certId;
 
-    /** 发起人 业务字段 */
+    /**
+     * 发起人 业务字段
+     */
     private String promoter;
 
-    /** 出证文件路径 */
+    /**
+     * 出证文件路径
+     */
     private String outCertExplain;
 
     private List<CertFiles> list;
 
-    /** 发送人业务字段 */
+    /**
+     * 发送人业务字段
+     */
     private List<Contact> contactList;
 
     public List<CertFiles> getList() {

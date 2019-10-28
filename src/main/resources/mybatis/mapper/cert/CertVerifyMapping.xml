@@ -1,79 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dm.user.mapper.CertVerifyMapper">
-  <resultMap id="BaseResultMap" type="com.dm.user.entity.CertVerify">
-    <id column="verify_id" jdbcType="INTEGER" property="verifyId" />
-    <result column="cert_id" jdbcType="INTEGER" property="certId" />
-    <result column="verify_date" jdbcType="TIMESTAMP" property="verifyDate" />
-    <result column="verify_state" jdbcType="INTEGER" property="verifyState" />
-    <result column="verify_money" jdbcType="INTEGER" property="verifyMoney" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.CertVerify">
+        <id column="verify_id" jdbcType="INTEGER" property="verifyId"/>
+        <result column="cert_id" jdbcType="INTEGER" property="certId"/>
+        <result column="verify_date" jdbcType="TIMESTAMP" property="verifyDate"/>
+        <result column="verify_state" jdbcType="INTEGER" property="verifyState"/>
+        <result column="verify_money" jdbcType="INTEGER" property="verifyMoney"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     verify_id, cert_id, verify_date, verify_state, verify_money
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from biz_cert_verify
-    where verify_id = #{verifyId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_cert_verify
+        where verify_id = #{verifyId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_cert_verify
     where verify_id = #{verifyId,jdbcType=INTEGER}
   </delete>
-  <insert id="insertSelective" parameterType="com.dm.user.entity.CertVerify" keyProperty="verifyId" useGeneratedKeys="true">
-    insert into biz_cert_verify
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="verifyId != null">
-        verify_id,
-      </if>
-      <if test="certId != null">
-        cert_id,
-      </if>
-      <if test="verifyDate != null">
-        verify_date,
-      </if>
-      <if test="verifyState != null">
-        verify_state,
-      </if>
-      <if test="verifyMoney != null">
-        verify_money,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="verifyId != null">
-        #{verifyId,jdbcType=INTEGER},
-      </if>
-      <if test="certId != null">
-        #{certId,jdbcType=INTEGER},
-      </if>
-      <if test="verifyDate != null">
-        #{verifyDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="verifyState != null">
-        #{verifyState,jdbcType=INTEGER},
-      </if>
-      <if test="verifyMoney != null">
-        #{verifyMoney,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertVerify">
-    update biz_cert_verify
-    <set>
-      <if test="certId != null">
-        cert_id = #{certId,jdbcType=INTEGER},
-      </if>
-      <if test="verifyDate != null">
-        verify_date = #{verifyDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="verifyState != null">
-        verify_state = #{verifyState,jdbcType=INTEGER},
-      </if>
-      <if test="verifyMoney != null">
-        verify_money = #{verifyMoney,jdbcType=INTEGER},
-      </if>
-    </set>
-    where verify_id = #{verifyId,jdbcType=INTEGER}
-  </update>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.CertVerify" keyProperty="verifyId"
+            useGeneratedKeys="true">
+        insert into biz_cert_verify
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="verifyId != null">
+                verify_id,
+            </if>
+            <if test="certId != null">
+                cert_id,
+            </if>
+            <if test="verifyDate != null">
+                verify_date,
+            </if>
+            <if test="verifyState != null">
+                verify_state,
+            </if>
+            <if test="verifyMoney != null">
+                verify_money,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="verifyId != null">
+                #{verifyId,jdbcType=INTEGER},
+            </if>
+            <if test="certId != null">
+                #{certId,jdbcType=INTEGER},
+            </if>
+            <if test="verifyDate != null">
+                #{verifyDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="verifyState != null">
+                #{verifyState,jdbcType=INTEGER},
+            </if>
+            <if test="verifyMoney != null">
+                #{verifyMoney,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertVerify">
+        update biz_cert_verify
+        <set>
+            <if test="certId != null">
+                cert_id = #{certId,jdbcType=INTEGER},
+            </if>
+            <if test="verifyDate != null">
+                verify_date = #{verifyDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="verifyState != null">
+                verify_state = #{verifyState,jdbcType=INTEGER},
+            </if>
+            <if test="verifyMoney != null">
+                verify_money = #{verifyMoney,jdbcType=INTEGER},
+            </if>
+        </set>
+        where verify_id = #{verifyId,jdbcType=INTEGER}
+    </update>
 </mapper>

@@ -1,41 +1,41 @@
 #application通用环境配置
 spring:
-   freemarker:
-     checkTemplateLocation: false
-   mvc:
-      date-format: yyyy-MM-dd HH:mm:ss
-      #spring-webmvc的视图解析
-      #view:
-      #prefix: /WEB-INF/
-      #suffix: .jsp
-      # 静态文件请求匹配方式
-      static-path-pattern: /**
-   #jackson:  
+  freemarker:
+    checkTemplateLocation: false
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+    #spring-webmvc的视图解析
+    #view:
+    #prefix: /WEB-INF/
+    #suffix: .jsp
+    # 静态文件请求匹配方式
+    static-path-pattern: /**
+      #jackson:
       #date-format: yyyy-MM-dd HH:mm:ss
       #serialization: 
-         #WRITE_ENUMS_USING_INDEX: true
-         #FAIL_ON_EMPTY_BEANS: false
-   messages:
-      #国际化语言配置，表示放在classpath的i18n文件夹，文件前缀为msg  
-      #cacheSeconds：加载国际化文件的缓存时间，单位为秒，默认为永久缓存。
-      encoding: UTF-8
-      basename: i18n/msg   #相对路径 首部请勿添加斜杠,可以通过逗号指定多个,application.properties写法i18n.msg
-   #dev tools 热部署
-   devtools:
-      livereload:
-         enabled: true
-   servlet:
-     multipart:
-       enabled: false
-       resolve-lazily: true
-   jpa:
-     open-in-view: false
-   thymeleaf:
-     enabled: false
-     check-template-location: false
+    #WRITE_ENUMS_USING_INDEX: true
+    #FAIL_ON_EMPTY_BEANS: false
+  messages:
+    #国际化语言配置，表示放在classpath的i18n文件夹，文件前缀为msg
+    #cacheSeconds：加载国际化文件的缓存时间，单位为秒，默认为永久缓存。
+    encoding: UTF-8
+    basename: i18n/msg   #相对路径 首部请勿添加斜杠,可以通过逗号指定多个,application.properties写法i18n.msg
+  #dev tools 热部署
+  devtools:
+    livereload:
+      enabled: true
+  servlet:
+    multipart:
+      enabled: false
+      resolve-lazily: true
+  jpa:
+    open-in-view: false
+  thymeleaf:
+    enabled: false
+    check-template-location: false
 #log配置
 logging:
-   config: classpath:config/log4j2.xml
+  config: classpath:config/log4j2.xml
 #logging.level=info
 #logging.level.com.sc=debug
 
@@ -44,14 +44,14 @@ security:
   #basic:
   #  enabled: false
   token:
-     secret: dm@123@dm     #token加密的服务端密钥，不能泄漏，否则客户端可以自己生成token
-     expiredTime: 360000000    #过期时间，单位毫秒，即多少毫秒后过期
-     requestParameter: Authorization     #url请求上传token的参数名称，默认为Authorization
-     prefix: Bearer          #url请求上传的token值前缀，验证时需要去掉此前缀         
+    secret: dm@123@dm     #token加密的服务端密钥，不能泄漏，否则客户端可以自己生成token
+    expiredTime: 360000000    #过期时间，单位毫秒，即多少毫秒后过期
+    requestParameter: Authorization     #url请求上传token的参数名称，默认为Authorization
+    prefix: Bearer          #url请求上传的token值前缀，验证时需要去掉此前缀
   passwordEncoder: MD5       #密码编码器，默认使用BCrypt密码编码器
   login:
-     usernameParameter: username   #spring security登录用户名参数名称，默认为username
-     passwordParameter: password   #spring security登录密码参数名称，默认为password
+    usernameParameter: username   #spring security登录用户名参数名称，默认为username
+    passwordParameter: password   #spring security登录密码参数名称，默认为password
 management:
   security:
     enabled: false

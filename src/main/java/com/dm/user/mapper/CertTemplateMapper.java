@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.CertTemplate;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ import java.util.List;
 public interface CertTemplateMapper {
     /**
      * 根据ID删除
+     *
      * @param templateId
      * @return
      */
@@ -19,6 +21,7 @@ public interface CertTemplateMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +29,7 @@ public interface CertTemplateMapper {
 
     /**
      * 根据ID查询
+     *
      * @param templateId
      * @return
      */
@@ -33,6 +37,7 @@ public interface CertTemplateMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -40,12 +45,14 @@ public interface CertTemplateMapper {
 
     /**
      * 查询机集合
+     *
      * @return
      */
     List<CertTemplate> list();
 
     /**
      * 根据类型查询模板
+     *
      * @param type
      * @return
      */

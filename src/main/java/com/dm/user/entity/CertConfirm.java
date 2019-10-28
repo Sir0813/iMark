@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -15,14 +16,16 @@ public class CertConfirm {
 
     private Integer certId;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date confirmDate;
 
     @NotBlank(message = "联系人姓名不能为空")
     @Size(min = 1, max = 30, message = "联系人姓名过长")
     private String confirmPerson;
 
-    /** 0已确认1未确认2退回3撤回4发起人 */
+    /**
+     * 0已确认1未确认2退回3撤回4发起人
+     */
     private Integer confirmState;
 
     private Integer result;

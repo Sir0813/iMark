@@ -10,7 +10,10 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author cui
@@ -52,7 +55,7 @@ public class OutCertController extends BaseController {
         return ResultUtil.success(outCert);
     }
 
-    @ApiOperation(value = "出证文件打包下载", response= ResultUtil.class)
+    @ApiOperation(value = "出证文件打包下载", response = ResultUtil.class)
     @RequestMapping(value = "/cert/downZip", method = RequestMethod.GET)
     public Result downZip(String outCertId) throws Exception {
         String downPath = outCertService.downZip(outCertId);

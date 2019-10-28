@@ -13,8 +13,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @Configuration
 public class MultipartConfig {
 
-	@Bean
-    public MultipartResolver multipartResolver(){
+    @Bean
+    public MultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("UTF-8");
         // resolveLazily属性启用是为了推迟文件解析，自定义捕获文件大小异常
@@ -24,9 +24,10 @@ public class MultipartConfig {
         resolver.setResolveLazily(true);
         return resolver;
     }
+
     @Bean
-    public CIDService cidService(){
+    public CIDService cidService() {
         return new CIDServiceImpl();
     }
-	
+
 }

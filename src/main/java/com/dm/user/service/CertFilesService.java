@@ -1,6 +1,7 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.CertFiles;
+
 import java.util.List;
 
 /**
@@ -11,13 +12,15 @@ public interface CertFilesService {
 
     /**
      * 新增
+     *
      * @param certFiles
      * @throws Exception
      */
-	void insertSelective(CertFiles certFiles) throws Exception;
+    void insertSelective(CertFiles certFiles) throws Exception;
 
     /**
      * 修改
+     *
      * @param cf
      * @throws Exception
      */
@@ -25,6 +28,7 @@ public interface CertFilesService {
 
     /**
      * 根据存证ID删除
+     *
      * @param certId
      * @throws Exception
      */
@@ -32,6 +36,7 @@ public interface CertFilesService {
 
     /**
      * 根据文件ID批量查询
+     *
      * @param filesId
      * @return
      * @throws Exception
@@ -40,6 +45,7 @@ public interface CertFilesService {
 
     /**
      * 根据主键ID删除
+     *
      * @param fileId
      * @throws Exception
      */
@@ -47,6 +53,7 @@ public interface CertFilesService {
 
     /**
      * 根据主键ID查询
+     *
      * @param fileId
      * @return
      * @throws Exception
@@ -55,6 +62,7 @@ public interface CertFilesService {
 
     /**
      * 根据文件路径查询
+     *
      * @param frontPath
      * @return
      * @throws Exception

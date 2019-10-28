@@ -17,6 +17,7 @@ public enum CertStateEnum {
 
     private int code;
     private String desc;
+
     private CertStateEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;

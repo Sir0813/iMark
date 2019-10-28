@@ -1,11 +1,12 @@
 package com.dm.user.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.dm.user.entity.CertFiles;
 import com.dm.user.mapper.CertFilesMapper;
 import com.dm.user.service.CertFilesService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPr
     private CertFilesMapper certFilesMapper;
 
     @Override
-    public void insertSelective(CertFiles certFiles) throws Exception{
+    public void insertSelective(CertFiles certFiles) throws Exception {
         try {
             certFilesMapper.insertSelective(certFiles);
         } catch (Exception e) {
@@ -28,7 +29,7 @@ public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPr
     }
 
     @Override
-    public void updateByPrimaryKeySelective(CertFiles cf) throws Exception{
+    public void updateByPrimaryKeySelective(CertFiles cf) throws Exception {
         try {
             certFilesMapper.updateByPrimaryKeySelective(cf);
         } catch (Exception e) {
@@ -37,7 +38,7 @@ public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPr
     }
 
     @Override
-    public void deleteByCertId(Integer certId) throws Exception{
+    public void deleteByCertId(Integer certId) throws Exception {
         try {
             certFilesMapper.deleteByCertId(certId);
         } catch (Exception e) {
@@ -46,7 +47,7 @@ public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPr
     }
 
     @Override
-    public List<CertFiles> findByFilesIds(String[] filesId) throws Exception{
+    public List<CertFiles> findByFilesIds(String[] filesId) throws Exception {
         try {
             return certFilesMapper.findByFilesIds(filesId);
         } catch (Exception e) {

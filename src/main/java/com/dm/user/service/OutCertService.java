@@ -12,6 +12,7 @@ public interface OutCertService {
 
     /**
      * 动态下载出证模板
+     *
      * @param certIds
      * @return
      * @throws Exception
@@ -20,6 +21,7 @@ public interface OutCertService {
 
     /**
      * 保存
+     *
      * @param outCert
      * @throws Exception
      */
@@ -27,6 +29,7 @@ public interface OutCertService {
 
     /**
      * 出证列表
+     *
      * @param page
      * @param state
      * @return
@@ -36,6 +39,7 @@ public interface OutCertService {
 
     /**
      * 出证详情
+     *
      * @param outCertId
      * @return
      * @throws Exception
@@ -44,6 +48,7 @@ public interface OutCertService {
 
     /**
      * 出证说明及出证文件打包成ZIP
+     *
      * @param outCertId
      * @return
      * @throws Exception

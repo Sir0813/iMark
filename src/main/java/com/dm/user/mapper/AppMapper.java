@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AppMapper {
     /**
      * 根据ID删除
+     *
      * @param appId 主键ID
      * @return
      */
@@ -18,6 +19,7 @@ public interface AppMapper {
 
     /**
      * 新增
+     *
      * @param record app实体
      * @return
      */
@@ -25,6 +27,7 @@ public interface AppMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -32,6 +35,7 @@ public interface AppMapper {
 
     /**
      * 根据ID查询
+     *
      * @param appId
      * @return
      */
@@ -39,6 +43,7 @@ public interface AppMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -46,6 +51,7 @@ public interface AppMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -53,6 +59,7 @@ public interface AppMapper {
 
     /**
      * 获取app最新版本
+     *
      * @param app
      * @return
      */

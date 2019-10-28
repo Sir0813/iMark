@@ -12,6 +12,7 @@ public interface OpinionMapper {
 
     /**
      * 删除
+     *
      * @param opinionId
      * @return
      */
@@ -19,6 +20,7 @@ public interface OpinionMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +28,7 @@ public interface OpinionMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -33,6 +36,7 @@ public interface OpinionMapper {
 
     /**
      * 根据ID查询
+     *
      * @param opinionId
      * @return
      */
@@ -40,6 +44,7 @@ public interface OpinionMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -47,6 +52,7 @@ public interface OpinionMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */

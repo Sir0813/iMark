@@ -18,6 +18,7 @@ import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.*;
 import java.util.*;
 
@@ -53,10 +54,10 @@ public class OutCertServiceImpl implements OutCertService {
     public String downloadOutCertTemplate(String certIds) throws Exception {
         String[] split = certIds.split(",");
         List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
-        List<Map<String,String>> newlist = new ArrayList<>();
+        List<Map<String, String>> newlist = new ArrayList<>();
         for (int i = 0; i < certFicates.size(); i++) {
-            CertFicate certFicate =  certFicates.get(i);
-            Map<String,String> dataMap = new HashMap<>(16);
+            CertFicate certFicate = certFicates.get(i);
+            Map<String, String> dataMap = new HashMap<>(16);
             dataMap.put("name", certFicate.getCertName());
             dataMap.put("time", certFicate.getCertDate().toString());
             dataMap.put("certno", certFicate.getCertChainno());
@@ -73,18 +74,18 @@ public class OutCertServiceImpl implements OutCertService {
         String osname = System.getProperty("os.name").toLowerCase();
         File outFile;
         String resultPath = "";
-        if (osname.startsWith(StateMsg.OS_NAME)){
+        if (osname.startsWith(StateMsg.OS_NAME)) {
             configuration.setDirectoryForTemplateLoading(new File("D:\\upload\\"));
             outFile = new File("D:\\upload\\" + fileName);
             resultPath = "http://192.168.3.101/img/" + fileName;
-        }else{
+        } else {
             configuration.setDirectoryForTemplateLoading(new File("/opt/czt-upload/outcert/"));
             outFile = new File("/opt/czt-upload/outcert/" + fileName);
             resultPath = "http://114.244.37.10:7080/img/outcert/" + fileName;
         }
         //以utf-8的编码读取ftl文件
-        Template t =  configuration.getTemplate("outcert.ftl", "utf-8");
-        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "utf-8"),10240);
+        Template t = configuration.getTemplate("outcert.ftl", "utf-8");
+        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "utf-8"), 10240);
         t.process(dataMapss, out);
         out.close();
         return resultPath;
@@ -98,7 +99,7 @@ public class OutCertServiceImpl implements OutCertService {
             outCertMapper.insertSelective(outCert);
             List<Contact> contactList = outCert.getContactList();
             for (int i = 0; i < contactList.size(); i++) {
-                Contact contact =  contactList.get(i);
+                Contact contact = contactList.get(i);
                 User user = userService.findByName(contact.getContactPhone());
                 PushMsg pm = new PushMsg();
                 pm.setTitle(StateMsg.OUT_CERT_TITLE);
@@ -111,13 +112,13 @@ public class OutCertServiceImpl implements OutCertService {
                 pm.setReceive(contact.getContactPhone());
                 pm.setCertFicateId(String.valueOf(outCert.getOutCertId()));
                 pushMsgService.insertSelective(pm);
-                if (null != user){
+                if (null != user) {
                     contact.setUserId(user.getUserid());
                     /*出证通知*/
                     pm.setUserId(user.getUserid());
                     String json = new Gson().toJson(pm);
                     int resout = PushUtil.getInstance().sendToRegistrationId(contact.getContactPhone(), pm.getTitle(), json);
-                    if (resout == 1){
+                    if (resout == 1) {
                         pm.setState("1");
                     }
                     pushMsgService.updateByPrimaryKeySelective(pm);
@@ -141,25 +142,25 @@ public class OutCertServiceImpl implements OutCertService {
             String userId = LoginUserHelper.getUserId();
             String mySend = "mysend";
             String toMe = "tome";
-            if (mySend.equals(state)){
+            if (mySend.equals(state)) {
                 list = outCertMapper.list(userId);
-            }else if (toMe.equals(state)){
+            } else if (toMe.equals(state)) {
                 List<Contact> contacts = contactMapper.selectByUserId(userId);
-                if (contacts.size() > 0){
+                if (contacts.size() > 0) {
                     for (int i = 0; i < contacts.size(); i++) {
-                        Contact contact =  contacts.get(i);
+                        Contact contact = contacts.get(i);
                         OutCert outCert = outCertMapper.selectByPrimaryKey(contact.getOutCertId());
                         list.add(outCert);
                     }
                 }
-            }else{
+            } else {
                 return null;
             }
             if (list.size() == 0) {
                 return null;
             }
             PageInfo<OutCert> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum()>pageInfo.getPages()) {
+            if (page.getPageNum() > pageInfo.getPages()) {
                 return null;
             }
             return pageInfo;
@@ -182,14 +183,14 @@ public class OutCertServiceImpl implements OutCertService {
             List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
             String filesId = "";
             for (int i = 0; i < certFicates.size(); i++) {
-                CertFicate certFicate =  certFicates.get(i);
+                CertFicate certFicate = certFicates.get(i);
                 String certFilesid = certFicate.getCertFilesid();
                 filesId += certFilesid;
             }
             String id = distinctStringWithDot(filesId);
             List<CertFiles> list = certFilesService.findByFilesIds(id.split(","));
             for (int i = 0; i < list.size(); i++) {
-                CertFiles files =  list.get(i);
+                CertFiles files = list.get(i);
                 CertFicate certFicate = certFicateService.selectByPrimaryKey(files.getCertId());
                 files.setFileHash(certFicate.getCertName());
             }
@@ -216,7 +217,7 @@ public class OutCertServiceImpl implements OutCertService {
             List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
             String filesId = "";
             for (int i = 0; i < certFicates.size(); i++) {
-                CertFicate certFicate =  certFicates.get(i);
+                CertFicate certFicate = certFicates.get(i);
                 String certFilesid = certFicate.getCertFilesid();
                 filesId += certFilesid;
             }
@@ -230,15 +231,15 @@ public class OutCertServiceImpl implements OutCertService {
             String zipFilePath = "";
             String downloadPath = "";
             String path = UUID.randomUUID().toString();
-            if (osname.startsWith(StateMsg.OS_NAME)){
+            if (osname.startsWith(StateMsg.OS_NAME)) {
                 zipFilePath = "D:\\upload";
                 downloadPath = "http://192.168.3.101/img/" + path + ".zip";
-            }else{
+            } else {
                 zipFilePath = "/opt/czt-upload/outcert/zip";
                 downloadPath = "http://114.244.37.10:7080/img/outcert/zip/" + path + ".zip";
             }
             boolean b = fileUtil.fileToZip(fileList, zipFilePath, path);
-            if (!b){
+            if (!b) {
                 throw new Exception("压缩失败");
             }
             return downloadPath;
@@ -248,19 +249,19 @@ public class OutCertServiceImpl implements OutCertService {
     }
 
     private static String distinctStringWithDot(String str) {
-        String[]array = str.split(",");
+        String[] array = str.split(",");
         List<String> list = new ArrayList<>();
-        for(int i=0; i<array.length; i++){
-            for(int j=i+1; j<array.length; j++){
-                if(array[i].equals(array[j])){
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i + 1; j < array.length; j++) {
+                if (array[i].equals(array[j])) {
                     j = ++i;
                 }
             }
             list.add(array[i]);
         }
         StringBuffer sb = new StringBuffer();
-        for(String s:list){
-            sb.append(s+",");
+        for (String s : list) {
+            sb.append(s + ",");
         }
         return sb.toString();
     }

@@ -1,294 +1,295 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.dm.user.mapper.CertFicateMapper" >
-  <resultMap id="BaseResultMap" type="com.dm.user.entity.CertFicate" >
-    <id column="cert_id" property="certId" jdbcType="INTEGER" />
-    <result column="cert_date" property="certDate" jdbcType="TIMESTAMP" />
-    <result column="cert_post_date" property="certPostDate" jdbcType="TIMESTAMP" />
-    <result column="cert_owner" property="certOwner" jdbcType="INTEGER" />
-    <result column="cert_name" property="certName" jdbcType="VARCHAR" />
-    <result column="cert_describe" property="certDescribe" jdbcType="VARCHAR" />
-    <result column="cert_status" property="certStatus" jdbcType="INTEGER" />
-    <result column="cert_is_delete" property="certIsDelete" jdbcType="INTEGER" />
-    <result column="cert_del_date" property="certDelDate" jdbcType="TIMESTAMP" />
-    <result column="cert_type" property="certType" jdbcType="INTEGER" />
-    <result column="cert_hash" property="certHash" jdbcType="VARCHAR" />
-    <result column="cert_chainno" property="certChainno" jdbcType="VARCHAR" />
-    <result column="cert_filesid" property="certFilesid" jdbcType="VARCHAR" />
-    <result column="cert_isconf" property="certIsconf" jdbcType="INTEGER" />
-    <result column="cert_file_is_save" property="certFileIsSave" jdbcType="VARCHAR" />
-    <result column="cert_address" property="certAddress" jdbcType="VARCHAR" />
-    <result column="cert_code" property="certCode" jdbcType="VARCHAR" />
-    <result column="cert_block_number" property="certBlockNumber" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.dm.user.mapper.CertFicateMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.CertFicate">
+        <id column="cert_id" property="certId" jdbcType="INTEGER"/>
+        <result column="cert_date" property="certDate" jdbcType="TIMESTAMP"/>
+        <result column="cert_post_date" property="certPostDate" jdbcType="TIMESTAMP"/>
+        <result column="cert_owner" property="certOwner" jdbcType="INTEGER"/>
+        <result column="cert_name" property="certName" jdbcType="VARCHAR"/>
+        <result column="cert_describe" property="certDescribe" jdbcType="VARCHAR"/>
+        <result column="cert_status" property="certStatus" jdbcType="INTEGER"/>
+        <result column="cert_is_delete" property="certIsDelete" jdbcType="INTEGER"/>
+        <result column="cert_del_date" property="certDelDate" jdbcType="TIMESTAMP"/>
+        <result column="cert_type" property="certType" jdbcType="INTEGER"/>
+        <result column="cert_hash" property="certHash" jdbcType="VARCHAR"/>
+        <result column="cert_chainno" property="certChainno" jdbcType="VARCHAR"/>
+        <result column="cert_filesid" property="certFilesid" jdbcType="VARCHAR"/>
+        <result column="cert_isconf" property="certIsconf" jdbcType="INTEGER"/>
+        <result column="cert_file_is_save" property="certFileIsSave" jdbcType="VARCHAR"/>
+        <result column="cert_address" property="certAddress" jdbcType="VARCHAR"/>
+        <result column="cert_code" property="certCode" jdbcType="VARCHAR"/>
+        <result column="cert_block_number" property="certBlockNumber" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     cert_id, cert_date, cert_owner, cert_name, cert_describe, cert_status, cert_is_delete, 
     cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save,
     cert_address, cert_code, cert_block_number
   </sql>
-  <update id="updateCertState">
-	update biz_certficate
-  		<set>
-  			cert_status = 2,
-  			cert_isconf = 0
-  		</set>
-  	where cert_id = #{certId}
-  </update>
-  <update id="updateReasonByCertId" parameterType="java.lang.Integer">
-  	update biz_certficate
-  		<set>
-  			cert_status = 5
-  		</set>
-  	where cert_id = #{certId}
-  </update>
-  <update id="updateCertRevoke" parameterType="java.lang.Integer">
-  	update biz_certficate
-  		<set>
-  			cert_status = 6
-  		</set>
-  	where cert_id = #{certId,jdbcType=INTEGER}
-  </update>
-  <select id="selectByIDs" parameterType="java.util.List" resultMap="BaseResultMap">
-	  select 
-	  <include refid="Base_Column_List"></include>
-	  from biz_certficate
-	  where cert_id in 
-	  <foreach collection="array" item="certid" open="(" close= ")" separator=",">
-		#{certid}
-	  </foreach>
-	  and cert_isconf = 1
-	  and cert_is_delete = 1
-	  and cert_status = 4
-	  order by cert_post_date desc
-  </select>
+    <update id="updateCertState">
+        update biz_certficate
+        <set>
+            cert_status = 2,
+            cert_isconf = 0
+        </set>
+        where cert_id = #{certId}
+    </update>
+    <update id="updateReasonByCertId" parameterType="java.lang.Integer">
+        update biz_certficate
+        <set>
+            cert_status = 5
+        </set>
+        where cert_id = #{certId}
+    </update>
+    <update id="updateCertRevoke" parameterType="java.lang.Integer">
+        update biz_certficate
+        <set>
+            cert_status = 6
+        </set>
+        where cert_id = #{certId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByIDs" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_certficate
+        where cert_id in
+        <foreach collection="array" item="certid" open="(" close=")" separator=",">
+            #{certid}
+        </foreach>
+        and cert_isconf = 1
+        and cert_is_delete = 1
+        and cert_status = 4
+        order by cert_post_date desc
+    </select>
     <select id="selectByCertIDs" parameterType="java.util.List" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
         from biz_certficate
         where cert_id in
-        <foreach collection="array" item="certid" open="(" close= ")" separator=",">
+        <foreach collection="array" item="certid" open="(" close=")" separator=",">
             #{certid}
         </foreach>
     </select>
-  <select id="list" resultMap="BaseResultMap" parameterType="java.util.Map">
-  	select 
-  	<include refid="Base_Column_List" />
-  	from biz_certficate
-  	where cert_owner = #{userId}
-    and cert_is_delete = 1
-  	<choose>
-  		<when test="state != null and state !=''">
-  			<if test="state==0">
-  				and cert_status = #{state}
-  			</if>
-  			<if test="state==2">
-  				and cert_status = #{state} and cert_isconf = 0 
-  			</if>
-  			<if test="state==3">
-  				and cert_status = #{state} 
-  			</if>
-  			<if test="state==4">
-  				and cert_isconf = 1 and cert_status = #{state}
-  			</if>
-  			<if test="state==5">
-  				and (cert_status = #{state}
-  				or cert_status = 6)
-  			</if>
-  		</when>
-  		<otherwise>
-            <if test="certName!=null and certName!=''">
-                <bind name="pattern" value="'%' + _parameter.certName + '%'" />
-                and cert_name like #{pattern}
-            </if>
-            <if test="certid!=null">
-                or cert_id in
-                <foreach collection="certid" item="item" open="(" close= ")" separator="," >
-                   #{item}
-                </foreach>
-            </if>
-        </otherwise>
-  	</choose>
-    order by cert_post_date desc
-  </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from biz_certficate
-    where cert_id = #{certId,jdbcType=INTEGER}
-  </select>
-    <select id="selectByIdAndState" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    <select id="list" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
+        from biz_certficate
+        where cert_owner = #{userId}
+        and cert_is_delete = 1
+        <choose>
+            <when test="state != null and state !=''">
+                <if test="state==0">
+                    and cert_status = #{state}
+                </if>
+                <if test="state==2">
+                    and cert_status = #{state} and cert_isconf = 0
+                </if>
+                <if test="state==3">
+                    and cert_status = #{state}
+                </if>
+                <if test="state==4">
+                    and cert_isconf = 1 and cert_status = #{state}
+                </if>
+                <if test="state==5">
+                    and (cert_status = #{state}
+                    or cert_status = 6)
+                </if>
+            </when>
+            <otherwise>
+                <if test="certName!=null and certName!=''">
+                    <bind name="pattern" value="'%' + _parameter.certName + '%'"/>
+                    and cert_name like #{pattern}
+                </if>
+                <if test="certid!=null">
+                    or cert_id in
+                    <foreach collection="certid" item="item" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
+        order by cert_post_date desc
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_certficate
+        where cert_id = #{certId,jdbcType=INTEGER}
+    </select>
+    <select id="selectByIdAndState" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
         from biz_certficate
         where cert_id = #{certId,jdbcType=INTEGER}
         and cert_status = 2
         and cert_is_delete = 1
     </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_certficate
     where cert_id = #{certId,jdbcType=INTEGER}
   </delete>
-  <insert id="insertSelective" parameterType="com.dm.user.entity.CertFicate" useGeneratedKeys="true" keyProperty="certId">
-    insert into biz_certficate
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="certDate != null" >
-        cert_date,
-      </if>
-      <if test="certPostDate != null" >
-        cert_post_date,
-      </if>
-      <if test="certOwner != null" >
-        cert_owner,
-      </if>
-      <if test="certName != null" >
-        cert_name,
-      </if>
-      <if test="certDescribe != null" >
-        cert_describe,
-      </if>
-      <if test="certStatus != null" >
-        cert_status,
-      </if>
-      <if test="certIsDelete != null" >
-        cert_is_delete,
-      </if>
-      <if test="certDelDate != null" >
-        cert_del_date,
-      </if>
-      <if test="certType != null" >
-        cert_type,
-      </if>
-      <if test="certHash != null" >
-        cert_hash,
-      </if>
-      <if test="certChainno != null" >
-        cert_chainno,
-      </if>
-      <if test="certFilesid != null" >
-        cert_filesid,
-      </if>
-      <if test="certIsconf != null" >
-        cert_isconf,
-      </if>
-        <if test="certFileIsSave != null" >
-            cert_file_is_save,
-        </if>
-        <if test="certAddress != null" >
-            cert_address,
-        </if>
-        <if test="certCode != null" >
-            cert_code,
-        </if>
-        <if test="certBlockNumber != null" >
-            cert_block_number,
-        </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="certDate != null" >
-        #{certDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="certPostDate != null" >
-        #{certPostDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="certOwner != null" >
-        #{certOwner,jdbcType=INTEGER},
-      </if>
-      <if test="certName != null" >
-        #{certName,jdbcType=VARCHAR},
-      </if>
-      <if test="certDescribe != null" >
-        #{certDescribe,jdbcType=VARCHAR},
-      </if>
-      <if test="certStatus != null" >
-        #{certStatus,jdbcType=INTEGER},
-      </if>
-      <if test="certIsDelete != null" >
-        #{certIsDelete,jdbcType=INTEGER},
-      </if>
-      <if test="certDelDate != null" >
-        #{certDelDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="certType != null" >
-        #{certType,jdbcType=INTEGER},
-      </if>
-      <if test="certHash != null" >
-        #{certHash,jdbcType=VARCHAR},
-      </if>
-      <if test="certChainno != null" >
-        #{certChainno,jdbcType=VARCHAR},
-      </if>
-      <if test="certFilesid != null" >
-        #{certFilesid,jdbcType=VARCHAR},
-      </if>
-      <if test="certIsconf != null" >
-        #{certIsconf,jdbcType=INTEGER},
-      </if>
-        <if test="certFileIsSave != null" >
-            #{certFileIsSave,jdbcType=VARCHAR},
-        </if>
-        <if test="certAddress != null" >
-            #{certAddress,jdbcType=VARCHAR},
-        </if>
-        <if test="certCode != null" >
-            #{certCode,jdbcType=VARCHAR},
-        </if>
-        <if test="certBlockNumber != null" >
-            #{certBlockNumber,jdbcType=VARCHAR},
-        </if>
-    </trim>
-  </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertFicate" >
+    <insert id="insertSelective" parameterType="com.dm.user.entity.CertFicate" useGeneratedKeys="true"
+            keyProperty="certId">
+        insert into biz_certficate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="certDate != null">
+                cert_date,
+            </if>
+            <if test="certPostDate != null">
+                cert_post_date,
+            </if>
+            <if test="certOwner != null">
+                cert_owner,
+            </if>
+            <if test="certName != null">
+                cert_name,
+            </if>
+            <if test="certDescribe != null">
+                cert_describe,
+            </if>
+            <if test="certStatus != null">
+                cert_status,
+            </if>
+            <if test="certIsDelete != null">
+                cert_is_delete,
+            </if>
+            <if test="certDelDate != null">
+                cert_del_date,
+            </if>
+            <if test="certType != null">
+                cert_type,
+            </if>
+            <if test="certHash != null">
+                cert_hash,
+            </if>
+            <if test="certChainno != null">
+                cert_chainno,
+            </if>
+            <if test="certFilesid != null">
+                cert_filesid,
+            </if>
+            <if test="certIsconf != null">
+                cert_isconf,
+            </if>
+            <if test="certFileIsSave != null">
+                cert_file_is_save,
+            </if>
+            <if test="certAddress != null">
+                cert_address,
+            </if>
+            <if test="certCode != null">
+                cert_code,
+            </if>
+            <if test="certBlockNumber != null">
+                cert_block_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="certDate != null">
+                #{certDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="certPostDate != null">
+                #{certPostDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="certOwner != null">
+                #{certOwner,jdbcType=INTEGER},
+            </if>
+            <if test="certName != null">
+                #{certName,jdbcType=VARCHAR},
+            </if>
+            <if test="certDescribe != null">
+                #{certDescribe,jdbcType=VARCHAR},
+            </if>
+            <if test="certStatus != null">
+                #{certStatus,jdbcType=INTEGER},
+            </if>
+            <if test="certIsDelete != null">
+                #{certIsDelete,jdbcType=INTEGER},
+            </if>
+            <if test="certDelDate != null">
+                #{certDelDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="certType != null">
+                #{certType,jdbcType=INTEGER},
+            </if>
+            <if test="certHash != null">
+                #{certHash,jdbcType=VARCHAR},
+            </if>
+            <if test="certChainno != null">
+                #{certChainno,jdbcType=VARCHAR},
+            </if>
+            <if test="certFilesid != null">
+                #{certFilesid,jdbcType=VARCHAR},
+            </if>
+            <if test="certIsconf != null">
+                #{certIsconf,jdbcType=INTEGER},
+            </if>
+            <if test="certFileIsSave != null">
+                #{certFileIsSave,jdbcType=VARCHAR},
+            </if>
+            <if test="certAddress != null">
+                #{certAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="certCode != null">
+                #{certCode,jdbcType=VARCHAR},
+            </if>
+            <if test="certBlockNumber != null">
+                #{certBlockNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.CertFicate">
         update biz_certficate
-        <set >
-            <if test="certDate != null" >
+        <set>
+            <if test="certDate != null">
                 cert_date = #{certDate,jdbcType=TIMESTAMP},
             </if>
-            <if test="certPostDate != null" >
+            <if test="certPostDate != null">
                 cert_post_date = #{certPostDate,jdbcType=TIMESTAMP},
             </if>
-            <if test="certOwner != null" >
+            <if test="certOwner != null">
                 cert_owner = #{certOwner,jdbcType=VARCHAR},
             </if>
-            <if test="certName != null" >
+            <if test="certName != null">
                 cert_name = #{certName,jdbcType=VARCHAR},
             </if>
-            <if test="certDescribe != null" >
+            <if test="certDescribe != null">
                 cert_describe = #{certDescribe,jdbcType=VARCHAR},
             </if>
-            <if test="certStatus != null" >
+            <if test="certStatus != null">
                 cert_status = #{certStatus,jdbcType=INTEGER},
             </if>
-            <if test="certIsDelete != null" >
+            <if test="certIsDelete != null">
                 cert_Is_Delete = #{certIsDelete,jdbcType=VARCHAR},
             </if>
-            <if test="certIsconf != null" >
+            <if test="certIsconf != null">
                 cert_Isconf = #{certIsconf,jdbcType=VARCHAR},
             </if>
-            <if test="certDelDate != null" >
+            <if test="certDelDate != null">
                 cert_Del_Date = #{certDelDate,jdbcType=TIMESTAMP},
             </if>
-            <if test="certType != null" >
+            <if test="certType != null">
                 cert_Type = #{certType,jdbcType=INTEGER},
             </if>
-            <if test="certHash != null" >
+            <if test="certHash != null">
                 cert_Hash = #{certHash,jdbcType=VARCHAR},
             </if>
-            <if test="certChainno != null" >
+            <if test="certChainno != null">
                 cert_Chainno = #{certChainno,jdbcType=VARCHAR},
             </if>
-            <if test="certFilesid != null" >
+            <if test="certFilesid != null">
                 cert_Filesid = #{certFilesid,jdbcType=VARCHAR},
             </if>
-            <if test="certFileIsSave != null" >
+            <if test="certFileIsSave != null">
                 cert_File_Is_Save = #{certFileIsSave,jdbcType=VARCHAR},
             </if>
-            <if test="certAddress != null" >
+            <if test="certAddress != null">
                 cert_Address = #{certAddress,jdbcType=VARCHAR},
             </if>
-            <if test="certCode != null" >
+            <if test="certCode != null">
                 cert_Code = #{certCode,jdbcType=VARCHAR},
             </if>
-            <if test="certBlockNumber != null" >
+            <if test="certBlockNumber != null">
                 cert_block_number = #{certBlockNumber,jdbcType=VARCHAR},
             </if>
         </set>

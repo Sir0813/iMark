@@ -1,12 +1,12 @@
 # application全局配置
 spring:
-   # 默认访问 appplication.properties或applicaion.yml
-   config:
-      # 配置文件名称，默认为appplication
-      # name: application
-      # 配置文件路径
-      # location: application.yml
-   profiles:
-      # 配置扩展profiles
-      active: dev
-      # active: pro
+  # 默认访问 appplication.properties或applicaion.yml
+  config:
+  # 配置文件名称，默认为appplication
+  # name: application
+  # 配置文件路径
+  # location: application.yml
+  profiles:
+    # 配置扩展profiles
+    active: dev
+    # active: pro

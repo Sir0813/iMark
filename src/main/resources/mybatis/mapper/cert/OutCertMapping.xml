@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dm.user.mapper.OutCertMapper">
-  <resultMap id="BaseResultMap" type="com.dm.user.entity.OutCert">
-    <id column="out_cert_id" jdbcType="INTEGER" property="outCertId" />
-    <result column="out_cert_time" jdbcType="TIMESTAMP" property="outCertTime" />
-    <result column="out_cert_name" jdbcType="VARCHAR" property="outCertName" />
-    <result column="out_cert_desc" jdbcType="VARCHAR" property="outCertDesc" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="file_id" jdbcType="INTEGER" property="fileId" />
-    <result column="cert_id" jdbcType="VARCHAR" property="certId" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.OutCert">
+        <id column="out_cert_id" jdbcType="INTEGER" property="outCertId"/>
+        <result column="out_cert_time" jdbcType="TIMESTAMP" property="outCertTime"/>
+        <result column="out_cert_name" jdbcType="VARCHAR" property="outCertName"/>
+        <result column="out_cert_desc" jdbcType="VARCHAR" property="outCertDesc"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="file_id" jdbcType="INTEGER" property="fileId"/>
+        <result column="cert_id" jdbcType="VARCHAR" property="certId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     out_cert_id, out_cert_time, out_cert_name, out_cert_desc, user_id, file_id, cert_id
   </sql>
-  <select id="list" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from biz_out_cert
-    where user_id = #{userId}
-    order by out_cert_time desc
-  </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from biz_out_cert
-    where out_cert_id = #{outCertId,jdbcType=INTEGER}
-    order by out_cert_time desc
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="list" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_out_cert
+        where user_id = #{userId}
+        order by out_cert_time desc
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_out_cert
+        where out_cert_id = #{outCertId,jdbcType=INTEGER}
+        order by out_cert_time desc
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_out_cert
     where out_cert_id = #{outCertId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.dm.user.entity.OutCert">
+    <insert id="insert" parameterType="com.dm.user.entity.OutCert">
     insert into biz_out_cert (out_cert_id, out_cert_time, out_cert_name, 
       out_cert_desc, user_id, file_id, 
       cert_id)
@@ -39,74 +39,75 @@
       #{outCertDesc,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{fileId,jdbcType=INTEGER}, 
       #{certId,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.dm.user.entity.OutCert" useGeneratedKeys="true" keyProperty="outCertId">
-    insert into biz_out_cert
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="outCertTime != null">
-        out_cert_time,
-      </if>
-      <if test="outCertName != null">
-        out_cert_name,
-      </if>
-      <if test="outCertDesc != null">
-        out_cert_desc,
-      </if>
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="fileId != null">
-        file_id,
-      </if>
-      <if test="certId != null">
-        cert_id,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="outCertTime != null">
-        #{outCertTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="outCertName != null">
-        #{outCertName,jdbcType=VARCHAR},
-      </if>
-      <if test="outCertDesc != null">
-        #{outCertDesc,jdbcType=VARCHAR},
-      </if>
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="fileId != null">
-        #{fileId,jdbcType=INTEGER},
-      </if>
-      <if test="certId != null">
-        #{certId,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.OutCert">
-    update biz_out_cert
-    <set>
-      <if test="outCertTime != null">
-        out_cert_time = #{outCertTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="outCertName != null">
-        out_cert_name = #{outCertName,jdbcType=VARCHAR},
-      </if>
-      <if test="outCertDesc != null">
-        out_cert_desc = #{outCertDesc,jdbcType=VARCHAR},
-      </if>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="fileId != null">
-        file_id = #{fileId,jdbcType=INTEGER},
-      </if>
-      <if test="certId != null">
-        cert_id = #{certId,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where out_cert_id = #{outCertId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.OutCert">
+    <insert id="insertSelective" parameterType="com.dm.user.entity.OutCert" useGeneratedKeys="true"
+            keyProperty="outCertId">
+        insert into biz_out_cert
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outCertTime != null">
+                out_cert_time,
+            </if>
+            <if test="outCertName != null">
+                out_cert_name,
+            </if>
+            <if test="outCertDesc != null">
+                out_cert_desc,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="fileId != null">
+                file_id,
+            </if>
+            <if test="certId != null">
+                cert_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outCertTime != null">
+                #{outCertTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="outCertName != null">
+                #{outCertName,jdbcType=VARCHAR},
+            </if>
+            <if test="outCertDesc != null">
+                #{outCertDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="fileId != null">
+                #{fileId,jdbcType=INTEGER},
+            </if>
+            <if test="certId != null">
+                #{certId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.OutCert">
+        update biz_out_cert
+        <set>
+            <if test="outCertTime != null">
+                out_cert_time = #{outCertTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="outCertName != null">
+                out_cert_name = #{outCertName,jdbcType=VARCHAR},
+            </if>
+            <if test="outCertDesc != null">
+                out_cert_desc = #{outCertDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="fileId != null">
+                file_id = #{fileId,jdbcType=INTEGER},
+            </if>
+            <if test="certId != null">
+                cert_id = #{certId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where out_cert_id = #{outCertId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.OutCert">
     update biz_out_cert
     set out_cert_time = #{outCertTime,jdbcType=TIMESTAMP},
       out_cert_name = #{outCertName,jdbcType=VARCHAR},

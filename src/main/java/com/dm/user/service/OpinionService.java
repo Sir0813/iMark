@@ -10,6 +10,7 @@ public interface OpinionService {
 
     /**
      * 意见反馈提交
+     *
      * @param opinion
      * @throws Exception
      */

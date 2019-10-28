@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.PushMsg;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public interface PushMsgMapper {
 
     /**
      * 删除
+     *
      * @param pushId
      * @return
      */
@@ -20,6 +22,7 @@ public interface PushMsgMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -27,6 +30,7 @@ public interface PushMsgMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -34,6 +38,7 @@ public interface PushMsgMapper {
 
     /**
      * 根据ID查询
+     *
      * @param pushId
      * @return
      */
@@ -41,6 +46,7 @@ public interface PushMsgMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -48,6 +54,7 @@ public interface PushMsgMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -55,6 +62,7 @@ public interface PushMsgMapper {
 
     /**
      * 根据状态和手机号查询
+     *
      * @param username
      * @return
      */
@@ -62,6 +70,7 @@ public interface PushMsgMapper {
 
     /**
      * 用户历史消息
+     *
      * @param userId 用户ID
      * @return
      */
@@ -69,6 +78,7 @@ public interface PushMsgMapper {
 
     /**
      * 修改成已读
+     *
      * @param pushId
      */
     void updateByRead(String pushId);

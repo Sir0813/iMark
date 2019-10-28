@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -24,8 +25,10 @@ public class HttpSendUtil {
     private static final String URL = "https://device.jpush.cn/v3/";
     private static final String APP_KEY = "f0e7dec1b2aefc534e08fe18";
     private static final String SECRET_KEY = "2464890880bcd3f52e00c1d7";
+
     /**
      * 构造Basic Auth认证头信息
+     *
      * @return authHeader
      */
     private static String getHeader() {
@@ -37,6 +40,7 @@ public class HttpSendUtil {
 
     /**
      * 查询别名绑定的设备
+     *
      * @param url
      * @param alias
      * @return
@@ -62,6 +66,7 @@ public class HttpSendUtil {
 
     /**
      * 绑定别名
+     *
      * @param url
      * @param json
      * @throws Exception
@@ -82,6 +87,7 @@ public class HttpSendUtil {
 
     /**
      * 删除别名
+     *
      * @param url
      * @param alias
      * @throws Exception

@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -25,19 +26,21 @@ public class UploadFailException {
 
     /**
      * 文件上传太大异常处理
+     *
      * @param req
      * @param e
      * @return
      */
-	@ExceptionHandler(MaxUploadSizeExceededException.class)
-    public Result handleMaxUploadSizeExceededException(HttpServletRequest req,MaxUploadSizeExceededException e) {
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result handleMaxUploadSizeExceededException(HttpServletRequest req, MaxUploadSizeExceededException e) {
         new ResultUtil();
         logger.error("error URL ===>>" + req.getRequestURL() + "<===>error msg ===>>" + e.getMessage());
-		return ResultUtil.info("file.upload.max.size.code","file.upload.max.size.msg");
+        return ResultUtil.info("file.upload.max.size.code", "file.upload.max.size.msg");
     }
 
     /**
      * 字段校验异常处理
+     *
      * @param req
      * @param ex
      * @return
@@ -48,7 +51,7 @@ public class UploadFailException {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < fieldErrors.size(); i++) {
-            FieldError fieldError =  fieldErrors.get(i);
+            FieldError fieldError = fieldErrors.get(i);
             builder.append(fieldError.getDefaultMessage());
         }
         /* + "\n"*/
@@ -61,6 +64,7 @@ public class UploadFailException {
 
     /**
      * 统一异常处理
+     *
      * @param req
      * @param ex
      * @return
@@ -70,11 +74,11 @@ public class UploadFailException {
         Result result = null;
         logger.error("error URL ===>>" + req.getRequestURL() + "<===>error msg ===>>" + ex.getMessage());
         String errorMsg = "系统开小差了，请稍后重试";
-        if (ex.getMessage().contains(StateMsg.REASONMSG)){
+        if (ex.getMessage().contains(StateMsg.REASONMSG)) {
             result = new Result();
             result.setMsg(StateMsg.REASONMSG);
             result.setCode("10000");
-        }else{
+        } else {
             result = ResultUtil.error(errorMsg);
         }
         return result;

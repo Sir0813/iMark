@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class PushMsgServiceImpl implements PushMsgService {
     }
 
     @Override
-    public void updateByPrimaryKeySelective(PushMsg pm) throws Exception{
+    public void updateByPrimaryKeySelective(PushMsg pm) throws Exception {
         try {
             pushMsgMapper.updateByPrimaryKeySelective(pm);
         } catch (Exception e) {
@@ -52,7 +53,7 @@ public class PushMsgServiceImpl implements PushMsgService {
                 return null;
             }
             PageInfo<PushMsg> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum()>pageInfo.getPages()) {
+            if (page.getPageNum() > pageInfo.getPages()) {
                 return null;
             }
             return pageInfo;

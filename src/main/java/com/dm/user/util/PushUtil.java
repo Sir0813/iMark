@@ -20,21 +20,22 @@ import org.springframework.stereotype.Component;
  * @date 2019-09-26
  */
 @Component
-public class PushUtil{
+public class PushUtil {
 
-	private static PushUtil instance;
-	
+    private static PushUtil instance;
+
     private JPushClient jpushClient;
 
     private static Logger logger = LoggerFactory.getLogger(PushUtil.class);
 
     /**
      * 极光账户初始化
+     *
      * @throws Exception
      */
     private PushUtil() throws Exception {
-    	String appKey = "f0e7dec1b2aefc534e08fe18";
-    	String masterSecret = "2464890880bcd3f52e00c1d7";
+        String appKey = "f0e7dec1b2aefc534e08fe18";
+        String masterSecret = "2464890880bcd3f52e00c1d7";
     	/*Yaml yaml = new Yaml();
         String url = PushUtil.class.getClassLoader().getResource("config/application-dev.yml").getPath();
         Map<String,Object> map = yaml.loadAs(new FileInputStream(url), Map.class);
@@ -59,20 +60,21 @@ public class PushUtil{
 
     /**
      * 推送给指定设备标识参数的用户（自定义消息通知）
-     * @param alias 设备标识 用户ID 别名
-     * @param msg_title 消息内容标题
+     *
+     * @param alias       设备标识 用户ID 别名
+     * @param msg_title   消息内容标题
      * @param msg_content 消息内容
      * @return 0推送失败，1推送成功
      */
     public int sendToRegistrationId(String alias, String msg_title, String msg_content) {
         int result = 0;
         try {
-        	//pushPayload = this.buildPushObjectAlertWithTitle(alias, msg_content, extrasparam);
+            //pushPayload = this.buildPushObjectAlertWithTitle(alias, msg_content, extrasparam);
             PushPayload pushPayload = null;
             pushPayload = this.buildPushObjectMessageWithTitle(alias, msg_title, msg_content);
             PushResult pushResult = jpushClient.sendPush(pushPayload);
-            if(pushResult.getResponseCode() == 200&&pushResult.statusCode==0){
-                result=1;
+            if (pushResult.getResponseCode() == 200 && pushResult.statusCode == 0) {
+                result = 1;
             }
             logger.info("[极光推送]PushResult result is " + pushResult);
         } catch (APIConnectionException e) {
@@ -84,11 +86,12 @@ public class PushUtil{
         }
         return result;
     }
- 
+
     /**
      * 推送自定义消息
-     * @param alias 设备标识 用户ID 别名
-     * @param msg_title 消息内容标题
+     *
+     * @param alias       设备标识 用户ID 别名
+     * @param msg_title   消息内容标题
      * @param msg_content 消息内容
      * @return
      */
@@ -145,19 +148,20 @@ public class PushUtil{
                         .build())
                 .build();
     }
-    
+
     /**
      * 推送通知
+     *
      * @param alias
      * @param msg_content
      * @param extravalue
      * @return
      */
-	private PushPayload buildPushObjectAlertWithTitle(String alias,
-    		String msg_content, String extravalue) {
+    private PushPayload buildPushObjectAlertWithTitle(String alias,
+                                                      String msg_content, String extravalue) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(null==alias?Audience.all():Audience.registrationId(alias))
+                .setAudience(null == alias ? Audience.all() : Audience.registrationId(alias))
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .setAlert(msg_content)//通知内容

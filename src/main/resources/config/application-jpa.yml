@@ -1,24 +1,24 @@
 #spring JPA配置，JPA基于Hibernate
 spring:
-   jpa:
-      # 数据库类型
-      database: MYSQL
-      # 是否在控制台、日志中显示sql语句
-      show-sql: true
+  jpa:
+    # 数据库类型
+    database: MYSQL
+    # 是否在控制台、日志中显示sql语句
+    show-sql: true
+    hibernate:
+      # 建表方式
+      # Hibernate ddl auto (create, create-drop, update)
+      # create：每次加载Hibernate时都会删除上一次生成的表，然后重新生成新表，即使两次没有任何修改也会这样执行，这就导致每次启动都是一个新的数据库，也是导致数据丢失的重要原因。
+      # create-drop：每次加载Hibernate时都会生成表，但当SessionFactory关闭时，所生成的表将自动删除。
+      # update：最常用的属性值，第一次加载Hibernate时创建数据表（前提是需要先有数据库），以后加载HIbernate时只会根据model更新，即使model已经删除了某些属性，数据表也不会随之删除字段。
+      # validate：每次加载Hibernate时都会验证数据表结构，只会和已经存在的数据表进行比较，根据model修改表结构，但不会创建新表。
+      ddl-auto: update
+      # Naming strategy
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
       hibernate:
-         # 建表方式
-         # Hibernate ddl auto (create, create-drop, update)
-         # create：每次加载Hibernate时都会删除上一次生成的表，然后重新生成新表，即使两次没有任何修改也会这样执行，这就导致每次启动都是一个新的数据库，也是导致数据丢失的重要原因。
-         # create-drop：每次加载Hibernate时都会生成表，但当SessionFactory关闭时，所生成的表将自动删除。
-         # update：最常用的属性值，第一次加载Hibernate时创建数据表（前提是需要先有数据库），以后加载HIbernate时只会根据model更新，即使model已经删除了某些属性，数据表也不会随之删除字段。
-         # validate：每次加载Hibernate时都会验证数据表结构，只会和已经存在的数据表进行比较，根据model修改表结构，但不会创建新表。
-         ddl-auto: update
-         # Naming strategy
-         naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-      properties:
-         hibernate:
-            # 数据库方言
-            dialect: org.hibernate.dialect.MySQL5Dialect
+        # 数据库方言
+        dialect: org.hibernate.dialect.MySQL5Dialect
 
 # Hibernate 相关配置
 #========================================================

@@ -1,7 +1,7 @@
 package com.dm.user.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
 import com.dm.user.entity.UserCard;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author cui
@@ -12,6 +12,7 @@ public interface UserCardMapper {
 
     /**
      * 删除
+     *
      * @param cardid
      * @return
      */
@@ -19,6 +20,7 @@ public interface UserCardMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +28,7 @@ public interface UserCardMapper {
 
     /**
      * 根据ID查询
+     *
      * @param cardid
      * @return
      */
@@ -33,6 +36,7 @@ public interface UserCardMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -40,13 +44,15 @@ public interface UserCardMapper {
 
     /**
      * 根据用户ID查询
+     *
      * @param userid
      * @return
      */
-	UserCard selectByUserId(String userid, String realState);
+    UserCard selectByUserId(String userid, String realState);
 
     /**
      * 根据身份证号查询
+     *
      * @param cardNumber
      * @return
      */

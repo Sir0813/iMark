@@ -1,7 +1,7 @@
 package com.dm.user.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
 import com.dm.user.entity.PwdHistory;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author cui
@@ -12,6 +12,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 删除
+     *
      * @param key
      * @return
      */
@@ -19,6 +20,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +28,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -33,6 +36,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 根据ID查询
+     *
      * @param key
      * @return
      */
@@ -40,6 +44,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -47,6 +52,7 @@ public interface PwdHistoryMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */

@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+
 import java.util.Map;
 
 /**
@@ -13,6 +14,7 @@ public interface UserMapper {
 
     /**
      * 删除
+     *
      * @param userid
      * @return
      */
@@ -20,6 +22,7 @@ public interface UserMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -27,6 +30,7 @@ public interface UserMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -34,6 +38,7 @@ public interface UserMapper {
 
     /**
      * 根据主键查询
+     *
      * @param userid
      * @return
      */
@@ -41,6 +46,7 @@ public interface UserMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -48,6 +54,7 @@ public interface UserMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -55,25 +62,29 @@ public interface UserMapper {
 
     /**
      * 注册
+     *
      * @param user
      */
-	void userRegister(User user);
+    void userRegister(User user);
 
     /**
      * 根据用户手机号查找
+     *
      * @param username
      * @return
      */
-	User findByName(String username);
+    User findByName(String username);
 
     /**
      * 根据ID修改密码
+     *
      * @param map
      */
-	void updateById(Map<String, Object> map);
+    void updateById(Map<String, Object> map);
 
     /**
      * 根据email查询
+     *
      * @param email
      * @return
      */

@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -44,10 +45,10 @@ public class User {
 
     private Integer badLoginNum;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastPwdDate;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastActive;
 
     private String createdDate;
@@ -56,9 +57,9 @@ public class User {
 
     private String describe;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date validEndDate;
-    
+
     private String headPhoto;
 
     public Integer getUserid() {
@@ -213,11 +214,11 @@ public class User {
         this.validEndDate = validEndDate;
     }
 
-	public String getHeadPhoto() {
-		return headPhoto;
-	}
+    public String getHeadPhoto() {
+        return headPhoto;
+    }
 
-	public void setHeadPhoto(String headPhoto) {
-		this.headPhoto = headPhoto;
-	}
+    public void setHeadPhoto(String headPhoto) {
+        this.headPhoto = headPhoto;
+    }
 }

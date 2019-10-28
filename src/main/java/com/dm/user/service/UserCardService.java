@@ -11,6 +11,7 @@ public interface UserCardService {
 
     /**
      * 实名认证提交
+     *
      * @param userCard
      * @return
      * @throws Exception
@@ -19,6 +20,7 @@ public interface UserCardService {
 
     /**
      * 实名信息查看
+     *
      * @return
      * @throws Exception
      */
@@ -26,6 +28,7 @@ public interface UserCardService {
 
     /**
      * 根据用户ID查询
+     *
      * @param userId
      * @return
      * @throws Exception

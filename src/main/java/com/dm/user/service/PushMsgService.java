@@ -3,6 +3,7 @@ package com.dm.user.service;
 import com.dm.user.entity.PushMsg;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public interface PushMsgService {
 
     /**
      * 新增
+     *
      * @param pm
      * @throws Exception
      */
@@ -20,6 +22,7 @@ public interface PushMsgService {
 
     /**
      * 根据发送人和状态查询
+     *
      * @param username
      * @return
      * @throws Exception
@@ -28,6 +31,7 @@ public interface PushMsgService {
 
     /**
      * 修改
+     *
      * @param pm
      * @throws Exception
      */
@@ -35,6 +39,7 @@ public interface PushMsgService {
 
     /**
      * 历史消息
+     *
      * @param page
      * @return
      * @throws Exception
@@ -43,6 +48,7 @@ public interface PushMsgService {
 
     /**
      * 已读状态修改
+     *
      * @param pushId
      * @throws Exception
      */

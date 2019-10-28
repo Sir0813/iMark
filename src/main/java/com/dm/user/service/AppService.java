@@ -11,6 +11,7 @@ public interface AppService {
 
     /**
      * 获取最新app版本
+     *
      * @param app
      * @return app实体
      * @throws Exception

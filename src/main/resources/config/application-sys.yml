@@ -2,14 +2,14 @@
 #-------------------------------------------------------
 #多元权限分离,即不能交叉权限，内容为角色code的组合字符串
 sys:
-   mult:
-      auth:
-         sep: auditor,sadmin
-   name: jboot
+  mult:
+    auth:
+      sep: auditor,sadmin
+  name: jboot
 
 #登录配置
 login:
-   #是否支持多端登录
-   multi: true
+  #是否支持多端登录
+  multi: true
 
       

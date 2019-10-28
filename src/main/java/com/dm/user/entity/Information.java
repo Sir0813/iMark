@@ -1,6 +1,7 @@
 package com.dm.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 /**
@@ -15,17 +16,19 @@ public class Information {
 
     private String infoMsg;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date infoSenddate;
 
     private String infoUser;
 
-    /** 0发送成功未进行认证（有效）1发送成功已经认证（无效）*/
+    /**
+     * 0发送成功未进行认证（有效）1发送成功已经认证（无效）
+     */
     private String infoState;
 
     private String infoPhone;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date infoExpireddate;
 
     public Integer getInfoId() {
@@ -84,11 +87,11 @@ public class Information {
         this.infoExpireddate = infoExpireddate;
     }
 
-	public String getInfoState() {
-		return infoState;
-	}
+    public String getInfoState() {
+        return infoState;
+    }
 
-	public void setInfoState(String infoState) {
-		this.infoState = infoState;
-	}
+    public void setInfoState(String infoState) {
+        this.infoState = infoState;
+    }
 }

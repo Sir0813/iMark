@@ -12,6 +12,7 @@ public interface TemFileMapper {
 
     /**
      * 删除
+     *
      * @param temId
      * @return
      */
@@ -19,6 +20,7 @@ public interface TemFileMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -26,6 +28,7 @@ public interface TemFileMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -33,6 +36,7 @@ public interface TemFileMapper {
 
     /**
      * 根据ID查询
+     *
      * @param temId
      * @return
      */
@@ -40,6 +44,7 @@ public interface TemFileMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */
@@ -47,6 +52,7 @@ public interface TemFileMapper {
 
     /**
      * 根据存证ID查询
+     *
      * @param certId
      * @return
      */

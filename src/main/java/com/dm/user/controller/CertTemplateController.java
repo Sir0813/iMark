@@ -26,7 +26,7 @@ public class CertTemplateController extends BaseController {
     private CertTemplateService certTemplateService;
 
     @ApiOperation(value = "模板列表", response = ResultUtil.class)
-    @RequestMapping(value = "/list" , method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result list() throws Exception {
         return certTemplateService.list();
     }
@@ -35,7 +35,7 @@ public class CertTemplateController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public Result getHtmlTemplate(String type) throws Exception {
         CertTemplate ct = certTemplateService.getByTemplateType(type);
-        String htmlTemplate = FileUtil.getHtmlTemplate(ct.getTemplatePath()).replace("\t","");
+        String htmlTemplate = FileUtil.getHtmlTemplate(ct.getTemplatePath()).replace("\t", "");
         return ResultUtil.success(htmlTemplate);
     }
 

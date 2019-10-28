@@ -15,11 +15,11 @@ public class CertFiles {
     private Double fileSize;
 
     private String filePath;
-    
+
     private Integer certId;
-    
+
     private String fileSeq;
-    
+
     private String fileUrl;
 
     private String fileHash;
@@ -33,14 +33,14 @@ public class CertFiles {
     }
 
     public String getFileSeq() {
-		return fileSeq;
-	}
+        return fileSeq;
+    }
 
-	public void setFileSeq(String fileSeq) {
-		this.fileSeq = fileSeq;
-	}
+    public void setFileSeq(String fileSeq) {
+        this.fileSeq = fileSeq;
+    }
 
-	public Integer getFileId() {
+    public Integer getFileId() {
         return fileId;
     }
 
@@ -88,12 +88,12 @@ public class CertFiles {
         this.filePath = filePath == null ? null : filePath.trim();
     }
 
-	public String getFileUrl() {
-		return fileUrl;
-	}
+    public String getFileUrl() {
+        return fileUrl;
+    }
 
-	public void setFileUrl(String fileUrl) {
-		this.fileUrl = fileUrl;
-	}
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
 }

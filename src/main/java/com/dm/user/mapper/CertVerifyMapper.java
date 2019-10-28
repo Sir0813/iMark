@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CertVerifyMapper {
     /**
      * 删除
+     *
      * @param verifyId
      * @return
      */
@@ -18,6 +19,7 @@ public interface CertVerifyMapper {
 
     /**
      * 新增
+     *
      * @param record
      * @return
      */
@@ -25,6 +27,7 @@ public interface CertVerifyMapper {
 
     /**
      * 根据ID查询
+     *
      * @param verifyId
      * @return
      */
@@ -32,6 +35,7 @@ public interface CertVerifyMapper {
 
     /**
      * 修改
+     *
      * @param record
      * @return
      */

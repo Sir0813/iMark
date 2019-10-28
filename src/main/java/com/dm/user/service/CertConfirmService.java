@@ -1,6 +1,7 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.CertConfirm;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public interface CertConfirmService {
 
     /**
      * 根据ID删除
+     *
      * @param certId
      * @throws Exception
      */
@@ -19,6 +21,7 @@ public interface CertConfirmService {
 
     /**
      * 新增
+     *
      * @param certConfirm
      * @throws Exception
      */
@@ -26,6 +29,7 @@ public interface CertConfirmService {
 
     /**
      * 根据存证ID查询
+     *
      * @param certId 存证ID
      * @return
      * @throws Exception
@@ -34,6 +38,7 @@ public interface CertConfirmService {
 
     /**
      * 根据用户ID查询
+     *
      * @param userId
      * @return
      * @throws Exception
@@ -42,8 +47,9 @@ public interface CertConfirmService {
 
     /**
      * 根据用户ID和状态查询
+     *
      * @param userId 用户状态
-     * @param state 状态
+     * @param state  状态
      * @return
      * @throws Exception
      */
@@ -51,6 +57,7 @@ public interface CertConfirmService {
 
     /**
      * 根据存证ID修改
+     *
      * @param map reason 退回原因 certId 存证ID confirmPhone 确认人手机号
      * @throws Exception
      */
@@ -58,6 +65,7 @@ public interface CertConfirmService {
 
     /**
      * 修改确认状态
+     *
      * @param map certId 存证ID confirmPhone 确认人手机号
      * @throws Exception
      */
@@ -65,6 +73,7 @@ public interface CertConfirmService {
 
     /**
      * 根据状态 存证ID查询
+     *
      * @param map certId 存证ID
      * @return
      * @throws Exception
@@ -73,6 +82,7 @@ public interface CertConfirmService {
 
     /**
      * 根据手机号查询
+     *
      * @param username 用户手机号
      * @return
      * @throws Exception
@@ -81,6 +91,7 @@ public interface CertConfirmService {
 
     /**
      * 修改
+     *
      * @param certConfirm
      */
     void updateByPrimaryKeySelective(CertConfirm certConfirm);

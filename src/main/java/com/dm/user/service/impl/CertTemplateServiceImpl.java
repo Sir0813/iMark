@@ -10,6 +10,7 @@ import com.dm.user.service.CertTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class CertTemplateServiceImpl implements CertTemplateService {
         try {
             List<CertTemplate> templateList = certTemplateMapper.list();
             return ResultUtil.success(templateList);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(e);
         }
     }
@@ -40,7 +41,7 @@ public class CertTemplateServiceImpl implements CertTemplateService {
         try {
             CertTemplate ct = certTemplateMapper.getByTemplateType(type);
             return ct;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e);
         }
     }
