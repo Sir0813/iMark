@@ -4,7 +4,6 @@ import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.CertFicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +26,7 @@ public class CertImgUtil {
      * @return
      * @throws IOException
      */
-    public static ByteArrayResource createStringMark(CertFicate certFicate,String path, String qrPath) throws IOException, FontFormatException {
+    public static ByteArrayResource createStringMark(CertFicate certFicate, String path, String qrPath) throws IOException, FontFormatException {
         File file = new File(path);
         Image img = ImageIO.read(file);
         int width = img.getWidth(null);
@@ -36,10 +35,10 @@ public class CertImgUtil {
         Graphics2D g = bi.createGraphics();
         Graphics graphics = bi.getGraphics();
         // 设置抗锯齿
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
         // 阴影颜色
-        g.setPaint(new Color(0,0,0,64));
+        g.setPaint(new Color(0, 0, 0, 64));
         g.setPaint(Color.BLACK);
         g.setFont(new Font("黑体", Font.PLAIN, 35));
         g.drawString("文件存证证书", (int) 185, (int) 100);
@@ -59,12 +58,13 @@ public class CertImgUtil {
         g.drawString("区块链存证编号："+substring, (int) 120, (int) 370);
         g.drawString(s, (int) 120, (int) 390);
         String certAddress = certFicate.getCertAddress();
-        String address = ""; String address2 = "";
+        String address = "";
+        String address2 = "";
         if (StringUtils.isNotBlank(certAddress)){
             int maxLength = 22;
-            if (certAddress.length()>maxLength){
-                address = certAddress.substring(0,22);
-                address2 = certAddress.substring(22,certAddress.length());
+            if (certAddress.length() > maxLength){
+                address = certAddress.substring(0, 22);
+                address2 = certAddress.substring(22, certAddress.length());
             }
         }
         g.drawString("存证位置：" + address, (int) 120, (int) 430);

@@ -76,26 +76,26 @@ public class FileUtil {
 			String fileName = multipartFile[i].getOriginalFilename();
 			int indexOf = fileName.lastIndexOf(".");
 			String suffix = "";
-			if (indexOf>=0) {
+			if (indexOf >= 0) {
 				suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
 			}
 			UUID randomUuid = UUID.randomUUID();
-			String filePath = certFilePath + File.separator + randomUuid+suffix;
-			String fileUrl = certFilePrefix+File.separator+randomUuid+suffix;
-			boolean uploadBoolean = FileUtil.uploadFile(certFilePath+File.separator, randomUuid+suffix, multipartFile[i]);
+			String filePath = certFilePath + File.separator + randomUuid + suffix;
+			String fileUrl = certFilePrefix + File.separator + randomUuid + suffix;
+			boolean uploadBoolean = FileUtil.uploadFile(certFilePath + File.separator, randomUuid + suffix, multipartFile[i]);
 			if (!uploadBoolean) {
 				throw new Exception();
 			}
 			CertFiles certFiles = new CertFiles();
 			String osname = System.getProperty("os.name").toLowerCase();
-			if (".mp4".equals(suffix)||".mov".equals(suffix)){
-				String uuid = UUID.randomUUID().toString()+".png";
+			if (".mp4".equals(suffix) || ".mov".equals(suffix)){
+				String uuid = UUID.randomUUID().toString() + ".png";
 				if (osname.startsWith(StateMsg.OS_NAME)){
-					FileUtil.fetchFrame(filePath,"D:\\upload\\vidopng\\"+uuid);
-					certFiles.setFileName("http://192.168.3.101/img/vidopng/"+uuid);
+					FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
+					certFiles.setFileName("http://192.168.3.101/img/vidopng/" + uuid);
 				}else{
-					FileUtil.fetchFrame(filePath,"/opt/czt-upload/vidopng/"+uuid);
-					certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/"+uuid);
+					FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
+					certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/" + uuid);
 				}
 			}else{
 				certFiles.setFileName(fileName);
@@ -104,9 +104,9 @@ public class FileUtil {
 			certFiles.setFilePath(filePath);
 			certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
 			certFiles.setFileType(suffix);
-			certFiles.setFileSeq(i+"");
+			certFiles.setFileSeq(i + "");
 			certFilesService.insertSelective(certFiles);
-			certIds[i]=String.valueOf(certFiles.getFileId());
+			certIds[i] = String.valueOf(certFiles.getFileId());
 		}
 		map.put("fileIds", certIds);
 		return map;
@@ -136,7 +136,7 @@ public class FileUtil {
 			certFilesService.insertSelective(certFiles);
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
 			CertFiles cf = certFilesService.selectByUrl(user.getHeadPhoto());
-			if (null!=cf) {
+			if (null != cf) {
                 File file = new File(cf.getFilePath());
                 file.delete();
                 certFilesService.deleteByPrimaryKey(cf.getFileId());
@@ -175,12 +175,12 @@ public class FileUtil {
 	}
 
 	public static String getHtmlTemplate(String filePath) {
-		BufferedReader in ;
-		String str ;
+		BufferedReader in;
+		String str;
 		StringBuffer sb = new StringBuffer();
 		try {
 			in = new BufferedReader(new FileReader(new File(filePath)));
-			while((str=in.readLine())!=null){
+			while((str = in.readLine()) != null){
 				sb.append(str);
 			}
 			in.close();
@@ -203,16 +203,16 @@ public class FileUtil {
 		try{
 			FFmpegFrameGrabber ff = FFmpegFrameGrabber.createDefault(videofile);
 			ff.start();
-			String rotate =ff.getVideoMetadata("rotate");
+			String rotate = ff.getVideoMetadata("rotate");
 			Frame f;
 			int i = 0;
-			while (i <1) {
-				f =ff.grabImage();
+			while (i < 1) {
+				f = ff.grabImage();
 				opencv_core.IplImage src = null;
-				if(null !=rotate &&rotate.length() > 1) {
-					OpenCVFrameConverter.ToIplImage converter =new OpenCVFrameConverter.ToIplImage();
-					src =converter.convert(f);
-					f =converter.convert(rotate(src, Integer.valueOf(rotate)));
+				if(null != rotate &&rotate.length() > 1) {
+					OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+					src = converter.convert(f);
+					f = converter.convert(rotate(src, Integer.valueOf(rotate)));
 				}
 				doExecuteFrame(f,framefile);
 				i++;
@@ -234,15 +234,15 @@ public class FileUtil {
 	}
 
 	public static void doExecuteFrame(Frame f, String targerFilePath) {
-		if (null ==f ||null ==f.image) {
+		if (null == f ||null == f.image) {
 			return;
 		}
-		Java2DFrameConverter converter =new Java2DFrameConverter();
-		String imageMat ="jpg";
-		BufferedImage bi =converter.getBufferedImage(f);
-		File output =new File(targerFilePath);
+		Java2DFrameConverter converter = new Java2DFrameConverter();
+		String imageMat = "jpg";
+		BufferedImage bi = converter.getBufferedImage(f);
+		File output = new File(targerFilePath);
 		try {
-			ImageIO.write(bi,imageMat,output);
+			ImageIO.write(bi, imageMat, output);
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -256,10 +256,10 @@ public class FileUtil {
 	 * @return
 	 */
 	public boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
-		FileInputStream fis ;
+		FileInputStream fis;
 		BufferedInputStream bis = null;
-		FileOutputStream fos ;
-		ZipOutputStream zos =null;
+		FileOutputStream fos;
+		ZipOutputStream zos = null;
 		try {
 			File zipFile = new File(zipFilePath + File.separator + fileName + ".zip");
 			if (files.size() == 0) {
@@ -361,14 +361,14 @@ public class FileUtil {
 			for (int i = 0; i < multipartFile.length; i++) {
 				String fileName = multipartFile[i].getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
-				String fileNewName = UUID.randomUUID().toString()+suffix;
+				String fileNewName = UUID.randomUUID().toString() + suffix;
 				String filePath = "";
 				String fileUrl = "";
 				boolean uploadBoolean = false;
 				if("outcert".equals(type)) {
 					filePath = outCertFilePath + File.separator + fileNewName;
-					fileUrl = outCertFilePrefix+File.separator+fileNewName;
-					uploadBoolean = FileUtil.uploadFile(outCertFilePath+File.separator, fileNewName, multipartFile[i]);
+					fileUrl = outCertFilePrefix + File.separator + fileNewName;
+					uploadBoolean = FileUtil.uploadFile(outCertFilePath + File.separator, fileNewName, multipartFile[i]);
 				}
 				if (!uploadBoolean) {
 					throw new Exception("文件上传失败!");
@@ -379,7 +379,7 @@ public class FileUtil {
 				certFiles.setFilePath(filePath);
 				certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
 				certFiles.setFileType(suffix);
-				certFiles.setFileSeq(i+"");
+				certFiles.setFileSeq(i + "");
 				certFilesService.insertSelective(certFiles);
 				fileIds[i]=String.valueOf(certFiles.getFileId());
 			}

@@ -89,17 +89,17 @@ public class UserServiceImpl implements UserService{
 			User u = userMapper.findByName(phone);
 		    switch (type){
 				case StateMsg.REGISTER :
-					if (null!=u) {
+					if (null != u) {
 						return ResultUtil.info("register.has.name.code","register.has.name.msg");
 					}
 					break;
 				case StateMsg.FORGETPWD :
-					if (null==u) {
+					if (null == u) {
 						return ResultUtil.info("login.account.no.code","login.account.no.msg");
 					}
 					break;
 				case StateMsg.LOGIN :
-					if (null==u) {
+					if (null == u) {
 						return ResultUtil.info("login.account.no.code","login.account.no.msg");
 					}
 					break;
@@ -107,11 +107,11 @@ public class UserServiceImpl implements UserService{
 			Information info = new Information();
 			Date date = new Date();
 			Map<String,Object> map = new HashMap<>(16);
-			map.put("email",phone);
+			map.put("email", phone);
 			Information information = informationService.selectByPhone(map);
-			if (null!=information){
-				if (!date.after(new Date(information.getInfoSenddate().getTime()+60000))){
-					return ResultUtil.info("error.code","veri.send.frequent.msg");
+			if (null != information){
+				if (!date.after(new Date(information.getInfoSenddate().getTime() + 60000))){
+					return ResultUtil.info("error.code", "veri.send.frequent.msg");
 				}
 			}
 			long randomNumber = RandomCode.generateRandomNumber(6);
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService{
 			info.setInfoMsg(replaceContent);
 			info.setInfoPhone(phone);
 			info.setInfoSenddate(date);
-			info.setInfoExpireddate(new Date(date.getTime()+expired));
+			info.setInfoExpireddate(new Date(date.getTime() + expired));
 			info.setInfoState("0");
 			informationService.insertSelective(info);
 			return ResultUtil.success(String.valueOf(randomNumber));
@@ -133,8 +133,8 @@ public class UserServiceImpl implements UserService{
 	public Result userRegister(User user) throws Exception {
 		try {
 			User u = userMapper.findByName(user.getUsername());
-			if (null!=u) {
-				return ResultUtil.info("register.has.name.code","register.has.name.msg");
+			if (null != u) {
+				return ResultUtil.info("register.has.name.code", "register.has.name.msg");
 			}
 			Map<String, Object> map = new HashMap<>(16);
 			map.put("email", user.getUsername());
@@ -147,30 +147,30 @@ public class UserServiceImpl implements UserService{
 			information.setInfoState("1");
 			user.setSalt(RandomCode.getCode());
 			user.setUsercode("");
-			String md5Password = MD5Util.encode(user.getPassword()+user.getSalt());
+			String md5Password = MD5Util.encode(user.getPassword() + user.getSalt());
 			user.setPassword(md5Password);
 			user.setCreatedDate(DateUtil.timeToString2(new Date()));
 			informationService.updateByPrimaryKeySelective(information);
 			userMapper.userRegister(user);
 			// 待自己确认 需要更新注册用户ID
 			List<CertConfirm>list = certConfirmService.selectByPhone(user.getUsername());
-			if (list.size()>0){
-				list.forEach(l->{
-					l.setUserId(user.getUserid());
-					certConfirmService.updateByPrimaryKeySelective(l);
+			if (list.size() > 0){
+				list.forEach(cc ->{
+					cc.setUserId(user.getUserid());
+					certConfirmService.updateByPrimaryKeySelective(cc);
 				});
 			}
 			// 出证发送给我的添加用户ID
 			List<Contact>contacts = contactMapper.selectByPhone(user.getUsername());
-			if (contacts.size()>0){
-				contacts.forEach(contact -> {
+			if (contacts.size() > 0){
+				contacts.forEach(contact ->{
 					contact.setUserId(user.getUserid());
 					contactMapper.updateByPrimaryKey(contact);
 				});
 			}
 			// 历史消息添加用户ID
 			List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(user.getUsername());
-			if (pushMsgs.size()>0){
+			if (pushMsgs.size() > 0){
 				for (int i = 0; i < pushMsgs.size(); i++) {
 					PushMsg pushMsg =  pushMsgs.get(i);
 					pushMsg.setUserId(user.getUserid());
@@ -195,13 +195,13 @@ public class UserServiceImpl implements UserService{
 	public Result resetPassword(Map<String,Object>map) throws Exception {
 		try {
 			LoginUserDetails user = loginUserService.getUserByUsername(LoginUserHelper.getUserName());
-			String md5Password = MD5Util.encode(map.get("oldPassword").toString()+user.getSalt());
+			String md5Password = MD5Util.encode(map.get("oldPassword").toString() + user.getSalt());
 			if (!md5Password.equals(user.getPassword())) {
-				return ResultUtil.info("user.reset.password.error.code","user.reset.password.error.msg");
+				return ResultUtil.info("user.reset.password.error.code", "user.reset.password.error.msg");
 			}
-			String newPwd = MD5Util.encode(map.get("newPassword").toString()+user.getSalt());
+			String newPwd = MD5Util.encode(map.get("newPassword").toString() + user.getSalt());
 			if (newPwd.equals(user.getPassword())) {
-				return ResultUtil.info("user.reset.equal.password.code","user.reset.equal.password.msg");
+				return ResultUtil.info("user.reset.equal.password.code", "user.reset.equal.password.msg");
 			}else {
 				map.put("userid", user.getUserid());
 				map.put("password", newPwd);
@@ -218,14 +218,14 @@ public class UserServiceImpl implements UserService{
 		try {
 			Map<String,Object> map = new HashMap<>(16);
 			User user = userMapper.findByName(LoginUserHelper.getUserName());
-			UserCard userCard = userCardService.selectByUserId(user.getUserid().toString());
-			map.put("email", StringUtils.isBlank(user.getEmail())?"":user.getEmail());
+			UserCard userCard = userCardService.selectByUserId(user.getUserid().toString(), "2");
+			map.put("email", StringUtils.isBlank(user.getEmail()) ? "":user.getEmail());
 			map.put("userName", LoginUserHelper.getUserName());
-			map.put("realName", null==userCard?"":userCard.getRealName());
-			map.put("headPhoto", StringUtils.isBlank(user.getHeadPhoto())?"":user.getHeadPhoto());
-			map.put("realState", null==userCard?"":userCard.getRealState());
+			map.put("realName", null == userCard ? "" : userCard.getRealName());
+			map.put("headPhoto", StringUtils.isBlank(user.getHeadPhoto()) ? "" : user.getHeadPhoto());
+			map.put("realState", null == userCard ? "" : userCard.getRealState());
 			map.put("sex", user.getSex());
-			map.put("nickName", null==user.getDescribe()?"":user.getDescribe());
+			map.put("nickName", null == user.getDescribe() ? "" : user.getDescribe());
 			map.put("userid", user.getUserid());
 			return ResultUtil.success(map);
 		} catch (Exception e) {
@@ -237,12 +237,12 @@ public class UserServiceImpl implements UserService{
 	public Result getPushMsg() throws Exception {
 		try {
 			List<PushMsg> pmList = pushMsgService.selectByReceiveAndState(LoginUserHelper.getUserName());
-			if (pmList.size()>0){
-				pmList.forEach(pm->{
+			if (pmList.size() > 0){
+				pmList.forEach(pm ->{
 					String json = new Gson().toJson(pm);
 					try {
 						int resout = PushUtil.getInstance().sendToRegistrationId(LoginUserHelper.getUserName(), pm.getTitle(), json);
-						if (resout==1){
+						if (resout == 1){
 							pm.setState("1");
 							pushMsgService.updateByPrimaryKeySelective(pm);
 						}
@@ -265,7 +265,7 @@ public class UserServiceImpl implements UserService{
 			user.setUsercode(registrationId);
 			userMapper.updateByPrimaryKeySelective(user);
 			JSONObject json = new JSONObject();
-			json.put("alias",user.getUsername());
+			json.put("alias", user.getUsername());
 			HttpSendUtil.postData("devices/" + registrationId, json);
 			return user.getUserid().toString();
 		} catch (Exception e) {
@@ -273,14 +273,14 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 
-	private Result checkVeriCode(Information info,Map<String, Object> map) throws Exception {
+	private Result checkVeriCode(Information info, Map<String,Object> map) throws Exception {
 		try {
-			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-				return ResultUtil.info("email.code.error.code","email.code.error.msg");
+			if (null == info || !map.get("veriCode").toString().equals(info.getInfoCode())) {
+				return ResultUtil.info("email.code.error.code", "email.code.error.msg");
 			}
 			Date date = new Date();
 			if (date.after(info.getInfoExpireddate())) {
-				return ResultUtil.info("email.code.expire.code","email.code.expire.msg");
+				return ResultUtil.info("email.code.expire.code", "email.code.expire.msg");
 			}
 			return ResultUtil.success();
 		} catch (Exception e) {
@@ -298,11 +298,11 @@ public class UserServiceImpl implements UserService{
 	public Result retrievePwd(Map<String, Object> map) throws Exception {
 		try {
 			User user = userMapper.findByName(map.get("phone").toString());
-			if (null==user) {
-				return ResultUtil.info("login.account.no.code","login.account.no.msg");
+			if (null == user) {
+				return ResultUtil.info("login.account.no.code", "login.account.no.msg");
 			}
 			user.setSalt(RandomCode.getCode());
-			String md5Password = MD5Util.encode(map.get("password").toString()+user.getSalt());
+			String md5Password = MD5Util.encode(map.get("password").toString() + user.getSalt());
 			user.setPassword(md5Password);
 			userMapper.updateByPrimaryKeySelective(user);
 			return ResultUtil.success();
@@ -332,8 +332,8 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Result dynamicLogin(Map<String, Object> map) throws Exception {
 		User user = userMapper.findByName(map.get("username").toString());
-		if (null==user) {
-			return ResultUtil.info("login.account.no.code","login.account.no.msg");
+		if (null == user) {
+			return ResultUtil.info("login.account.no.code", "login.account.no.msg");
 		}
 		map.put("email", map.get("username").toString());
 		map.put("veriCode", map.get("password").toString());

@@ -89,7 +89,7 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 				return result;
 			}
 			User user = userService.selectByEamil(map.get("email").toString());
-			if (null!=user){
+			if (null != user){
 				return ResultUtil.info("email.code.have.code","email.code.have.msg");
 			}
 			User u = userService.findByName(LoginUserHelper.getUserName());
@@ -124,8 +124,8 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 	public Result changePhone(Map<String, Object> map) throws Exception {
 		try {
 			User user = userService.findByName(map.get("newPhone").toString());
-			if (null!=user) {
-				return ResultUtil.info("register.has.name.code","register.has.name.msg");
+			if (null != user) {
+				return ResultUtil.info("register.has.name.code", "register.has.name.msg");
 			}
 			map.put("email", map.get("newPhone").toString());
 			Information info = informationMapper.selectByPhone(map);
@@ -140,23 +140,23 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 			informationMapper.updateByPrimaryKeySelective(info);
 			/*待自己确认 需要更新注册用户ID*/
 			List<CertConfirm>list = certConfirmService.selectByPhone(u.getUsername());
-			if (list.size()>0){
-				list.forEach(l->{
-					l.setUserId(u.getUserid());
-					certConfirmService.updateByPrimaryKeySelective(l);
+			if (list.size() > 0){
+				list.forEach(cc ->{
+					cc.setUserId(u.getUserid());
+					certConfirmService.updateByPrimaryKeySelective(cc);
 				});
 			}
 			/*出证发送给我的添加用户ID*/
 			List<Contact> contacts = contactMapper.selectByPhone(u.getUsername());
-			if (contacts.size()>0){
-				contacts.forEach(contact -> {
+			if (contacts.size() > 0){
+				contacts.forEach(contact ->{
 					contact.setUserId(u.getUserid());
 					contactMapper.updateByPrimaryKey(contact);
 				});
 			}
 			/*历史消息添加用户ID*/
 			List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(u.getUsername());
-			if (pushMsgs.size()>0){
+			if (pushMsgs.size() > 0){
 				for (int i = 0; i < pushMsgs.size(); i++) {
 					PushMsg pushMsg =  pushMsgs.get(i);
 					pushMsg.setUserId(u.getUserid());
@@ -198,12 +198,12 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
 
 	private Result checkVeriCode(Information info, Map<String, Object> map) throws Exception {
 		try {
-			if (null==info||!map.get("veriCode").toString().equals(info.getInfoCode())) {
-				return ResultUtil.info("email.code.error.code","email.code.error.msg");
+			if (null == info || !map.get("veriCode").toString().equals(info.getInfoCode())) {
+				return ResultUtil.info("email.code.error.code", "email.code.error.msg");
 			}
 			Date date = new Date();
 			if (date.after(info.getInfoExpireddate())) {
-				return ResultUtil.info("email.code.expire.code","email.code.expire.msg");
+				return ResultUtil.info("email.code.expire.code", "email.code.expire.msg");
 			}
 			return ResultUtil.success();
 		} catch (Exception e) {

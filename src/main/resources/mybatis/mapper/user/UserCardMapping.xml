@@ -28,6 +28,9 @@
   	<include refid="Base_Column_List"></include>
   	from sys_user_card
   	where userid = #{userid}
+  	<if test="realState != null and realState != ''">
+      and real_state = #{realState}
+    </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

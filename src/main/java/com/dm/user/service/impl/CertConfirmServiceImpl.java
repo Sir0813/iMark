@@ -13,7 +13,7 @@ import java.util.Map;
  * @author cui
  */
 @Service
-@Transactional(rollbackFor=Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class CertConfirmServiceImpl implements CertConfirmService{
 
 	@Autowired
@@ -58,7 +58,7 @@ public class CertConfirmServiceImpl implements CertConfirmService{
 	@Override
 	public List<CertConfirm> selectByuserIdAndState(String userId, String s) throws Exception {
 		try {
-			return certConfirmMapper.selectByuserIdAndState(userId,s);
+			return certConfirmMapper.selectByuserIdAndState(userId, s);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}

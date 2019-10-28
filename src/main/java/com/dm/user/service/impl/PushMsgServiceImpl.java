@@ -48,7 +48,7 @@ public class PushMsgServiceImpl implements PushMsgService {
         try {
             PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
             List<PushMsg> list = pushMsgMapper.historyInfo(LoginUserHelper.getUserId());
-            if (list.size()==0) {
+            if (list.size() == 0) {
                 return null;
             }
             PageInfo<PushMsg> pageInfo = new PageInfo<>(list);

@@ -30,5 +30,5 @@ public interface UserCardService {
      * @return
      * @throws Exception
      */
-    UserCard selectByUserId(String userId) throws Exception;
+    UserCard selectByUserId(String userId, String realState) throws Exception;
 }

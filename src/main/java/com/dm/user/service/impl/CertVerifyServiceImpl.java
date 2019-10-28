@@ -42,7 +42,7 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             CertFicate cf = certFicateService.selectByIdAndState(certFicate.getCertId());
             String[] filesId = certFicate.getCertFilesid().split(",");
             List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
-            if (null==cf) {
+            if (null == cf) {
                 deleteCertFile(certFiles);
                 return false;
             }
@@ -51,7 +51,7 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
             String fhash = "";
             String chash = "";
             for (CertFiles files : fileList) {
-                fhash+=(files.getFileHash()+",");
+                fhash += (files.getFileHash() + ",");
             }
             for (CertFiles files : certFiles) {
                 chash = CryptoHelper.hash(ShaUtil.getFileByte(files.getFilePath()));
@@ -61,9 +61,9 @@ public class CertVerifyServiceImpl  implements CertVerifyService {
                 }
             }
             deleteCertFile(certFiles);
-            String realHash = CryptoHelper.hash(cf.getCertHash()+cf.getCertId());
-            if (fileList.size()==1){
-                String confirmHash = CryptoHelper.hash(chash+certFicate.getCertId());
+            String realHash = CryptoHelper.hash(cf.getCertHash() + cf.getCertId());
+            if (fileList.size() == 1){
+                String confirmHash = CryptoHelper.hash(chash + certFicate.getCertId());
                 if (!realHash.equals(confirmHash)) {
                     return false;
                 }

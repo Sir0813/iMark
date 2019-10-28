@@ -43,7 +43,7 @@ public interface UserCardMapper {
      * @param userid
      * @return
      */
-	UserCard selectByUserId(String userid);
+	UserCard selectByUserId(String userid, String realState);
 
     /**
      * 根据身份证号查询
