@@ -25,11 +25,11 @@
     cert_id, cert_date, cert_owner, cert_name, cert_describe, cert_status, cert_is_delete, 
     cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save,
     cert_address, cert_code, cert_block_number
-  </sql>
+    </sql>
     <update id="updateCertState">
         update biz_certficate
         <set>
-            cert_status = 2,
+            cert_status = #{certSuccess},
             cert_isconf = 0
         </set>
         where cert_id = #{certId}
@@ -37,14 +37,14 @@
     <update id="updateReasonByCertId" parameterType="java.lang.Integer">
         update biz_certficate
         <set>
-            cert_status = 5
+            cert_status = #{isReturn}
         </set>
         where cert_id = #{certId}
     </update>
     <update id="updateCertRevoke" parameterType="java.lang.Integer">
         update biz_certficate
         <set>
-            cert_status = 6
+            cert_status = #{isRevoke}
         </set>
         where cert_id = #{certId,jdbcType=INTEGER}
     </update>
@@ -57,8 +57,8 @@
             #{certid}
         </foreach>
         and cert_isconf = 1
-        and cert_is_delete = 1
-        and cert_status = 4
+        and cert_is_delete = #{notDelete}
+        and cert_status = #{otherConfirm}
         order by cert_post_date desc
     </select>
     <select id="selectByCertIDs" parameterType="java.util.List" resultMap="BaseResultMap">
@@ -75,7 +75,7 @@
         <include refid="Base_Column_List"/>
         from biz_certficate
         where cert_owner = #{userId}
-        and cert_is_delete = 1
+        and cert_is_delete = #{fileNotDelete}
         <choose>
             <when test="state != null and state !=''">
                 <if test="state==0">
@@ -92,7 +92,7 @@
                 </if>
                 <if test="state==5">
                     and (cert_status = #{state}
-                    or cert_status = 6)
+                    or cert_status = #{isRevoke})
                 </if>
             </when>
             <otherwise>
@@ -121,13 +121,13 @@
         <include refid="Base_Column_List"/>
         from biz_certficate
         where cert_id = #{certId,jdbcType=INTEGER}
-        and cert_status = 2
-        and cert_is_delete = 1
+        and cert_status = #{certSuccess}
+        and cert_is_delete = #{fileNotDelete}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_certficate
     where cert_id = #{certId,jdbcType=INTEGER}
-  </delete>
+    </delete>
     <insert id="insertSelective" parameterType="com.dm.user.entity.CertFicate" useGeneratedKeys="true"
             keyProperty="certId">
         insert into biz_certficate

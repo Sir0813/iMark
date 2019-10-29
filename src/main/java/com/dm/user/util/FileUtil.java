@@ -64,7 +64,7 @@ public class FileUtil {
 
     public Map<String, Object> uploadFile(HttpServletRequest request, HttpServletResponse response,
                                           MultipartFile[] multipartFile) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         if (multipartFile.length == 0) {
             map.put("nofile", "请选择文件");
             return map;
@@ -356,7 +356,8 @@ public class FileUtil {
         }
     }
 
-    public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response, MultipartFile[] multipartFile, String type)
+    public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response,
+                                          MultipartFile[] multipartFile, String type)
             throws Exception {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");

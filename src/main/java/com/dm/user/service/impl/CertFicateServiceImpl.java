@@ -317,9 +317,11 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     return null;
                 }
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-                list = certFicateMapper.selectByIDs(ids);
+                list = certFicateMapper.selectByIDs(StateMsg.CERT_FILE_NOT_DELETE, CertStateEnum.OTHERS_CONFIRM.getCode(), ids);
             } else {
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+                map.put("fileNotDelete", StateMsg.CERT_FILE_NOT_DELETE);
+                map.put("isRevoke", CertStateEnum.IS_REVOKE.getCode());
                 list = certFicateMapper.list(map);
                 certConfirmState(list, state);
             }
@@ -409,7 +411,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     @Override
     public void certRevoke(String certId) throws Exception {
         try {
-            certFicateMapper.updateCertRevoke(Integer.parseInt(certId));
+            certFicateMapper.updateCertRevoke(CertStateEnum.IS_REVOKE.getCode(), Integer.parseInt(certId));
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -418,9 +420,9 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     @Override
     public void draftDel(CertFicate certFicate) throws Exception {
         try {
-            certFicate.setCertDelDate(new Date());
-            certFicate.setCertIsDelete(StateMsg.CERT_IS_DELETE);
-            certFicateMapper.updateByPrimaryKeySelective(certFicate);
+            //certFicate.setCertDelDate(new Date());
+            //certFicate.setCertIsDelete(StateMsg.CERT_IS_DELETE);
+            certFicateMapper.deleteByPrimaryKey(certFicate.getCertId());
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -434,7 +436,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             }
             map.put("confirmPhone", LoginUserHelper.getUserName());
             certConfirmService.updateByCertId(map);
-            certFicateMapper.updateReasonByCertId(Integer.parseInt(map.get("certId").toString()));
+            certFicateMapper.updateReasonByCertId(CertStateEnum.IS_RETURN.getCode(), Integer.parseInt(map.get("certId").toString()));
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -447,6 +449,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             certConfirmService.updateConfirmState(map);
             List<CertConfirm> confirmList = certConfirmService.selectByState(map);
             if (confirmList.size() == 0) {
+                map.put("certSuccess", CertStateEnum.CERT_SUCCESS.getCode());
                 certFicateMapper.updateCertState(map);
             }
         } catch (Exception e) {
@@ -522,7 +525,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     @Override
     public CertFicate selectByIdAndState(Integer certId) throws Exception {
         try {
-            return certFicateMapper.selectByIdAndState(certId);
+            return certFicateMapper.selectByIdAndState(CertStateEnum.CERT_SUCCESS.getCode(), StateMsg.CERT_FILE_NOT_DELETE, certId);
         } catch (Exception e) {
             throw new Exception(e);
         }

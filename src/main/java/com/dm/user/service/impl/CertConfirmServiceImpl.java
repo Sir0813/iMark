@@ -2,6 +2,7 @@ package com.dm.user.service.impl;
 
 import com.dm.user.entity.CertConfirm;
 import com.dm.user.mapper.CertConfirmMapper;
+import com.dm.user.msg.ConfirmEnum;
 import com.dm.user.service.CertConfirmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,8 @@ public class CertConfirmServiceImpl implements CertConfirmService {
     @Override
     public void updateByCertId(Map<String, Object> map) throws Exception {
         try {
+            map.put("returnConfirm", ConfirmEnum.RETURN_CONFIRM.getCode());
+            map.put("originator", ConfirmEnum.ORIGINATOR.getCode());
             certConfirmMapper.updateByCertId(map);
         } catch (Exception e) {
             throw new Exception(e);
@@ -77,6 +80,7 @@ public class CertConfirmServiceImpl implements CertConfirmService {
     @Override
     public void updateConfirmState(Map<String, Object> map) throws Exception {
         try {
+            map.put("isConfirm", ConfirmEnum.IS_CONFIRM.getCode());
             certConfirmMapper.updateConfirmState(map);
         } catch (Exception e) {
             throw new Exception(e);
@@ -86,6 +90,7 @@ public class CertConfirmServiceImpl implements CertConfirmService {
     @Override
     public List<CertConfirm> selectByState(Map<String, Object> map) throws Exception {
         try {
+            map.put("noConfirm", ConfirmEnum.NO_CONFIRM.getCode());
             return certConfirmMapper.selectByState(map);
         } catch (Exception e) {
             throw new Exception(e);

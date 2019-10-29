@@ -75,21 +75,21 @@ public interface CertFicateMapper {
      * @param ids
      * @return
      */
-    List<CertFicate> selectByIDs(Integer[] ids);
+    List<CertFicate> selectByIDs(String notDelete, int otherConfirm, Integer[] ids);
 
     /**
      * 根据ID修改撤回原因
      *
      * @param certId
      */
-    void updateCertRevoke(int certId);
+    void updateCertRevoke(int isRevoke, int certId);
 
     /**
      * 根据存证ID修改
      *
      * @param certId
      */
-    void updateReasonByCertId(int certId);
+    void updateReasonByCertId(int isReturn, int certId);
 
     /**
      * 修改存证状态
@@ -104,7 +104,7 @@ public interface CertFicateMapper {
      * @param certId
      * @return
      */
-    CertFicate selectByIdAndState(Integer certId);
+    CertFicate selectByIdAndState(int certSuccess, String fileNotDelete, Integer certId);
 
     /**
      * 根据存证ID批量查询
