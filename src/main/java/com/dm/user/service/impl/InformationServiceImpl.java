@@ -59,6 +59,10 @@ public class InformationServiceImpl<insertSelective> implements InformationServi
     @Override
     public Result sendEmailCode(Map<String, Object> map) throws Exception {
         try {
+            User email = userService.selectByEamil(map.get("email").toString());
+            if (null != email) {
+                return ResultUtil.info("email.code.have.code", "email.code.have.msg");
+            }
             Information info = new Information();
             long randomNumber = RandomCode.generateRandomNumber(6);
             String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
