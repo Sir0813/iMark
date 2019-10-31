@@ -46,16 +46,19 @@
         <set>
             cert_status = #{isRevoke}
         </set>
-        where cert_id = #{certId,jdbcType=INTEGER}
+        where cert_id = #{certId}
     </update>
-    <select id="selectByIDs" parameterType="java.util.List" resultMap="BaseResultMap">
+    <select id="selectByIDs" parameterType="java.util.Map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
         from biz_certficate
-        where cert_id in
-        <foreach collection="array" item="certid" open="(" close=")" separator=",">
-            #{certid}
-        </foreach>
+        where 1=1
+        <if test="ids!=null and ids!=''">
+            and cert_id in
+            <foreach collection="certid" item="certid" open="(" close=")" separator=",">
+                #{certid}
+            </foreach>
+        </if>
         and cert_isconf = 1
         and cert_is_delete = #{notDelete}
         and cert_status = #{otherConfirm}
@@ -114,19 +117,19 @@
         select
         <include refid="Base_Column_List"/>
         from biz_certficate
-        where cert_id = #{certId,jdbcType=INTEGER}
+        where cert_id = #{certId}
     </select>
     <select id="selectByIdAndState" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
         from biz_certficate
-        where cert_id = #{certId,jdbcType=INTEGER}
+        where cert_id = #{certId}
         and cert_status = #{certSuccess}
         and cert_is_delete = #{fileNotDelete}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_certficate
-    where cert_id = #{certId,jdbcType=INTEGER}
+    where cert_id = #{certId}
     </delete>
     <insert id="insertSelective" parameterType="com.dm.user.entity.CertFicate" useGeneratedKeys="true"
             keyProperty="certId">
@@ -260,7 +263,7 @@
                 cert_status = #{certStatus,jdbcType=INTEGER},
             </if>
             <if test="certIsDelete != null">
-                cert_Is_Delete = #{certIsDelete,jdbcType=VARCHAR},
+                cert_Is_Delete = #{certIsDelete,jdbcType=INTEGER},
             </if>
             <if test="certIsconf != null">
                 cert_Isconf = #{certIsconf,jdbcType=VARCHAR},
@@ -293,6 +296,6 @@
                 cert_block_number = #{certBlockNumber,jdbcType=VARCHAR},
             </if>
         </set>
-        where cert_id = #{certId,jdbcType=INTEGER}
+        where cert_id = #{certId}
     </update>
 </mapper>

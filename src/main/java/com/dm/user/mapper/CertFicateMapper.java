@@ -75,7 +75,7 @@ public interface CertFicateMapper {
      * @param ids
      * @return
      */
-    List<CertFicate> selectByIDs(String notDelete, int otherConfirm, Integer[] ids);
+    List<CertFicate> selectByIDs(Map<String, Object> map);
 
     /**
      * 根据ID修改撤回原因
@@ -104,7 +104,7 @@ public interface CertFicateMapper {
      * @param certId
      * @return
      */
-    CertFicate selectByIdAndState(int certSuccess, String fileNotDelete, Integer certId);
+    CertFicate selectByIdAndState(int certSuccess, int fileNotDelete, Integer certId);
 
     /**
      * 根据存证ID批量查询

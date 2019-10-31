@@ -10,7 +10,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     tem_id, cert_id
-  </sql>
+    </sql>
     <sql id="Blob_Column_List">
     tem_file_text
   </sql>

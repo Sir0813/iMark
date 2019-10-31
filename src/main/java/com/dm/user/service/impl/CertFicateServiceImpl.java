@@ -68,6 +68,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     public CertFicate saveCert(CertFicate certFicate) throws Exception {
         try {
             boolean sendMsg = false;
+            JSONObject js = new JSONObject();
             certFicate.setCertOwner(LoginUserHelper.getUserId());
             certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
             List<CertFiles> certFiles = null;
@@ -78,10 +79,10 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
                     certFicate.setCertFilesid(fileId.toString());
                     // 生成文件hash
-                    certFiles = getHash(certFicate);
+                    certFiles = getHash(js, certFicate);
                 }
             } else {
-                certFiles = getHash(certFicate);
+                certFiles = getHash(js, certFicate);
             }
             if (null == certFiles) {
                 return null;
@@ -92,11 +93,18 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             } else {
                 certFicateMapper.insertSelective(certFicate);
             }
+            // 证书编号
+            DecimalFormat df = new DecimalFormat("000000");
+            String id = df.format(certFicate.getCertId());
+            certFicate.setCertCode("DMS01" + id);
             // 存证入链
             if (CertStateEnum.TO_CERT.getCode() == certFicate.getCertStatus()) {
                 // 对接存证sdk
                 String dataHash = CryptoHelper.hash(certFicate.getCertHash() + certFicate.getCertId());
-                Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), "");
+                js.put("文件hash", certFicate.getCertHash());
+                js.put("存证位置", certFicate.getCertAddress());
+                js.put("证书编号", certFicate.getCertCode());
+                Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), js.toString());
                 if (result.getData() instanceof TransactionResult) {
                     TransactionResult tr = (TransactionResult) result.getData();
                     certFicate.setCertChainno(tr.getTransactionID());
@@ -111,9 +119,6 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             } else {
                 certFicate.setCertStatus(CertStateEnum.NO_CERT.getCode());
             }
-            DecimalFormat df = new DecimalFormat("000000");
-            String id = df.format(certFicate.getCertId());
-            certFicate.setCertCode("DMS01" + id);
             certFicateMapper.updateByPrimaryKeySelective(certFicate);
             // 添加发起人 推送存证消息
             if (certFicate.getCertIsconf() == 1) {
@@ -145,7 +150,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
      * @return
      * @throws Exception
      */
-    private List<CertFiles> getHash(CertFicate certFicate) throws Exception {
+    private List<CertFiles> getHash(JSONObject js, CertFicate certFicate) throws Exception {
         try {
             if (StringUtils.isBlank(certFicate.getCertFilesid())) {
                 return null;
@@ -158,6 +163,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                 String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
                 hash.append(str);
                 certFile.setFileHash(str);
+                js.put("文件名称：" + certFile.getFileName(), "文件hash：" + certFile.getFileHash());
                 certFilesService.updateByPrimaryKeySelective(certFile);
             }
             if (certFiles.size() == 1) {
@@ -317,10 +323,12 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     return null;
                 }
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-                list = certFicateMapper.selectByIDs(StateMsg.CERT_FILE_NOT_DELETE, CertStateEnum.OTHERS_CONFIRM.getCode(), ids);
+                map.put("notDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
+                map.put("otherConfirm", CertStateEnum.OTHERS_CONFIRM.getCode());
+                list = certFicateMapper.selectByIDs(map);
             } else {
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-                map.put("fileNotDelete", StateMsg.CERT_FILE_NOT_DELETE);
+                map.put("fileNotDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
                 map.put("isRevoke", CertStateEnum.IS_REVOKE.getCode());
                 list = certFicateMapper.list(map);
                 certConfirmState(list, state);
@@ -525,7 +533,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     @Override
     public CertFicate selectByIdAndState(Integer certId) throws Exception {
         try {
-            return certFicateMapper.selectByIdAndState(CertStateEnum.CERT_SUCCESS.getCode(), StateMsg.CERT_FILE_NOT_DELETE, certId);
+            return certFicateMapper.selectByIdAndState(CertStateEnum.CERT_SUCCESS.getCode(), Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE), certId);
         } catch (Exception e) {
             throw new Exception(e);
         }

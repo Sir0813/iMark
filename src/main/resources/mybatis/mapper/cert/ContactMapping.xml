@@ -22,6 +22,7 @@
         <include refid="Base_Column_List"/>
         from biz_outcert_contact
         where user_id = #{userId}
+        order by out_cert_id desc
     </select>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select

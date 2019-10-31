@@ -41,7 +41,7 @@ public class UserCardServiceImpl implements UserCardService {
                 userCard.setPostTime(new Date());
                 userCardMapper.insertSelective(userCard);
             }
-            return ResultUtil.success();
+            return ResultUtil.success(userCard.getCardid());
         } catch (NumberFormatException e) {
             throw new Exception(e);
         }

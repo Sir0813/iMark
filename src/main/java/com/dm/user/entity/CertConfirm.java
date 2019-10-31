@@ -36,7 +36,6 @@ public class CertConfirm {
     @Pattern(regexp = "^0?(13|14|15|17|18|19)[0-9]{9}$", message = "请输入正确的联系人手机号")
     private String confirmPhone;
 
-    @NotBlank(message = "退回原因不能为空")
     @Size(max = 50, message = "退回原因最多50个字符")
     private String returnReason;
 
