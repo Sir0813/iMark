@@ -17,6 +17,10 @@
     <sql id="Base_Column_List">
     push_id, cert_ficate_id, title, content, server_time, type, skip_url, receive, state, is_read, user_id
     </sql>
+    <delete id="deleteByCertId" parameterType="java.lang.String">
+        delete from biz_push
+        where cert_ficate_id = #{certId}
+    </delete>
     <select id="historyInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -169,7 +173,7 @@
     </update>
     <update id="updateByRead" parameterType="java.lang.String">
     update biz_push
-    set is_read = 1
+    set is_read = '1'
     where push_id = #{pushId}
     </update>
 </mapper>

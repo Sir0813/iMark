@@ -53,12 +53,10 @@
         <include refid="Base_Column_List"></include>
         from biz_certficate
         where 1=1
-        <if test="ids!=null and ids!=''">
-            and cert_id in
-            <foreach collection="certid" item="certid" open="(" close=")" separator=",">
-                #{certid}
-            </foreach>
-        </if>
+        and cert_id in
+        <foreach collection="certid" item="certid" open="(" close=")" separator=",">
+            #{certid}
+        </foreach>
         and cert_isconf = 1
         and cert_is_delete = #{notDelete}
         and cert_status = #{otherConfirm}

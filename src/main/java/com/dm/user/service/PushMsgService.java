@@ -53,4 +53,12 @@ public interface PushMsgService {
      * @throws Exception
      */
     void readInfo(String pushId) throws Exception;
+
+    /**
+     * 根据ID删除推送记录
+     *
+     * @param parseInt
+     * @throws Exception
+     */
+    void deleteByCertId(String parseInt) throws Exception;
 }

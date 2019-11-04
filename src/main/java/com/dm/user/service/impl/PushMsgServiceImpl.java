@@ -70,4 +70,9 @@ public class PushMsgServiceImpl implements PushMsgService {
             throw new Exception(e);
         }
     }
+
+    @Override
+    public void deleteByCertId(String certId) throws Exception {
+        pushMsgMapper.deleteByCertId(certId);
+    }
 }

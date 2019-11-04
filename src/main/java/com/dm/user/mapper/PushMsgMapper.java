@@ -82,4 +82,11 @@ public interface PushMsgMapper {
      * @param pushId
      */
     void updateByRead(String pushId);
+
+    /**
+     * 根据存证ID删除推送记录
+     *
+     * @param certId 存证ID
+     */
+    void deleteByCertId(String certId);
 }

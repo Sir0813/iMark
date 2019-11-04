@@ -80,6 +80,8 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     certFicate.setCertFilesid(fileId.toString());
                     // 生成文件hash
                     certFiles = getHash(js, certFicate);
+                } else {
+                    certFiles = new ArrayList<CertFiles>();
                 }
             } else {
                 certFiles = getHash(js, certFicate);
@@ -420,6 +422,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     public void certRevoke(String certId) throws Exception {
         try {
             certFicateMapper.updateCertRevoke(CertStateEnum.IS_REVOKE.getCode(), Integer.parseInt(certId));
+            pushMsgService.deleteByCertId(certId);
         } catch (Exception e) {
             throw new Exception(e);
         }
