@@ -9,6 +9,8 @@ import com.dm.user.service.CertFicateService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -69,6 +71,9 @@ public class CertFicateController extends BaseController {
 
     @ApiOperation(value = "退回待自己确认存证", response = ResultUtil.class)
     @RequestMapping(value = "/returnReason", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "reason", value = "退回存证原因", dataType = "String")
+    })
     public Result returnReason(@RequestBody Map<String, Object> map) throws Exception {
         certFicateService.returnReason(map);
         return ResultUtil.success();
@@ -76,6 +81,9 @@ public class CertFicateController extends BaseController {
 
     @ApiOperation(value = "确认待自己确认", response = ResultUtil.class)
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "certId", value = "存证ID", dataType = "Integer")
+    })
     public Result confirm(@RequestBody Map<String, Object> map) throws Exception {
         certFicateService.confirm(map);
         return ResultUtil.success();

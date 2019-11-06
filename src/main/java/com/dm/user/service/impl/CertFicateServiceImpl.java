@@ -165,7 +165,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                 String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
                 hash.append(str);
                 certFile.setFileHash(str);
-                js.put("文件名称：" + certFile.getFileName(), "文件hash：" + certFile.getFileHash());
+                js.put(certFile.getFileName(), certFile.getFileHash());
                 certFilesService.updateByPrimaryKeySelective(certFile);
             }
             if (certFiles.size() == 1) {

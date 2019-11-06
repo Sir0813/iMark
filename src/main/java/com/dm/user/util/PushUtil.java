@@ -100,7 +100,7 @@ public class PushUtil {
         //IosAlert iosAlert =  IosAlert.newBuilder().setTitleAndBody("title", "alert body").build();
         return PushPayload.newBuilder()
                 //指定要推送的平台，all代表当前应用配置了的所有平台，也可以传android等具体平台
-                .setPlatform(Platform.android())
+                .setPlatform(Platform.android_ios())
                 //指定推送的接收对象，all代表所有人，也可以指定已经设置成功的tag或alias或该应应用客户端调用接口获取到的registration id
                 .setAudience(Audience.alias(alias))
                 //.setAudience(Audience.all()) //所有人
@@ -157,8 +157,7 @@ public class PushUtil {
      * @param extravalue
      * @return
      */
-    private PushPayload buildPushObjectAlertWithTitle(String alias,
-                                                      String msg_content, String extravalue) {
+    private PushPayload buildPushObjectAlertWithTitle(String alias, String msg_content, String extravalue) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(null == alias ? Audience.all() : Audience.registrationId(alias))

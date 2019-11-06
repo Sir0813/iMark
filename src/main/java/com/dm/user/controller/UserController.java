@@ -16,6 +16,8 @@ import com.dm.user.util.HttpSendUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -64,18 +66,29 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "找回密码 下一步", response = ResultUtil.class)
     @RequestMapping(value = "/api/nextOperate", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
+            @ApiImplicitParam(name = "veriCode", value = "验证码", dataType = "String")
+    })
     public Result nextOperate(@RequestBody Map<String, Object> map) throws Exception {
         return userService.nextOperate(map);
     }
 
     @ApiOperation(value = "找回密码", response = ResultUtil.class)
     @RequestMapping(value = "/api/retrievePwd", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "String")
+    })
     public Result retrievePwd(@RequestBody Map<String, Object> map) throws Exception {
         return userService.retrievePwd(map);
     }
 
     @ApiOperation(value = "极光推送获取用户 推送ID", response = ResultUtil.class)
     @RequestMapping(value = "/user/getRegistrationId", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "registrationId", value = "registrationId", dataType = "String")
+    })
     public Result getRegistrationId(@RequestBody Map<String, Object> map) throws Exception {
         String userId = userService.getRegistrationId(map);
         return ResultUtil.success(userId);
@@ -108,30 +121,49 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "重置密码", response = ResultUtil.class)
     @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPassword", value = "旧密码", dataType = "String"),
+            @ApiImplicitParam(name = "newPassword", value = "新密码", dataType = "String")
+    })
     public Result resetPassword(@Valid @RequestBody Map<String, Object> map) throws Exception {
         return userService.resetPassword(map);
     }
 
     @ApiOperation(value = "发送邮箱验证码", response = ResultUtil.class)
     @RequestMapping(value = "/user/sendEmailCode", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "邮箱", dataType = "String")
+    })
     public Result sendEmailCode(@RequestBody Map<String, Object> map) throws Exception {
         return informationService.sendEmailCode(map);
     }
 
     @ApiOperation(value = "绑定邮箱", response = ResultUtil.class)
     @RequestMapping(value = "/user/bindEmail", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "邮箱", dataType = "String"),
+            @ApiImplicitParam(name = "veriCode", value = "验证码", dataType = "String")
+    })
     public Result bindEmail(@Valid @RequestBody Map<String, Object> map) throws Exception {
         return informationService.bindEmail(map);
     }
 
     @ApiOperation(value = "更换手机号 校验原手机号验证码", response = ResultUtil.class)
     @RequestMapping(value = "/user/checkCode", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPhone", value = "旧账号", dataType = "String"),
+            @ApiImplicitParam(name = "veriCode", value = "验证码", dataType = "String")
+    })
     public Result checkCode(@RequestBody Map<String, Object> map) throws Exception {
         return informationService.checkCode(map);
     }
 
     @ApiOperation(value = "更换手机号", response = ResultUtil.class)
     @RequestMapping(value = "/user/changePhone", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "newPhone", value = "新手机号", dataType = "String"),
+            @ApiImplicitParam(name = "veriCode", value = "验证码", dataType = "String")
+    })
     public Result changePhone(@RequestBody Map<String, Object> map) throws Exception {
         return informationService.changePhone(map);
     }
@@ -150,6 +182,10 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "短信验证码登录", response = ResultUtil.class)
     @RequestMapping(value = "/api/dynamic/login", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "账号", dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "动态验证码", dataType = "String")
+    })
     public Result dynamicLogin(@RequestBody Map<String, Object> map) throws Exception {
         return userService.dynamicLogin(map);
     }
