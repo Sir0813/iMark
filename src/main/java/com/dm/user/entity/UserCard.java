@@ -24,6 +24,9 @@ public class UserCard {
 
     private Integer userid;
 
+    /**
+     * 1 提交认证数据 2 认证成功
+     */
     private String realState;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

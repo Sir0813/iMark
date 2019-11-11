@@ -20,6 +20,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -206,8 +209,16 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "退出登录", response = ResultUtil.class)
     @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
-    public Result logout() throws Exception {
+    public Result logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // 修改实名认证状态为未认证
+        userCardService.updateRealState();
+        // 清除设备已绑定推送别名
         HttpSendUtil.deleteData("aliases", LoginUserHelper.getUserName());
+        // 清除用户信息
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
         return ResultUtil.success();
     }
 

@@ -7,7 +7,7 @@ package com.dm.user.msg;
  */
 public enum UserCardEnum {
 
-    NOT_REAL("1", "未认证"),
+    NOT_REAL("1", "提交认证"),
     REAL_SUCCESS("2", "认证成功");
 
     private String code;

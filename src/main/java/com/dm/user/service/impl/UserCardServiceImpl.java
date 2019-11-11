@@ -72,4 +72,18 @@ public class UserCardServiceImpl implements UserCardService {
             throw new Exception(e);
         }
     }
+
+    @Override
+    public void updateRealState() throws Exception {
+        try {
+            UserCard userCard = userCardMapper.selectByUserId(LoginUserHelper.getUserId(), "");
+            if (null != userCard) {
+                userCard.setRealState(UserCardEnum.NOT_REAL.getCode());
+                userCard.setRealTime(null);
+                userCardMapper.updateByPrimaryKeySelective(userCard);
+            }
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 }

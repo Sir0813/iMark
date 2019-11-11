@@ -104,6 +104,8 @@ public class UserServiceImpl implements UserService {
                         return ResultUtil.info("login.account.no.code", "login.account.no.msg");
                     }
                     break;
+                default:
+                    return null;
             }
             Information info = new Information();
             Date date = new Date();
