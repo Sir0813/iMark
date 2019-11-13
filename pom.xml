@@ -11,14 +11,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<maven.path>http://192.168.1.211:8081/#browse</maven.path>
+		<maven.path>http://192.168.1.211:8081/repository</maven.path>
 	</properties>
 	<!-- 目录 -->
 	<repositories>
 		<repository>
 			<id>public</id>
 			<name>Public Repository</name>
-			<url>${maven.path}/browse:maven-public/</url>
+			<url>${maven.path}/maven-public/</url>
 		</repository>
 	</repositories>
 	<parent>
