@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
                     }
                     break;
                 default:
-                    return null;
+                    break;
             }
             Information info = new Information();
             Date date = new Date();
