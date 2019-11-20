@@ -35,12 +35,16 @@ public class FileController {
     @ApiOperation(value = "文件上传", response = ResultUtil.class)
     @RequestMapping(value = "/api/upload", method = RequestMethod.POST)
     public Result upload(HttpServletRequest request, HttpServletResponse response,
-                         @RequestParam(value = "file") MultipartFile[] multipartFile) throws Exception {
-        Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile);
-        if (map.containsKey("fileIds")) {
+                         @RequestParam(value = "file") MultipartFile[] multipartFile, String aid, String signature) throws Exception {
+        Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile, aid, signature);
+        if (map.containsKey("nofile")) {
+            return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
+        } else if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        } else if (map.containsKey("fileIds")) {
             return ResultUtil.success(map);
         }
-        return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
+        return null;
     }
 
     @ApiOperation(value = "出证上传图片", response = ResultUtil.class)

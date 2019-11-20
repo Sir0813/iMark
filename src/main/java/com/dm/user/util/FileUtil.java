@@ -1,5 +1,6 @@
 package com.dm.user.util;
 
+import com.ahdms.exception.*;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
@@ -8,6 +9,7 @@ import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
+import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -63,54 +65,101 @@ public class FileUtil {
     private UserMapper userMapper;
 
     public Map<String, Object> uploadFile(HttpServletRequest request, HttpServletResponse response,
-                                          MultipartFile[] multipartFile) throws Exception {
-        Map<String, Object> map = new HashMap<>(16);
-        if (multipartFile.length == 0) {
-            map.put("nofile", "请选择文件");
-            return map;
-        }
-        request.setCharacterEncoding("utf-8");
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("text/html;charset=utf-8");
-        String[] certIds = new String[multipartFile.length];
-        for (int i = 0; i < multipartFile.length; i++) {
-            String fileName = multipartFile[i].getOriginalFilename();
-            int indexOf = fileName.lastIndexOf(".");
-            String suffix = "";
-            if (indexOf >= 0) {
-                suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+                                          MultipartFile[] multipartFile, String aid, String signature) throws Exception {
+        try {
+            Map<String, Object> map = new HashMap<>(16);
+            if (multipartFile.length == 0) {
+                map.put("nofile", "请选择文件");
+                return map;
             }
-            UUID randomUuid = UUID.randomUUID();
-            String filePath = certFilePath + File.separator + randomUuid + suffix;
-            String fileUrl = certFilePrefix + File.separator + randomUuid + suffix;
-            boolean uploadBoolean = FileUtil.uploadFile(certFilePath + File.separator, randomUuid + suffix, multipartFile[i]);
-            if (!uploadBoolean) {
-                throw new Exception();
-            }
-            CertFiles certFiles = new CertFiles();
-            String osname = System.getProperty("os.name").toLowerCase();
-            if (".mp4".equals(suffix) || ".mov".equals(suffix)) {
-                String uuid = UUID.randomUUID().toString() + ".png";
-                if (osname.startsWith(StateMsg.OS_NAME)) {
-                    FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
-                    certFiles.setFileName("http://192.168.3.101/img/vidopng/" + uuid);
-                } else {
-                    FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
-                    certFiles.setFileName("http://114.244.37.10:7080/img/vidopng/" + uuid);
+            request.setCharacterEncoding("utf-8");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("text/html;charset=utf-8");
+            String[] certIds = new String[multipartFile.length];
+            StringBuilder inData = new StringBuilder();
+            for (int i = 0; i < multipartFile.length; i++) {
+                String fileName = multipartFile[i].getOriginalFilename();
+                int indexOf = fileName.lastIndexOf(".");
+                String suffix = "";
+                if (indexOf >= 0) {
+                    suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
                 }
-            } else {
-                certFiles.setFileName(fileName);
+                UUID randomUuid = UUID.randomUUID();
+                String filePath = certFilePath + File.separator + randomUuid + suffix;
+                String fileUrl = certFilePrefix + File.separator + randomUuid + suffix;
+                boolean uploadBoolean = FileUtil.uploadFile(certFilePath + File.separator, randomUuid + suffix, multipartFile[i]);
+                if (!uploadBoolean) {
+                    throw new Exception();
+                }
+                CertFiles certFiles = new CertFiles();
+                String osname = System.getProperty("os.name").toLowerCase();
+                if (".mp4".equals(suffix) || ".mov".equals(suffix)) {
+                    String uuid = UUID.randomUUID().toString() + ".png";
+                    if (osname.startsWith(StateMsg.OS_NAME)) {
+                        FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
+                        certFiles.setFileName("http://192.168.3.101/img/vidopng/" + uuid);
+                    } else {
+                        FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
+                        certFiles.setFileName("http://192.168.3.123:8082/img/vidopng/" + uuid);
+                    }
+                } else {
+                    certFiles.setFileName(fileName);
+                }
+                if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(signature)) {
+                    String md5 = ShaUtil.getMD5(filePath);
+                    inData.append(md5);
+                    certFiles.setFileHash(md5);
+                }
+                certFiles.setFileUrl(fileUrl);
+                certFiles.setFilePath(filePath);
+                certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
+                certFiles.setFileType(suffix);
+                certFiles.setFileSeq(i + "");
+                certFilesService.insertSelective(certFiles);
+                certIds[i] = String.valueOf(certFiles.getFileId());
             }
-            certFiles.setFileUrl(fileUrl);
-            certFiles.setFilePath(filePath);
-            certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
-            certFiles.setFileType(suffix);
-            certFiles.setFileSeq(i + "");
-            certFilesService.insertSelective(certFiles);
-            certIds[i] = String.valueOf(certFiles.getFileId());
+            boolean verifyState = false;
+            if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(inData) && StringUtils.isNotBlank(signature)) {
+                try {
+                    verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
+                } catch (SVS_ServerConnectException e) {
+                    e.printStackTrace();
+                } catch (SVS_SignatureEncodeException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertExpiredException e) {
+                    e.printStackTrace();
+                } catch (SVS_NotFoundPKMException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertException e) {
+                    e.printStackTrace();
+                } catch (SVS_SignatureException e) {
+                    e.printStackTrace();
+                } catch (SVS_VerifyDataException e) {
+                    e.printStackTrace();
+                } catch (SVS_InvalidParameterException e) {
+                    e.printStackTrace();
+                } catch (SVS_CheckIRLException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertNotTrustException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertIneffectiveException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertTypeException e) {
+                    e.printStackTrace();
+                } catch (SVS_CertCancelException e) {
+                    e.printStackTrace();
+                } catch (SVS_GetIRLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (!verifyState) {
+                map.put("verifyFailed", "verifyFailed");
+            }
+            map.put("fileIds", certIds);
+            return map;
+        } catch (Exception e) {
+            throw new Exception(e);
         }
-        map.put("fileIds", certIds);
-        return map;
     }
 
     public Result uploadHeadPhoto(HttpServletRequest request, HttpServletResponse response,

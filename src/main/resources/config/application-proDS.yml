@@ -9,7 +9,7 @@ spring:
     #主数据源,默认数据源
     master:
       type: com.alibaba.druid.pool.DruidDataSource
-      url: jdbc:mysql://192.168.1.220:3306/CZT?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://192.168.1.220:3306/sy?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
       username: cdisa
       password: Cdisa@123
       driverClassName: com.mysql.cj.jdbc.Driver
@@ -47,9 +47,9 @@ spring:
       filter: stat,wall,log4j
         #stat:
         #   log-slow-sql: true
-        #   slow-sql-millis: 1000
-        #  merge-sql: true
-        #wall:
+      #   slow-sql-millis: 1000
+      #  merge-sql: true
+      #wall:
       # config:
       #     multi-statement-allow: true
       #开启Web监控

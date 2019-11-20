@@ -20,11 +20,12 @@
         <result column="cert_address" property="certAddress" jdbcType="VARCHAR"/>
         <result column="cert_code" property="certCode" jdbcType="VARCHAR"/>
         <result column="cert_block_number" property="certBlockNumber" jdbcType="VARCHAR"/>
+        <result column="signature" property="signature" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
     cert_id, cert_date, cert_owner, cert_name, cert_describe, cert_status, cert_is_delete, 
     cert_del_date, cert_type, cert_hash, cert_chainno, cert_filesid, cert_isconf, cert_post_date, cert_file_is_save,
-    cert_address, cert_code, cert_block_number
+    cert_address, cert_code, cert_block_number, signature
     </sql>
     <update id="updateCertState">
         update biz_certficate
@@ -184,6 +185,9 @@
             <if test="certBlockNumber != null">
                 cert_block_number,
             </if>
+            <if test="signature != null">
+                signature,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="certDate != null">
@@ -236,6 +240,9 @@
             </if>
             <if test="certBlockNumber != null">
                 #{certBlockNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="signature != null">
+                #{signature,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -292,6 +299,9 @@
             </if>
             <if test="certBlockNumber != null">
                 cert_block_number = #{certBlockNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="signature != null">
+                signature = #{signature,jdbcType=VARCHAR},
             </if>
         </set>
         where cert_id = #{certId}

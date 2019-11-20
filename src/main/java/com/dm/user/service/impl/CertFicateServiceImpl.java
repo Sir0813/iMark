@@ -81,7 +81,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     // 生成文件hash
                     certFiles = getHash(js, certFicate);
                 } else {
-                    certFiles = new ArrayList<CertFiles>();
+                    certFiles = new ArrayList<>();
                 }
             } else {
                 certFiles = getHash(js, certFicate);
@@ -103,9 +103,10 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             if (CertStateEnum.TO_CERT.getCode() == certFicate.getCertStatus()) {
                 // 对接存证sdk
                 String dataHash = CryptoHelper.hash(certFicate.getCertHash() + certFicate.getCertId());
-                js.put("文件hash", certFicate.getCertHash());
+                js.put("文件摘要", certFicate.getCertHash());
                 js.put("存证位置", certFicate.getCertAddress());
                 js.put("证书编号", certFicate.getCertCode());
+                js.put("文件签名", certFicate.getSignature());
                 Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), js.toString());
                 if (result.getData() instanceof TransactionResult) {
                     TransactionResult tr = (TransactionResult) result.getData();
@@ -162,18 +163,11 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             StringBuffer hash = new StringBuffer();
             for (int i = 0; i < certFiles.size(); i++) {
                 CertFiles certFile = certFiles.get(i);
-                String str = CryptoHelper.hash(ShaUtil.getFileByte(certFile.getFilePath()));
-                hash.append(str);
-                certFile.setFileHash(str);
+                hash.append(certFile.getFileHash());
                 js.put(certFile.getFileName(), certFile.getFileHash());
-                certFilesService.updateByPrimaryKeySelective(certFile);
             }
-            if (certFiles.size() == 1) {
-                certFicate.setCertHash(hash.toString());
-            } else {
-                String dataHash = CryptoHelper.hash(hash.toString());
-                certFicate.setCertHash(dataHash);
-            }
+            String dataHash = CryptoHelper.hash(hash.toString());
+            certFicate.setCertHash(dataHash);
             return certFiles;
         } catch (Exception e) {
             throw new Exception(e);

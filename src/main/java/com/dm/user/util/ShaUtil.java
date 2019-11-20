@@ -1,5 +1,7 @@
 package com.dm.user.util;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +14,27 @@ import java.security.NoSuchAlgorithmException;
  * @date 2019-09-26
  */
 public class ShaUtil {
+
+    public static String getMD5(String path) {
+        try {
+            byte[] buffer = new byte[8192];
+            int len = 0;
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            File f = new File(path);
+            FileInputStream fis = new FileInputStream(f);
+            while ((len = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, len);
+            }
+            fis.close();
+            byte[] b = md.digest();
+            return new String(Base64.encode(b));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 文件转换为byte

@@ -58,7 +58,7 @@ public class PdfConvertUtil {
                 outputFile = "/opt/czt-upload/userTemplate/" + s;
                 fontPath = "/opt/jdk1.8.0_221/jre/lib/fonts/simsun.ttc";
                 certFiles.setFilePath("/opt/czt-upload/userTemplate/" + s);
-                certFiles.setFileUrl("http://114.244.37.10:7080/img/userTemplate/" + s);
+                certFiles.setFileUrl("http://192.168.3.123:8082/img/userTemplate/" + s);
             }
             OutputStream os = new FileOutputStream(outputFile);
             ITextRenderer render = new ITextRenderer();
@@ -68,6 +68,8 @@ public class PdfConvertUtil {
             render.layout();
             render.createPDF(os);
             os.close();
+            String md5 = ShaUtil.getMD5(certFiles.getFilePath());
+            certFiles.setFileHash(md5);
             certFiles.setFileName(s);
             certFiles.setFileType("pdf");
             certFiles.setFileSeq("1");

@@ -73,6 +73,12 @@ public class CertFicate {
      */
     private String certFileIsSave;
 
+
+    /**
+     * 文件签名
+     */
+    private String signature;
+
     /**
      * 确认人业务字段
      */
@@ -94,6 +100,14 @@ public class CertFicate {
     private String certCode;
 
     private String certBlockNumber;
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
 
     public String getCertBlockNumber() {
         return certBlockNumber;

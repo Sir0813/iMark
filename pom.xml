@@ -130,11 +130,12 @@
 			<artifactId>javacv-platform</artifactId>
 			<version>1.4.2</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.bytedeco</groupId>
-			<artifactId>javacv</artifactId>
-			<version>1.4.3</version>
-		</dependency>-->
+		<!-- iki jar包 -->
+		<dependency>
+			<groupId>com.dm.iki</groupId>
+			<artifactId>client</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dms-czt</finalName>

@@ -13,6 +13,7 @@ import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
 import com.dm.user.util.HttpSendUtil;
+import com.dm.user.util.IkiUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -220,6 +221,18 @@ public class UserController extends BaseController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return ResultUtil.success();
+    }
+
+    @ApiOperation(value = "登录验签", response = ResultUtil.class)
+    @RequestMapping(value = "/user/verifyData", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "aid", value = "iki可信标识", dataType = "String"),
+            @ApiImplicitParam(name = "inData", value = "签名原文", dataType = "String"),
+            @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String")
+    })
+    public Result verifyData(@RequestBody Map<String, Object> map) throws Exception {
+        boolean b = IkiUtil.verifyData(map.get("aid").toString(), map.get("inData").toString(), map.get("signature").toString());
+        return b ? ResultUtil.success() : ResultUtil.error();
     }
 
 }
