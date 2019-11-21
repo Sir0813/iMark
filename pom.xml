@@ -133,7 +133,7 @@
 		<!-- iki jar包 -->
 		<dependency>
 			<groupId>com.dm.iki</groupId>
-			<artifactId>client</artifactId>
+			<artifactId>sv-client</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 	</dependencies>

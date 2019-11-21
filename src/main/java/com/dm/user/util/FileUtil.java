@@ -100,7 +100,7 @@ public class FileUtil {
                         certFiles.setFileName("http://192.168.3.101/img/vidopng/" + uuid);
                     } else {
                         FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
-                        certFiles.setFileName("http://192.168.3.123:8082/img/vidopng/" + uuid);
+                        certFiles.setFileName("http://114.244.37.10:9082/img/vidopng/" + uuid);
                     }
                 } else {
                     certFiles.setFileName(fileName);
