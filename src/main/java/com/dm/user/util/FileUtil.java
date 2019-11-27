@@ -105,11 +105,9 @@ public class FileUtil {
                 } else {
                     certFiles.setFileName(fileName);
                 }
-                if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(signature)) {
-                    String md5 = ShaUtil.getMD5(filePath);
-                    inData.append(md5);
-                    certFiles.setFileHash(md5);
-                }
+                String md5 = ShaUtil.getMD5(filePath);
+                inData.append(md5);
+                certFiles.setFileHash(md5);
                 certFiles.setFileUrl(fileUrl);
                 certFiles.setFilePath(filePath);
                 certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
@@ -123,33 +121,33 @@ public class FileUtil {
                 try {
                     verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
                 } catch (SVS_ServerConnectException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_SignatureEncodeException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertExpiredException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_NotFoundPKMException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_SignatureException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_VerifyDataException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_InvalidParameterException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CheckIRLException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertNotTrustException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertIneffectiveException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertTypeException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_CertCancelException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 } catch (SVS_GetIRLException e) {
-                    e.printStackTrace();
+                    throw new Exception(e);
                 }
             }
             if (!verifyState) {

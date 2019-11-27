@@ -82,7 +82,9 @@ public class CertFicateController extends BaseController {
     @ApiOperation(value = "确认待自己确认", response = ResultUtil.class)
     @RequestMapping(value = "/confirm", method = RequestMethod.POST)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "certId", value = "存证ID", dataType = "Integer")
+            @ApiImplicitParam(name = "certId", value = "存证ID", dataType = "Integer"),
+            @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String"),
+            @ApiImplicitParam(name = "aid", value = "签名值", dataType = "String")
     })
     public Result confirm(@RequestBody Map<String, Object> map) throws Exception {
         certFicateService.confirm(map);

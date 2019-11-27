@@ -36,7 +36,7 @@ public interface UserCardService {
     UserCard selectByUserId(String userId, String realState) throws Exception;
 
     /**
-     * 退出登录时修改用户认证状态
+     * 修改用户认证状态
      *
      * @throws Exception
      */

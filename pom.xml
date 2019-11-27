@@ -136,6 +136,17 @@
 			<artifactId>sv-client</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<!-- 排除spring-boot-starter-web中的Tomcat -->
+		<!--<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>-->
 	</dependencies>
 	<build>
 		<finalName>dms-czt</finalName>
@@ -150,13 +161,13 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>com.dm.frame.jboot.Application</mainClass>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.mybatis.generator</groupId>
 				<artifactId>mybatis-generator-maven-plugin</artifactId>

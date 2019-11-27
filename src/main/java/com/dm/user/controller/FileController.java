@@ -39,12 +39,13 @@ public class FileController {
         Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile, aid, signature);
         if (map.containsKey("nofile")) {
             return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
-        } else if (map.containsKey("verifyFailed")) {
-            return ResultUtil.info("error.code", "signature.error.msg");
         } else if (map.containsKey("fileIds")) {
             return ResultUtil.success(map);
         }
         return null;
+        /*else if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        } */
     }
 
     @ApiOperation(value = "出证上传图片", response = ResultUtil.class)

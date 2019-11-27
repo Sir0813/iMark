@@ -451,6 +451,12 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     public void confirm(Map<String, Object> map) throws Exception {
         try {
             map.put("userId", LoginUserHelper.getUserId());
+            if (null != map.get("aid") && null != map.get("signature")) {
+                boolean b = IkiUtil.verifyData(map.get("aid").toString(), LoginUserHelper.getUserId(), map.get("signature").toString());
+                if (!b) {
+                    throw new Exception("验签失败");
+                }
+            }
             certConfirmService.updateConfirmState(map);
             List<CertConfirm> confirmList = certConfirmService.selectByState(map);
             if (confirmList.size() == 0) {

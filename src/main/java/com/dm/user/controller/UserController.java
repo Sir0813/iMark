@@ -211,7 +211,7 @@ public class UserController extends BaseController {
     @ApiOperation(value = "退出登录", response = ResultUtil.class)
     @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
     public Result logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // 修改实名认证状态为未认证
+        // 退出登录修改认证状态为未认证
         userCardService.updateRealState();
         // 清除设备已绑定推送别名
         HttpSendUtil.deleteData("aliases", LoginUserHelper.getUserName());
@@ -233,6 +233,12 @@ public class UserController extends BaseController {
     public Result verifyData(@RequestBody Map<String, Object> map) throws Exception {
         boolean b = IkiUtil.verifyData(map.get("aid").toString(), map.get("inData").toString(), map.get("signature").toString());
         return b ? ResultUtil.success() : ResultUtil.error();
+    }
+
+    @ApiOperation(value = "登录成功修改用户认证状态为未认证", response = ResultUtil.class)
+    @RequestMapping(value = "/user/updateRealState", method = RequestMethod.POST)
+    public void updateRealState() throws Exception {
+        userCardService.updateRealState();
     }
 
 }

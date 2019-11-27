@@ -244,10 +244,15 @@ public class UserServiceImpl implements UserService {
                 pmList.forEach(pm -> {
                     String json = new Gson().toJson(pm);
                     try {
-                        int resout = PushUtil.getInstance().sendToRegistrationId(LoginUserHelper.getUserName(), pm.getTitle(), json);
-                        if (resout == 1) {
-                            pm.setState("1");
-                            pushMsgService.updateByPrimaryKeySelective(pm);
+                        String aliases = HttpSendUtil.getData("aliases", LoginUserHelper.getUserName());
+                        JSONObject jsonObject = JSONObject.parseObject(aliases);
+                        String registrationIds = jsonObject.get("registration_ids").toString();
+                        if (!"[]".equals(registrationIds)) {
+                            int resout = PushUtil.getInstance().sendToRegistrationId(LoginUserHelper.getUserName(), pm.getTitle(), json);
+                            if (1 == resout) {
+                                pm.setState("1");
+                                pushMsgService.updateByPrimaryKeySelective(pm);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
