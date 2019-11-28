@@ -1,5 +1,6 @@
 package com.dm.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
@@ -68,7 +69,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
     public CertFicate saveCert(CertFicate certFicate) throws Exception {
         try {
             boolean sendMsg = false;
-            JSONObject js = new JSONObject();
+            Map<String, Object> map = new LinkedHashMap<>(16);
             certFicate.setCertOwner(LoginUserHelper.getUserId());
             certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
             List<CertFiles> certFiles = null;
@@ -79,12 +80,12 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                     Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
                     certFicate.setCertFilesid(fileId.toString());
                     // 生成文件hash
-                    certFiles = getHash(js, certFicate);
+                    certFiles = getHash(certFicate);
                 } else {
                     certFiles = new ArrayList<>();
                 }
             } else {
-                certFiles = getHash(js, certFicate);
+                certFiles = getHash(certFicate);
             }
             if (null == certFiles) {
                 return null;
@@ -99,15 +100,23 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             DecimalFormat df = new DecimalFormat("000000");
             String id = df.format(certFicate.getCertId());
             certFicate.setCertCode("DMS01" + id);
+            //map.put("用户", LoginUserHelper.getUserName());
+            map.put("证书编号", certFicate.getCertCode());
             // 存证入链
             if (CertStateEnum.TO_CERT.getCode() == certFicate.getCertStatus()) {
                 // 对接存证sdk
                 String dataHash = CryptoHelper.hash(certFicate.getCertHash() + certFicate.getCertId());
-                js.put("文件摘要", certFicate.getCertHash());
-                js.put("存证位置", certFicate.getCertAddress());
-                js.put("证书编号", certFicate.getCertCode());
-                js.put("文件签名", certFicate.getSignature());
-                Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), js.toString());
+                map.put("文件摘要", certFicate.getCertHash());
+                map.put("文件签名", certFicate.getSignature());
+                map.put("存证位置", certFicate.getCertAddress());
+                Map<String, Object> fileMap = new LinkedHashMap<>(16);
+                certFiles.forEach(cf -> {
+                    fileMap.put(cf.getFileName(), cf.getFileHash());
+                });
+                String fileJson = JSON.toJSONString(fileMap);
+                map.put("存证文件", fileJson);
+                String jsonString = JSON.toJSONString(map);
+                Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), jsonString);
                 if (result.getData() instanceof TransactionResult) {
                     TransactionResult tr = (TransactionResult) result.getData();
                     certFicate.setCertChainno(tr.getTransactionID());
@@ -153,7 +162,7 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
      * @return
      * @throws Exception
      */
-    private List<CertFiles> getHash(JSONObject js, CertFicate certFicate) throws Exception {
+    private List<CertFiles> getHash(CertFicate certFicate) throws Exception {
         try {
             if (StringUtils.isBlank(certFicate.getCertFilesid())) {
                 return null;
@@ -164,7 +173,6 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
             for (int i = 0; i < certFiles.size(); i++) {
                 CertFiles certFile = certFiles.get(i);
                 hash.append(certFile.getFileHash());
-                js.put(certFile.getFileName(), certFile.getFileHash());
             }
             String dataHash = CryptoHelper.hash(hash.toString());
             certFicate.setCertHash(dataHash);

@@ -223,7 +223,7 @@ public class UserController extends BaseController {
         return ResultUtil.success();
     }
 
-    @ApiOperation(value = "登录验签", response = ResultUtil.class)
+    @ApiOperation(value = "登录验签")
     @RequestMapping(value = "/user/verifyData", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "aid", value = "iki可信标识", dataType = "String"),
@@ -231,14 +231,17 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String")
     })
     public Result verifyData(@RequestBody Map<String, Object> map) throws Exception {
-        boolean b = IkiUtil.verifyData(map.get("aid").toString(), map.get("inData").toString(), map.get("signature").toString());
-        return b ? ResultUtil.success() : ResultUtil.error();
+        if (null != map.get("aid") && null != map.get("inData") && null != map.get("signature")) {
+            IkiUtil.verifyData(map.get("aid").toString(), map.get("inData").toString(), map.get("signature").toString());
+        }
+        return ResultUtil.success();
     }
 
     @ApiOperation(value = "登录成功修改用户认证状态为未认证", response = ResultUtil.class)
     @RequestMapping(value = "/user/updateRealState", method = RequestMethod.POST)
-    public void updateRealState() throws Exception {
+    public Result updateRealState() throws Exception {
         userCardService.updateRealState();
+        return ResultUtil.success();
     }
 
 }
