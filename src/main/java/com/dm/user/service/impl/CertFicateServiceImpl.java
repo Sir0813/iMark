@@ -36,7 +36,7 @@ import java.util.*;
  */
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateService {
+public class CertFicateServiceImpl implements CertFicateService {
 
     @Autowired
     private CertFicateMapper certFicateMapper;
@@ -111,7 +111,8 @@ public class CertFicateServiceImpl<selectByPrimaryKey> implements CertFicateServ
                 map.put("存证位置", certFicate.getCertAddress());
                 Map<String, Object> fileMap = new LinkedHashMap<>(16);
                 certFiles.forEach(cf -> {
-                    fileMap.put(cf.getFileName(), cf.getFileHash());
+                    String fileName = cf.getFileUrl().substring(cf.getFileUrl().lastIndexOf("/") + 1);
+                    fileMap.put(fileName, cf.getFileHash());
                 });
                 String fileJson = JSON.toJSONString(fileMap);
                 map.put("存证文件", fileJson);

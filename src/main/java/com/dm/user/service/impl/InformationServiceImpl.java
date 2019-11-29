@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class InformationServiceImpl<insertSelective> implements InformationService {
+public class InformationServiceImpl implements InformationService {
 
     @Autowired
     private InformationMapper informationMapper;

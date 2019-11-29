@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class CertFilesServiceImpl<findByFilesIds, deleteByPrimaryKey, selectByPrimaryKey> implements CertFilesService {
+public class CertFilesServiceImpl implements CertFilesService {
 
     @Autowired
     private CertFilesMapper certFilesMapper;

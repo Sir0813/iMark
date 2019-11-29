@@ -71,15 +71,15 @@ public class UploadFailException {
      */
     @ExceptionHandler(Exception.class)
     public Result exception(HttpServletRequest req, Exception ex) {
-        Result result = null;
+        Result result = new Result();
         logger.error("error URL ===>>" + req.getRequestURL() + "<===>error msg ===>>" + ex.getMessage());
         String errorMsg = "系统开小差了，请稍后重试";
         if (ex.getMessage().contains(StateMsg.REASONMSG)) {
-            result = new Result();
             result.setMsg(StateMsg.REASONMSG);
             result.setCode("10000");
         } else {
-            result = ResultUtil.error(errorMsg);
+            result.setMsg(errorMsg);
+            result.setCode("10000");
         }
         return result;
     }
