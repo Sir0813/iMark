@@ -448,6 +448,12 @@ public class CertFicateServiceImpl implements CertFicateService {
             if (null == map.get("reason") || StringUtils.isBlank(map.get("reason").toString())) {
                 throw new Exception(StateMsg.REASONMSG);
             }
+            if (null != map.get("aid") && null != map.get("signature")) {
+                boolean b = IkiUtil.verifyData(map.get("aid").toString(), LoginUserHelper.getUserId(), map.get("signature").toString());
+                if (!b) {
+                    throw new Exception("验签失败");
+                }
+            }
             map.put("confirmPhone", LoginUserHelper.getUserName());
             certConfirmService.updateByCertId(map);
             certFicateMapper.updateReasonByCertId(CertStateEnum.IS_RETURN.getCode(), Integer.parseInt(map.get("certId").toString()));
