@@ -16,7 +16,7 @@ public enum ConfirmEnum {
     private int code;
     private String desc;
 
-    private ConfirmEnum(int code, String desc) {
+    ConfirmEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

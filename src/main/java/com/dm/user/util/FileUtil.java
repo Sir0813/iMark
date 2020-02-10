@@ -19,17 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Encoder;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -57,6 +54,12 @@ public class FileUtil {
 
     @Value("${upload.headFilePath}")
     private String headFilePath;
+
+    /*@Value("${upload.applyFilePath}")
+    private String applyFilePath;
+
+    @Value("${upload.applyFilePrefix}")
+    private String applyFilePrefix;*/
 
     @Autowired
     private CertFilesService certFilesService;
@@ -97,10 +100,10 @@ public class FileUtil {
                     String uuid = UUID.randomUUID().toString() + ".png";
                     if (osname.startsWith(StateMsg.OS_NAME)) {
                         FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
-                        certFiles.setFileName("http://192.168.3.101/img/vidopng/" + uuid);
+                        certFiles.setFileName("img/vidopng/" + uuid);
                     } else {
                         FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
-                        certFiles.setFileName("http://114.244.37.10:9082/img/vidopng/" + uuid);
+                        certFiles.setFileName("vidopng/" + uuid);
                     }
                 } else {
                     certFiles.setFileName(fileName);
@@ -301,9 +304,9 @@ public class FileUtil {
     /**
      * 打包下载
      *
-     * @param sourceFilePath 指定文件路径
-     * @param zipFilePath    打成压缩包的路径
-     * @param fileName       文件名称
+     * @param files       文件
+     * @param zipFilePath 打成压缩包的路径
+     * @param fileName    文件名称
      * @return
      */
     public boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
@@ -354,55 +357,6 @@ public class FileUtil {
         }
     }
 
-    /**
-     * 文件转为文件流
-     *
-     * @param imagePath 图片路径
-     * @return
-     */
-    @SuppressWarnings("restriction")
-    public static String imageChangeBase64(String imagePath) {
-        byte[] data = null;
-        try {
-            InputStream inputStream = new FileInputStream(imagePath);
-            data = new byte[inputStream.available()];
-            inputStream.read(data);
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(data);
-    }
-
-    public void fileDownload(HttpServletResponse response, String fileName, String filePath) {
-        response.setHeader("content-type", "application/octet-stream");
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        byte[] buff = new byte[1024];
-        BufferedInputStream bis = null;
-        try {
-            OutputStream os = response.getOutputStream();
-            bis = new BufferedInputStream(new FileInputStream(new File(filePath + fileName)));
-            int i = bis.read(buff);
-            while (i != -1) {
-                os.write(buff, 0, buff.length);
-                os.flush();
-                i = bis.read(buff);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public Map<String, Object> realUpload(HttpServletRequest request, HttpServletResponse response,
                                           MultipartFile[] multipartFile, String type)
             throws Exception {
@@ -438,5 +392,88 @@ public class FileUtil {
         }
         map.put("fileIds", fileIds);
         return map;
+    }
+
+    public Map<String, Object> itemUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            request.setCharacterEncoding("utf-8");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("text/html;charset=utf-8");
+            MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+            String requeredids = multipartHttpServletRequest.getParameter("requeredids");
+            String[] split = requeredids.split(",");
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            for (int i = 0; i < split.length; i++) {
+                String s = split[i];
+                List<MultipartFile> file = multipartHttpServletRequest.getFiles("row" + s);
+                String fileIds = "";
+                for (int j = 0; j < file.size(); j++) {
+                    MultipartFile multipartFile = file.get(j);
+                    String fileName = multipartFile.getOriginalFilename();
+                    int indexOf = fileName.lastIndexOf(".");
+                    String suffix = "";
+                    if (indexOf >= 0) {
+                        suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+                    }
+                    UUID randomUuid = UUID.randomUUID();
+                    String filePath = certFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+                    String fileUrl = certFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+                    boolean uploadBoolean = uploadFile(filePath, "", multipartFile);
+                    if (!uploadBoolean) {
+                        throw new Exception("上传失败");
+                    }
+                    // 文件表插入文件
+                    CertFiles certFiles = new CertFiles();
+                    certFiles.setFileName(fileName);
+                    certFiles.setFileUrl(fileUrl);
+                    certFiles.setFilePath(filePath);
+                    certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+                    certFiles.setFileType(suffix);
+                    certFiles.setFileSeq(j + "");
+                    certFilesService.insertSelective(certFiles);
+                    fileIds += (certFiles.getFileId() + ",");
+                }
+                map.put("row" + s, fileIds);
+            }
+            return map;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    public Map<String, Object> applyUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            request.setCharacterEncoding("utf-8");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("text/html;charset=utf-8");
+            MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+            List<MultipartFile> file = multipartHttpServletRequest.getFiles("file");
+            String fileName = file.get(0).getOriginalFilename();
+            int indexOf = fileName.lastIndexOf(".");
+            String suffix = "";
+            if (indexOf >= 0) {
+                suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+            }
+            UUID randomUuid = UUID.randomUUID();
+            String filePath = certFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            String fileUrl = certFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            boolean uploadBoolean = uploadFile(filePath, "", file.get(0));
+            if (!uploadBoolean) {
+                throw new Exception("上传失败");
+            }
+            CertFiles certFiles = new CertFiles();
+            certFiles.setFileName(fileName);
+            certFiles.setFileUrl(fileUrl);
+            certFiles.setFilePath(filePath);
+            certFiles.setFileSize(Double.valueOf(file.get(0).getSize()));
+            certFiles.setFileType(suffix);
+            certFiles.setFileSeq("0");
+            certFilesService.insertSelective(certFiles);
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("fileid", certFiles.getFileId());
+            return map;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

@@ -77,6 +77,12 @@ public class UploadFailException {
         if (ex.getMessage().contains(StateMsg.REASONMSG)) {
             result.setMsg(StateMsg.REASONMSG);
             result.setCode("10000");
+        } else if (ex.getMessage().contains(StateMsg.NOTREAL)) {
+            result.setMsg(StateMsg.NOTREAL);
+            result.setCode("10000");
+        } else if (ex.getMessage().contains(StateMsg.TAKE_ORDER_ERROR_MSG)) {
+            result.setMsg(StateMsg.TAKE_ORDER_ERROR_MSG);
+            result.setCode("10000");
         } else {
             result.setMsg(errorMsg);
             result.setCode("10000");

@@ -56,6 +56,15 @@ public class CertFilesServiceImpl implements CertFilesService {
     }
 
     @Override
+    public List<CertFiles> findByFilesIds2(String[] filesId) throws Exception {
+        try {
+            return certFilesMapper.findByFilesIds2(filesId);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
     public void deleteByPrimaryKey(Integer fileId) throws Exception {
         try {
             certFilesMapper.deleteByPrimaryKey(fileId);
@@ -81,4 +90,5 @@ public class CertFilesServiceImpl implements CertFilesService {
             throw new Exception(e);
         }
     }
+
 }

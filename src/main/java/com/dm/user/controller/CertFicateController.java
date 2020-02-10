@@ -14,10 +14,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -56,15 +53,15 @@ public class CertFicateController extends BaseController {
     }
 
     @ApiOperation(value = "存证详情", response = ResultUtil.class)
-    @RequestMapping(value = "/details", method = RequestMethod.GET)
-    public Result certDetails(String certFicateId) throws Exception {
+    @RequestMapping(value = "/details/{certFicateId}", method = RequestMethod.GET)
+    public Result certDetails(@PathVariable String certFicateId) throws Exception {
         CertFicate cert = certFicateService.certDetails(certFicateId);
         return ResultUtil.success(cert);
     }
 
     @ApiOperation(value = "撤回待他人确认存证", response = ResultUtil.class)
-    @RequestMapping(value = "/revoke", method = RequestMethod.GET)
-    public Result certRevoke(String certId) throws Exception {
+    @RequestMapping(value = "/revoke/{certId}", method = RequestMethod.GET)
+    public Result certRevoke(@PathVariable String certId) throws Exception {
         certFicateService.certRevoke(certId);
         return ResultUtil.success();
     }
@@ -99,8 +96,8 @@ public class CertFicateController extends BaseController {
     }
 
     @ApiOperation(value = "获取存证证书", response = ByteArrayResource.class)
-    @RequestMapping(value = "/getCertImg", method = RequestMethod.GET, headers = "Accept=image/jpeg")
-    public ByteArrayResource getCertImg(String certId) throws Exception {
+    @RequestMapping(value = "/getCertImg/{certId}", method = RequestMethod.GET, headers = "Accept=image/jpeg")
+    public ByteArrayResource getCertImg(@PathVariable String certId) throws Exception {
         ByteArrayResource bar = certFicateService.getCertImg(certId);
         return bar;
     }

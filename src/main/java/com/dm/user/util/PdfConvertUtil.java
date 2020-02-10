@@ -58,7 +58,7 @@ public class PdfConvertUtil {
                 outputFile = "/opt/czt-upload/userTemplate/" + s;
                 fontPath = "/opt/jdk1.8.0_221/jre/lib/fonts/simsun.ttc";
                 certFiles.setFilePath("/opt/czt-upload/userTemplate/" + s);
-                certFiles.setFileUrl("http://114.244.37.10:9082/img/userTemplate/" + s);
+                certFiles.setFileUrl("userTemplate/" + s);
             }
             OutputStream os = new FileOutputStream(outputFile);
             ITextRenderer render = new ITextRenderer();

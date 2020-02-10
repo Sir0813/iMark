@@ -10,10 +10,7 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author cui
@@ -28,8 +25,8 @@ public class OutCertController extends BaseController {
     private OutCertService outCertService;
 
     @ApiOperation(value = "动态下载出证模板", response = ResultUtil.class)
-    @RequestMapping(value = "/cert/template", method = RequestMethod.GET)
-    public Result downloadOutCertTemplate(String certIds) throws Exception {
+    @RequestMapping(value = "/cert/template/{certIds}", method = RequestMethod.GET)
+    public Result downloadOutCertTemplate(@PathVariable String certIds) throws Exception {
         String downloadPath = outCertService.downloadOutCertTemplate(certIds);
         return ResultUtil.success(downloadPath);
     }
@@ -49,15 +46,15 @@ public class OutCertController extends BaseController {
     }
 
     @ApiOperation(value = "出证详情", response = ResultUtil.class)
-    @RequestMapping(value = "/cert/details", method = RequestMethod.GET)
-    public Result details(String outCertId) throws Exception {
+    @RequestMapping(value = "/cert/details/{outCertId}", method = RequestMethod.GET)
+    public Result details(@PathVariable String outCertId) throws Exception {
         OutCert outCert = outCertService.details(outCertId);
         return ResultUtil.success(outCert);
     }
 
     @ApiOperation(value = "出证文件打包下载", response = ResultUtil.class)
-    @RequestMapping(value = "/cert/downZip", method = RequestMethod.GET)
-    public Result downZip(String outCertId) throws Exception {
+    @RequestMapping(value = "/cert/downZip/{outCertId}", method = RequestMethod.GET)
+    public Result downZip(@PathVariable String outCertId) throws Exception {
         String downPath = outCertService.downZip(outCertId);
         return ResultUtil.success(downPath);
     }

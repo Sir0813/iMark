@@ -52,6 +52,14 @@ public interface CertFilesMapper {
     List<CertFiles> findByFilesIds(String[] filesId);
 
     /**
+     * 根据文件ID批量查询
+     *
+     * @param filesId
+     * @return
+     */
+    List<CertFiles> findByFilesIds2(String[] filesId);
+
+    /**
      * 根据存证ID删除
      *
      * @param certId

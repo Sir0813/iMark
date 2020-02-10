@@ -57,8 +57,8 @@ public class UserController extends BaseController {
     private PushMsgService pushMsgService;
 
     @ApiOperation(value = "发送验证码", response = ResultUtil.class)
-    @RequestMapping(value = "/api/sendVeriCode", method = RequestMethod.GET)
-    public Result sendVeriCode(String phone, String type) throws Exception {
+    @RequestMapping(value = "/api/sendVeriCode/{phone}/{type}", method = RequestMethod.GET)
+    public Result sendVeriCode(@PathVariable String phone, @PathVariable String type) throws Exception {
         return userService.sendVeriCode(phone, type);
     }
 
@@ -202,8 +202,8 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation(value = "读取未查看消息", response = ResultUtil.class)
-    @RequestMapping(value = "/user/readInfo", method = RequestMethod.GET)
-    public Result readInfo(String pushId) throws Exception {
+    @RequestMapping(value = "/user/readInfo/{pushId}", method = RequestMethod.GET)
+    public Result readInfo(@PathVariable String pushId) throws Exception {
         pushMsgService.readInfo(pushId);
         return ResultUtil.success();
     }

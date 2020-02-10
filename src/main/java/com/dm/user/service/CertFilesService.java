@@ -44,6 +44,15 @@ public interface CertFilesService {
     List<CertFiles> findByFilesIds(String[] filesId) throws Exception;
 
     /**
+     * 根据文件ID批量查询
+     *
+     * @param filesId
+     * @return
+     * @throws Exception
+     */
+    List<CertFiles> findByFilesIds2(String[] filesId) throws Exception;
+
+    /**
      * 根据主键ID删除
      *
      * @param fileId

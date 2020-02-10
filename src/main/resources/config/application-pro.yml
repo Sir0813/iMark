@@ -10,15 +10,19 @@ upload:
   # 存证文件存储路径
   certFilePath: /opt/czt-upload/certfile
   # 存证文件访问路径
-  certFilePrefix: http://114.244.37.10:9082/img/certfile
+  certFilePrefix: certfile
   # 出证文件存储路径
   outCertFilePath: /opt/czt-upload/outcert/file
   # 出证文件访问下载路径
-  outCertFilePrefix: http://114.244.37.10:9082/img/outcert/file
+  outCertFilePrefix: outcert/file
   # 用户头像存储路径
   headFilePath: /opt/czt-upload/headfile
   # 用户头像访问路径
-  headFilePrefix: http://114.244.37.10:9082/img/headfile
+  headFilePrefix: headfile
+  # 公正文件存储路径
+  applyFilePath: /opt/czt-upload/apply
+  # 公正文件访问路径
+  applyFilePrefix: apply
 # 邮箱设置
 email:
   # 发送人邮箱地址

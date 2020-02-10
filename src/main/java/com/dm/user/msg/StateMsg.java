@@ -80,4 +80,14 @@ public final class StateMsg {
      * 退回存证字段为空
      */
     public static final String REASONMSG = "请输入退回原因";
+
+    /**
+     * 先完成实名认证再做操作
+     */
+    public static final String NOTREAL = "请先完成实名认证";
+
+    /**
+     * 抢单
+     */
+    public static final String TAKE_ORDER_ERROR_MSG = "该订单已被他人接取";
 }

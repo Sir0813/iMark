@@ -132,4 +132,14 @@
         </foreach>
         order by file_seq asc
     </select>
+    <select id="findByFilesIds2" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        file_id, file_url
+        from biz_cert_files
+        where file_id in
+        <foreach collection="array" item="fileid" open="(" close=")" separator=",">
+            #{fileid}
+        </foreach>
+        order by file_seq asc
+    </select>
 </mapper>

@@ -9,6 +9,7 @@ import com.dm.user.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,16 +33,16 @@ public class CertTemplateController extends BaseController {
     }
 
     @ApiOperation(value = "第一次合同模板编辑", response = ResultUtil.class)
-    @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public Result getHtmlTemplate(String type) throws Exception {
+    @RequestMapping(value = "/edit/{type}", method = RequestMethod.GET)
+    public Result getHtmlTemplate(@PathVariable String type) throws Exception {
         CertTemplate ct = certTemplateService.getByTemplateType(type);
         String htmlTemplate = FileUtil.getHtmlTemplate(ct.getTemplatePath()).replace("\t", "");
         return ResultUtil.success(htmlTemplate);
     }
 
     @ApiOperation(value = "编辑合同模板", response = ResultUtil.class)
-    @RequestMapping(value = "/fileEdit", method = RequestMethod.GET)
-    public Result fileEdit(String certId) throws Exception {
+    @RequestMapping(value = "/fileEdit/{certId}", method = RequestMethod.GET)
+    public Result fileEdit(@PathVariable String certId) throws Exception {
         String htmlTemplate = certTemplateService.fileEdit(certId);
         return ResultUtil.success(htmlTemplate);
     }

@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +51,9 @@ public class OutCertServiceImpl implements OutCertService {
     @Autowired
     private FileUtil fileUtil;
 
+    @Value("${upload.baseUrl}")
+    private String baseUrl;
+
     @Override
     public String downloadOutCertTemplate(String certIds) throws Exception {
         String[] split = certIds.split(",");
@@ -81,7 +85,7 @@ public class OutCertServiceImpl implements OutCertService {
         } else {
             configuration.setDirectoryForTemplateLoading(new File("/opt/czt-upload/outcert/"));
             outFile = new File("/opt/czt-upload/outcert/" + fileName);
-            resultPath = "http://114.244.37.10:9082/img/outcert/" + fileName;
+            resultPath = baseUrl + "dms-czt/outcert/" + fileName;
         }
         //以utf-8的编码读取ftl文件
         Template t = configuration.getTemplate("outcert.ftl", "utf-8");
@@ -236,7 +240,7 @@ public class OutCertServiceImpl implements OutCertService {
                 downloadPath = "http://192.168.3.101/img/" + path + ".zip";
             } else {
                 zipFilePath = "/opt/czt-upload/outcert/zip";
-                downloadPath = "http://114.244.37.10:9082/img/outcert/zip/" + path + ".zip";
+                downloadPath = baseUrl + "dms-czt/outcert/zip/" + path + ".zip";
             }
             boolean b = fileUtil.fileToZip(fileList, zipFilePath, path);
             if (!b) {

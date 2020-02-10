@@ -59,4 +59,18 @@ public class FileController {
         return ResultUtil.error();
     }
 
+    @ApiOperation(value = "公正用户上传资料", response = ResultUtil.class)
+    @RequestMapping(value = "/item/upload", method = RequestMethod.POST)
+    public Result itemUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> map = fileUtil.itemUpload(request, response);
+        return ResultUtil.success(map);
+    }
+
+    @ApiOperation(value = "上传公正意见书", response = ResultUtil.class)
+    @RequestMapping(value = "/apply/upload", method = RequestMethod.POST)
+    public Result applyUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> map = fileUtil.applyUpload(request, response);
+        return ResultUtil.success(map);
+    }
+
 }
