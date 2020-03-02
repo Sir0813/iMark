@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.OrgItemsMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.OrgItems">
+        <id column="itemid" jdbcType="INTEGER" property="itemid"/>
+        <result column="orgid" jdbcType="INTEGER" property="orgid"/>
+        <result column="item_code" jdbcType="VARCHAR" property="itemCode"/>
+        <result column="item_name" jdbcType="VARCHAR" property="itemName"/>
+        <result column="item_desc" jdbcType="VARCHAR" property="itemDesc"/>
+        <result column="logo_url" jdbcType="VARCHAR" property="logoUrl"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="valuation" jdbcType="INTEGER" property="valuation"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="lowest_price" jdbcType="DECIMAL" property="lowestPrice"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    itemid, orgid, item_code, item_name, item_desc, logo_url, status, version, created_date, 
+    created_by, valuation, price, lowest_price
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_org_items
+        where itemid = #{itemid,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from biz_org_items
+    where itemid = #{itemid,jdbcType=INTEGER}
+  </delete>
+    <select id="itemList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_org_items oitem
+        where orgId = #{orgId}
+        and oitem.status = 2
+        group by oitem.item_code
+        order by oitem.created_date asc
+    </select>
+    <select id="selectByOrgIdAndStatus" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        oitem.itemid, oitem.orgid, oitem.item_code, oitem.item_name, oitem.logo_url, oitem.status,
+        oitem.version, oitem.created_date, oitem.created_by, oitem.lowest_price
+        from biz_org_items oitem
+        where oitem.orgid = #{orgId}
+        and oitem.status = #{status}
+        group by oitem.item_code
+        order by oitem.created_date asc
+    </select>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.ItemApplyFilesMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.ItemApplyFiles">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="applyid" jdbcType="INTEGER" property="applyid"/>
+        <result column="fileid" jdbcType="INTEGER" property="fileid"/>
+        <result column="requeredid" jdbcType="INTEGER" property="requeredid"/>
+        <result column="describe" jdbcType="VARCHAR" property="describe"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="file_types" jdbcType="INTEGER" property="fileTypes"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, applyid, fileid, requeredid, `describe`, created_date, file_types, is_del
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_item_apply_files
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from biz_item_apply_files
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.ItemApplyFiles" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into biz_item_apply_files
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyid != null">
+                applyid,
+            </if>
+            <if test="fileid != null">
+                fileid,
+            </if>
+            <if test="requeredid != null">
+                requeredid,
+            </if>
+            <if test="describe != null">
+                `describe`,
+            </if>
+            <if test="createdDate != null">
+                created_date,
+            </if>
+            <if test="fileTypes != null">
+                file_types,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyid != null">
+                #{applyid,jdbcType=INTEGER},
+            </if>
+            <if test="fileid != null">
+                #{fileid,jdbcType=INTEGER},
+            </if>
+            <if test="requeredid != null">
+                #{requeredid,jdbcType=INTEGER},
+            </if>
+            <if test="describe != null">
+                #{describe,jdbcType=VARCHAR},
+            </if>
+            <if test="createdDate != null">
+                #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="fileTypes != null">
+                #{fileTypes,jdbcType=INTEGER},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.ItemApplyFiles">
+        update biz_item_apply_files
+        <set>
+            <if test="describe != null">
+                `describe` = #{describe,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where fileid = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByApplyIdAndRequeredId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_item_apply_files
+        where applyid = #{applyid}
+        and requeredid = #{requeredid}
+        and file_types = #{fileTypes}
+    </select>
+    <delete id="deleteByApplyIdAndRequeredId" parameterType="java.util.Map">
+        delete
+        from biz_item_apply_files
+        where applyid = #{applyid}
+        and requeredid = #{requeredid}
+    </delete>
+    <delete id="deleteByApplyIdAndFileType" parameterType="java.util.Map">
+        delete
+        from biz_item_apply_files
+        where applyid = #{applyId}
+        and file_types = #{fileTypes}
+    </delete>
+    <select id="selectByApplyIdAndState" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        biz_item_apply_files
+        WHERE
+        applyid = #{applyId}
+        AND file_types = #{state}
+    </select>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.WfInstanceMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.WfInstance">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="nodeid" jdbcType="INTEGER" property="nodeid"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason"/>
+        <result column="created_by" jdbcType="INTEGER" property="createdBy"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, created_date, update_date, nodeid, status, reject_reason, created_by
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wf_instance
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wf_instance
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.WfInstance" useGeneratedKeys="true" keyProperty="id">
+        insert into wf_instance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createdDate != null">
+                created_date,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="nodeid != null">
+                nodeid,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="rejectReason != null">
+                reject_reason,
+            </if>
+            <if test="createdBy != null">
+                created_by,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="createdDate != null">
+                #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="nodeid != null">
+                #{nodeid,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rejectReason != null">
+                #{rejectReason,jdbcType=VARCHAR},
+            </if>
+            <if test="createdBy != null">
+                #{createdBy,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.WfInstance">
+        update wf_instance
+        <set>
+            <if test="createdDate != null">
+                created_date = #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="nodeid != null">
+                nodeid = #{nodeid,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rejectReason != null">
+                reject_reason = #{rejectReason,jdbcType=VARCHAR},
+            </if>
+            <if test="createdBy != null">
+                created_by = #{createdBy,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByInstanceId" parameterType="java.util.Map">
+        UPDATE wf_instance
+        SET `status` = '4'
+        WHERE
+            id = (
+                SELECT
+                    wf_instance_id
+                FROM
+                    biz_item_apply
+                WHERE
+                    applyid = #{applyid}
+        )
+    </update>
+</mapper>

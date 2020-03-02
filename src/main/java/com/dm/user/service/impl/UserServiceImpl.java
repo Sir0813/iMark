@@ -67,6 +67,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ContactMapper contactMapper;
 
+    @Autowired
+    private OrgUserService orgUserService;
+
     @Value("${email.emailContent}")
     private String emailContent;
 
@@ -222,6 +225,8 @@ public class UserServiceImpl implements UserService {
             Map<String, Object> map = new HashMap<>(16);
             User user = userMapper.findByName(LoginUserHelper.getUserName());
             UserCard userCard = userCardService.selectByUserId(user.getUserid().toString(), "2");
+            OrgUser orgUser = orgUserService.selectByUserId(user.getUserid());
+            map.put("isAdmin", null == orgUser ? false : true);
             map.put("email", StringUtils.isBlank(user.getEmail()) ? "" : user.getEmail());
             map.put("userName", LoginUserHelper.getUserName());
             map.put("realName", null == userCard ? "" : userCard.getRealName());

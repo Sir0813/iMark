@@ -24,6 +24,11 @@ public class CertFiles {
 
     private String fileHash;
 
+    /**
+     * 业务字段 文件批注
+     */
+    private String describe;
+
     public String getFileHash() {
         return fileHash;
     }
@@ -94,6 +99,14 @@ public class CertFiles {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public String getDescribe() {
+        return describe;
+    }
+
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
 
 }

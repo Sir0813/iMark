@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.OrgMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.Org">
+        <id column="itemid" jdbcType="INTEGER" property="itemid"/>
+        <result column="orgcode" jdbcType="VARCHAR" property="orgcode"/>
+        <result column="orgname" jdbcType="VARCHAR" property="orgname"/>
+        <result column="orgtype" jdbcType="VARCHAR" property="orgtype"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
+        <result column="logo_url" jdbcType="VARCHAR" property="logoUrl"/>
+        <result column="pic_url" jdbcType="VARCHAR" property="picUrl"/>
+        <result column="home_url" jdbcType="VARCHAR" property="homeUrl"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="registe_date" jdbcType="TIMESTAMP" property="registeDate"/>
+        <result column="audit_date" jdbcType="TIMESTAMP" property="auditDate"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dm.user.entity.Org">
+        <result column="serve_desc" jdbcType="LONGVARCHAR" property="serveDesc"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    itemid, orgcode, orgname, orgtype, phone, address, post_code, logo_url, pic_url, 
+    home_url, status, registe_date, audit_date, latitude, longitude
+  </sql>
+    <sql id="Blob_Column_List">
+    serve_desc
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from biz_org
+        where itemid = #{itemid,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from biz_org
+    where itemid = #{itemid,jdbcType=INTEGER}
+    </delete>
+    <select id="orgList" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_org
+        where status = 1
+        order by registe_date desc
+    </select>
+</mapper>

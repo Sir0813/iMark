@@ -132,10 +132,14 @@
         </foreach>
         order by file_seq asc
     </select>
-    <select id="findByFilesIds2" resultMap="BaseResultMap" parameterType="java.util.List">
+    <select id="findByFilesIds2" resultType="com.dm.user.entity.CertFiles" parameterType="java.util.List">
         select
-        file_id, file_url
-        from biz_cert_files
+        certfile.file_id as fileId,
+        certfile.file_url as fileUrl,
+        applyfile.`describe` as `describe`
+        from biz_cert_files as certfile
+        inner join biz_item_apply_files as applyfile
+        on certfile.file_id = applyfile.fileid
         where file_id in
         <foreach collection="array" item="fileid" open="(" close=")" separator=",">
             #{fileid}
