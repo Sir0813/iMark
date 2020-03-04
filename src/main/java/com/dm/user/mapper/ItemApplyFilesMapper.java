@@ -26,4 +26,6 @@ public interface ItemApplyFilesMapper {
     void deleteByApplyIdAndFileType(Map<String, Object> map);
 
     ItemApplyFiles selectByApplyIdAndState(Map<String, Object> fileMap);
+
+    void updateDelState(Integer applyid);
 }

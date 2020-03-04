@@ -92,7 +92,7 @@
     </update>
     <update id="updateByInstanceId" parameterType="java.util.Map">
         UPDATE wf_instance
-        SET `status` = '4'
+        SET `status` = #{instanceState}
         WHERE
             id = (
                 SELECT

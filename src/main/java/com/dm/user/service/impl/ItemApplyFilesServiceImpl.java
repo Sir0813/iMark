@@ -81,5 +81,12 @@ public class ItemApplyFilesServiceImpl implements ItemApplyFilesService {
         }
     }
 
-
+    @Override
+    public void updateDelState(Integer applyid) throws Exception {
+        try {
+            itemApplyFilesMapper.updateDelState(applyid);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 }

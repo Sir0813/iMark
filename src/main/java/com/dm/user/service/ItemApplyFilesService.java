@@ -55,4 +55,11 @@ public interface ItemApplyFilesService {
      * @return
      */
     ItemApplyFiles selectByApplyIdAndState(Map<String, Object> fileMap) throws Exception;
+
+    /**
+     * 第一节点审批人退回意见书失效
+     *
+     * @param applyid
+     */
+    void updateDelState(Integer applyid) throws Exception;
 }

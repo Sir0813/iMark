@@ -113,5 +113,16 @@ public class ItemApplyController extends BaseController {
         return ResultUtil.success(itemApplyList);
     }
 
+    @ApiOperation(value = "审批通过", response = ResultUtil.class)
+    @RequestMapping(value = "/approved", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
+            @ApiImplicitParam(name = "opinion", value = "审批意见", dataType = "String")
+    })
+    public Result approved(@RequestBody Map<String, Object> map) throws Exception {
+        itemApplyService.approved(map);
+        return ResultUtil.success();
+    }
+
 
 }

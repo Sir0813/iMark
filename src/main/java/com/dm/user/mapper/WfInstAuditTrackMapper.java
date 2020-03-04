@@ -16,4 +16,6 @@ public interface WfInstAuditTrackMapper {
     int updateByPrimaryKeySelective(WfInstAuditTrack record);
 
     void insertData(Map<String, Object> map);
+
+    void insertApproved(Map<String, Object> map);
 }

@@ -46,6 +46,11 @@ public class ItemApply {
      */
     private String itemName;
 
+    /**
+     * 用户真实姓名
+     */
+    private String realName;
+
     public String getItemName() {
         return itemName;
     }
@@ -172,5 +177,13 @@ public class ItemApply {
 
     public void setHandleUserid(Integer handleUserid) {
         this.handleUserid = handleUserid;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 }

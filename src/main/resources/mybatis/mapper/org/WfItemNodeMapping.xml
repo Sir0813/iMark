@@ -28,4 +28,19 @@
         order by `order` asc
         limit 1
     </select>
+    <select id="selectByItemIdDesc" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wf_item_node_define
+        where itemid = #{itemid,jdbcType=VARCHAR}
+        order by `order` desc
+        limit 1
+    </select>
+    <select id="selectByOrder" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wf_item_node_define
+        where itemid = #{itemId}
+        and `order` = #{order}
+    </select>
 </mapper>

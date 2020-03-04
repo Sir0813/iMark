@@ -177,7 +177,6 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(fileMap);
             if (null != itemApplyFiles) {
                 certFiles = certFilesService.selectByPrimaryKey(itemApplyFiles.getFileid());
-
             }
             userMap.put("userName", null == userCard ? "" : userCard.getRealName());
             userMap.put("userPhone", user.getUsername());
@@ -323,8 +322,8 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
     @Override
     public Result rejectReason(Map<String, Object> map) throws Exception {
         try {
+            ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.parseInt(map.get("applyid").toString()));
             if (1 == Integer.valueOf(map.get("type").toString())) {
-                ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.parseInt(map.get("applyid").toString()));
                 itemApply.setStatus(ItemApplyEnum.REVIEW_NO.getCode());
                 WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
                 wfInstance.setRejectReason(map.get("rejectReason").toString());
@@ -335,10 +334,25 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             } else if (2 == Integer.valueOf(map.get("type").toString())) {
                 map.put("userId", LoginUserHelper.getUserId());
                 wfInstAuditTrackService.insertData(map);
-                wfInstanceService.updateByInstanceId(map);
-                itemApplyMapper.updateState(map);
+                WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
+                WfItemNode wfItemNode = wfItemNodeService.selectByItemId(itemApply.getItemid());
+                // 如果是第一个审批人
+                if (wfInstance.getNodeid() == wfItemNode.getId()) {
+                    map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
+                    itemApplyFilesService.updateDelState(itemApply.getApplyid());
+                    wfInstanceService.updateByInstanceId(map);
+                    itemApply.setStatus(ItemApplyEnum.REVIEW.getCode());
+                    itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+                } else {
+                    // 审批节点减一
+                    WfItemNode wfItemNode1 = wfItemNodeService.selectById(wfInstance.getNodeid());
+                    map.put("itemId", wfItemNode1.getItemid());
+                    map.put("order", wfItemNode1.getOrder() - 1);
+                    WfItemNode wfItemNode2 = wfItemNodeService.selectByOrder(map);
+                    wfInstance.setNodeid(wfItemNode2.getId());
+                    wfInstanceService.updateById(wfInstance);
+                }
             }
-
             return ResultUtil.success();
         } catch (Exception e) {
             throw new Exception(e);
@@ -400,5 +414,28 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             return null;
         }
         return pageInfo;
+    }
+
+    @Override
+    public void approved(Map<String, Object> map) throws Exception {
+        map.put("userId", LoginUserHelper.getUserId());
+        wfInstAuditTrackService.insertApproved(map);
+        ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
+        WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
+        WfItemNode wfItemNode = wfItemNodeService.selectByItemIdDesc(itemApply.getItemid());
+        // 当前节点 不是 审批最后一个节点  当前节点 需 +1
+        if (wfInstance.getNodeid() != wfItemNode.getId()) {
+            WfItemNode wfItemNode1 = wfItemNodeService.selectById(wfInstance.getNodeid());
+            map.put("itemId", wfItemNode1.getItemid());
+            map.put("order", wfItemNode1.getOrder() + 1);
+            WfItemNode wfItemNode2 = wfItemNodeService.selectByOrder(map);
+            wfInstance.setNodeid(wfItemNode2.getId());
+        } else {
+            wfInstance.setStatus(InstanceEnum.REVIEW_PASS.getCode());
+            itemApply.setStatus(ItemApplyEnum.REVIEW_SUCCESS.getCode());
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+        }
+        wfInstance.setUpdateDate(new Date());
+        wfInstanceService.updateById(wfInstance);
     }
 }

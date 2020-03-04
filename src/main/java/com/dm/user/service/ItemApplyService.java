@@ -115,4 +115,11 @@ public interface ItemApplyService {
      * @throws Exception
      */
     PageInfo<ItemApply> dealList(Page<ItemApply> page, int itemId) throws Exception;
+
+    /**
+     * 审批通过
+     *
+     * @param map
+     */
+    void approved(Map<String, Object> map) throws Exception;
 }

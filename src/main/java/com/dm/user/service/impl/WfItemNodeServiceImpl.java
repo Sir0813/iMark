@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class WfItemNodeServiceImpl implements WfItemNodeService {
@@ -21,5 +23,29 @@ public class WfItemNodeServiceImpl implements WfItemNodeService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    @Override
+    public WfItemNode selectByItemIdDesc(Integer itemid) throws Exception {
+        try {
+            return wfItemNodeMapper.selectByItemIdDesc(itemid.toString());
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public WfItemNode selectById(Integer nodeid) throws Exception {
+        try {
+            WfItemNode wfItemNode = wfItemNodeMapper.selectByPrimaryKey(nodeid);
+            return wfItemNode;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public WfItemNode selectByOrder(Map<String, Object> map) throws Exception {
+        return wfItemNodeMapper.selectByOrder(map);
     }
 }

@@ -10,4 +10,12 @@ public interface WfInstAuditTrackService {
      * @param map
      */
     void insertData(Map<String, Object> map) throws Exception;
+
+    /**
+     * 审批通过新增
+     *
+     * @param map
+     * @throws Exception
+     */
+    void insertApproved(Map<String, Object> map) throws Exception;
 }

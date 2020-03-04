@@ -111,5 +111,13 @@
         WHERE
         applyid = #{applyId}
         AND file_types = #{state}
+        AND is_del = 1
     </select>
+    <update id="updateDelState" parameterType="java.lang.Integer">
+        UPDATE biz_item_apply_files
+        SET is_del = 0
+        WHERE
+            applyid = #{applyid}
+        AND file_types = 2
+    </update>
 </mapper>
