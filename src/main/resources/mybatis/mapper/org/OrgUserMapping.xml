@@ -7,15 +7,17 @@
         <result column="role" jdbcType="INTEGER" property="role"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
     </resultMap>
     <sql id="Base_Column_List">
-    userid, orgid, role, status, created_date
-  </sql>
+    userid, orgid, role, status, created_date, is_del
+    </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from biz_org_users
         where userid = #{userid}
         and status = 0
+        and is_del = 0
     </select>
 </mapper>

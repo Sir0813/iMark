@@ -13,6 +13,8 @@ public class OrgUser {
 
     private Date createdDate;
 
+    private Integer isDel;
+
     public Integer getUserid() {
         return userid;
     }
@@ -51,5 +53,13 @@ public class OrgUser {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Integer getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(Integer isDel) {
+        this.isDel = isDel;
     }
 }

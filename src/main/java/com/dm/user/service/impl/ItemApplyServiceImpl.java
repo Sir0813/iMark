@@ -181,6 +181,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             userMap.put("userName", null == userCard ? "" : userCard.getRealName());
             userMap.put("userPhone", user.getUsername());
             userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
+            // 公正意见书
             map.put("opinionFile", certFiles);
             map.put("applyid", applyid);
             map.put("itemDesc", orgItems.getItemDesc());
