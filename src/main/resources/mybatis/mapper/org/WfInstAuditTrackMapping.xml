@@ -9,9 +9,10 @@
         <result column="audit_date" jdbcType="VARCHAR" property="auditDate"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="fileid" jdbcType="INTEGER" property="fileid"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, instid, userid, nodeid, audit_date, status, reason
+    id, instid, userid, nodeid, audit_date, status, reason, fileid
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -121,7 +122,8 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`
+            `reason`,
+            `fileid`
         )
         VALUES
             (
@@ -151,7 +153,8 @@
                 ),
                 NOW(),
                 '1',
-                #{rejectReason}
+                #{rejectReason},
+                #{fileId}
             )
     </insert>
     <insert id="insertApproved" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
@@ -161,7 +164,8 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`
+            `reason`,
+            `fileid`
         )
         VALUES
             (
@@ -191,7 +195,8 @@
                 ),
                 NOW(),
                 '0',
-                #{opinion}
+                #{opinion},
+                #{fileId}
             )
     </insert>
 </mapper>

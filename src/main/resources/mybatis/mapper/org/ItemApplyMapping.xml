@@ -362,18 +362,11 @@
         WHERE
         itemapply.wf_instance_id IN (
         SELECT
-        id
-        FROM
-        wf_instance
-        WHERE
-        id IN (
-        SELECT DISTINCT
         instid
         FROM
         `wf_inst_audit_track`
         WHERE
         userid = #{userId}
-        )
         )
         <if test="itemId != null">
             AND itemapply.itemid = #{itemId}
@@ -386,4 +379,20 @@
         WHERE
             `applyid` = #{applyid}
     </update>
+    <select id="history" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ApplyHistory">
+        SELECT
+            ucuser.`username` AS `username`,
+            audit.`audit_date` AS `auditDate`,
+            audit.`status` AS `status`,
+            audit.`reason` AS `reason`,
+            certfile.`file_url` AS `fileUrl`
+        FROM
+            wf_inst_audit_track AS audit
+        LEFT JOIN `biz_item_apply` AS apply ON apply.wf_instance_id = audit.instid
+        LEFT JOIN uc_user AS ucuser ON ucuser.userid = audit.userid
+        LEFT JOIN biz_cert_files AS certfile ON certfile.file_id = audit.fileid
+        WHERE
+            apply.applyid = #{applyid}
+        ORDER BY auditDate DESC
+    </select>
 </mapper>

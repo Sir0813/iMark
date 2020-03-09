@@ -77,7 +77,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 String requeredid = applyFile.getRequeredid();
                 String fileid = applyFile.getFileid();
                 String[] split = fileid.split(",");
-                if (!insert) {
+                if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus()) {
                     itemApplyFilesService.deleteByApplyIdAndRequeredId(itemApply.getApplyid(), requeredid);
                 }
                 for (int j = 0; j < split.length; j++) {
@@ -171,18 +171,24 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 map.put("price", orgItems.getLowestPrice());
             }
             CertFiles certFiles = null;
-            Map<String, Object> fileMap = new LinkedHashMap<>(16);
-            fileMap.put("applyId", applyid);
-            fileMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
-            ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(fileMap);
-            if (null != itemApplyFiles) {
-                certFiles = certFilesService.selectByPrimaryKey(itemApplyFiles.getFileid());
+            List<ApplyHistory> applyHistories = null;
+            if (itemApply.getStatus() != ItemApplyEnum.DRAFT.getCode()) {
+                Map<String, Object> fileMap = new LinkedHashMap<>(16);
+                fileMap.put("applyId", applyid);
+                fileMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+                ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(fileMap);
+                if (null != itemApplyFiles) {
+                    certFiles = certFilesService.selectByPrimaryKey(itemApplyFiles.getFileid());
+                }
+                // 审核历史记录
+                applyHistories = itemApplyMapper.history(applyid);
             }
             userMap.put("userName", null == userCard ? "" : userCard.getRealName());
             userMap.put("userPhone", user.getUsername());
             userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
             // 公正意见书
             map.put("opinionFile", certFiles);
+            map.put("history", applyHistories);
             map.put("applyid", applyid);
             map.put("itemDesc", orgItems.getItemDesc());
             map.put("itemRequered", list);

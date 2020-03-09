@@ -1,5 +1,6 @@
 package com.dm.user.mapper;
 
+import com.dm.user.entity.ApplyHistory;
 import com.dm.user.entity.ItemApply;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -90,4 +91,12 @@ public interface ItemApplyMapper {
      * @param map
      */
     void updateState(Map<String, Object> map);
+
+    /**
+     * 公正审核历史记录
+     *
+     * @param applyid
+     * @return
+     */
+    List<ApplyHistory> history(int applyid);
 }
