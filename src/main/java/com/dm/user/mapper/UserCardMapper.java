@@ -57,4 +57,11 @@ public interface UserCardMapper {
      * @return
      */
     UserCard selectByCardNumber(String cardNumber);
+
+    /**
+     * 修改认证状态
+     *
+     * @param userCard
+     */
+    void updateByPrimaryKey(UserCard userCard);
 }

@@ -24,10 +24,17 @@ public class CertFiles {
 
     private String fileHash;
 
+    private String thumbUrl;
+
     /**
      * 业务字段 文件批注
      */
     private String describe;
+
+    /**
+     * 业务字段 文件描述
+     */
+    private String detail;
 
     public String getFileHash() {
         return fileHash;
@@ -109,4 +116,19 @@ public class CertFiles {
         this.describe = describe;
     }
 
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public String getThumbUrl() {
+        return thumbUrl;
+    }
+
+    public void setThumbUrl(String thumbUrl) {
+        this.thumbUrl = thumbUrl;
+    }
 }

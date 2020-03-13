@@ -13,7 +13,6 @@ import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
 import com.dm.user.util.HttpSendUtil;
-import com.dm.user.util.IkiUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -231,9 +230,9 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String")
     })
     public Result verifyData(@RequestBody Map<String, Object> map) throws Exception {
-        if (null != map.get("aid") && null != map.get("inData") && null != map.get("signature")) {
+        /*if (null != map.get("aid") && null != map.get("inData") && null != map.get("signature")) {
             IkiUtil.verifyData(map.get("aid").toString(), map.get("inData").toString(), map.get("signature").toString());
-        }
+        }*/
         return ResultUtil.success();
     }
 

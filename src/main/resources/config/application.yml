@@ -1,5 +1,7 @@
 # application全局配置
 spring:
+  jmx:
+    default-domain: dms
   # 默认访问 appplication.properties或applicaion.yml
   config:
   # 配置文件名称，默认为appplication

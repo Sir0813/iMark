@@ -51,6 +51,11 @@ public class ItemApply {
      */
     private String realName;
 
+    /**
+     * 公正logo
+     */
+    private String logoUrl;
+
     public String getItemName() {
         return itemName;
     }
@@ -185,5 +190,13 @@ public class ItemApply {
 
     public void setRealName(String realName) {
         this.realName = realName;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 }

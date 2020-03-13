@@ -1,13 +1,16 @@
 package com.dm.user;
 
 
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
+import com.dm.app.tid.sdk.model.entity.Authentication;
+import com.dm.app.tid.sdk.model.entity.TID;
+import com.dm.app.tid.sdk.service.TIDService;
+import com.dm.app.tid.sdk.service.impl.TIDServiceImpl;
+import com.dm.cid.sdk.service.CIDService;
+import com.dm.cid.sdk.service.impl.CIDServiceImpl;
+import com.dm.fchain.sdk.model.TransactionResult;
+import com.dm.fchain.sdk.msg.Result;
+
+import static java.lang.String.format;
 
 /**
  * @Description
@@ -16,58 +19,53 @@ import java.io.File;
  * @DATE 2019/7/31
  */
 public class AppTest {
+
     public static void main(String[] args) {
+        int rand = (int) (Math.random() * 1000000000);
+        TIDService tidService = new TIDServiceImpl();
+        TID tid = new TID();
+        Authentication authentication = new Authentication();
+        //保存测试用户test1
+        tid.setNo("test" + rand);
+        tid.setName("测试" + rand);
+        tid.setPassword("123");
+        tid.setAddress("北京111111");
+        authentication.setTid("root");
+        authentication.setPassword("123456");
+        Result result = null;
         try {
-            //CIDService ccs = new CIDServiceImpl();
-            //String result = ccs.query("Rg7LgvLAWQCXWfFsYJ2Y69zD/ArDr3hy7aqpSWtnkf8=");
-            //System.out.println("======"+result);
-            //Result res = ccs.save("id000031234545645","存证测试2","2019-07-31","");
-            //System.out.println(res.getMsg());
-            AppTest.fetchFrame("D:\\upload\\5052ba8d-1f84-4c91-932b-69e2bc109a56.mp4", "D:\\upload\\11111111111111111111111.jpg");
+            result = tidService.save(tid, authentication);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(format(" transaction result is  %s", result.getData()));
 
-    }
 
-
-    /**
-     * 获取指定视频的帧并保存为图片至指定目录
-     * @param videofile  源视频文件路径
-     * @param framefile  截取帧的图片存放路径
-     * @throws Exception
-     */
-    public static void fetchFrame(String videofile, String framefile)
-            throws Exception {
-        long start = System.currentTimeMillis();
-        File targetFile = new File(framefile);
-        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
-        ff.start();
-        int lenght = ff.getLengthInFrames();
-        int i = 0;
-        Frame f = null;
-        while (i < lenght) {
-            // 过滤前5帧，避免出现全黑的图片，依自己情况而定
-            f = ff.grabFrame();
-            if ((i > 5) && (f.image != null)) {
-                break;
+        try {
+            CIDService chainCertService = new CIDServiceImpl();
+            String cidString = "";
+            try {
+                cidString = chainCertService.query("++6+g5P3wG22mCJKpv0AOkWtKcTke6kjD0RCbFlTb1c=");
+                System.out.println(cidString);
+            } catch (Exception var13) {
+                cidString = "";
             }
-            i++;
+            Result result2 = chainCertService.save("test" + rand, "测试3", "2019-8-20", "");
+            Object data = result2.getData();
+            long blockNumber = 0L;
+            if (data instanceof TransactionResult) {
+                TransactionResult tr = (TransactionResult) result2.getData();
+                String txid = tr.getTransactionID();
+                blockNumber = tr.getBlockNumber();
+                System.out.println(txid);
+                System.out.println(blockNumber);
+            } else {
+                System.out.println("存证失败");
+            }
+        } catch (Exception var14) {
+            var14.printStackTrace();
         }
-        int owidth = f.imageWidth;
-        int oheight = f.imageHeight;
-        // 对截取的帧进行等比例缩放
-        int width = 800;
-        int height = (int) (((double) width / owidth) * oheight);
-        Java2DFrameConverter converter = new Java2DFrameConverter();
-        BufferedImage fecthedImage = converter.getBufferedImage(f);
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        bi.getGraphics().drawImage(fecthedImage.getScaledInstance(width,height, Image.SCALE_SMOOTH),
-                0, 0, null);
-        ImageIO.write(bi, "jpg", targetFile);
-        //ff.flush();
-        ff.stop();
-        System.out.println(System.currentTimeMillis() - start);
 
     }
+
 }

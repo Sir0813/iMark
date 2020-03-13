@@ -80,7 +80,7 @@ public class UserCardServiceImpl implements UserCardService {
             if (null != userCard) {
                 userCard.setRealState(UserCardEnum.NOT_REAL.getCode());
                 userCard.setRealTime(null);
-                userCardMapper.updateByPrimaryKeySelective(userCard);
+                userCardMapper.updateByPrimaryKey(userCard);
             }
         } catch (Exception e) {
             throw new Exception(e);

@@ -44,7 +44,7 @@
         select
         <include refid="Base_Column_List"/>
         from biz_org
-        where status = 1
+        where status = 0
         order by registe_date desc
     </select>
 </mapper>

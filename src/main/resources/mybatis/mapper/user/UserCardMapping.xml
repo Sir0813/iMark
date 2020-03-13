@@ -128,4 +128,12 @@
         </set>
         where cardid = #{cardid,jdbcType=INTEGER}
     </update>
+    <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.UserCard">
+        update sys_user_card
+        <set>
+            real_state = #{realState},
+            real_time = #{realTime},
+        </set>
+        where cardid = #{cardid}
+    </update>
 </mapper>

@@ -11,9 +11,10 @@
         <result column="file_seq" property="fileSeq" jdbcType="VARCHAR"/>
         <result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
         <result column="file_hash" property="fileHash" jdbcType="VARCHAR"/>
+        <result column="thumb_url" property="thumbUrl" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url, file_hash
+    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url, file_hash, thumb_url
   </sql>
     <select id="selectByUrl" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -64,6 +65,9 @@
             <if test="fileHash != null">
                 file_hash,
             </if>
+            <if test="thumbUrl != null">
+                thumb_url,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="fileType != null">
@@ -89,6 +93,9 @@
             </if>
             <if test="fileHash != null">
                 #{fileHash,jdbcType=VARCHAR},
+            </if>
+            <if test="thumbUrl != null">
+                #{thumbUrl,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -119,6 +126,9 @@
             <if test="fileHash != null">
                 file_hash = #{fileHash,jdbcType=VARCHAR},
             </if>
+            <if test="thumbUrl != null">
+                thumb_url = #{thumbUrl,jdbcType=VARCHAR},
+            </if>
         </set>
         where file_id = #{fileId,jdbcType=INTEGER}
     </update>
@@ -134,16 +144,19 @@
     </select>
     <select id="findByFilesIds2" resultType="com.dm.user.entity.CertFiles" parameterType="java.util.List">
         select
-        certfile.file_id as fileId,
-        certfile.file_url as fileUrl,
-        applyfile.`describe` as `describe`
-        from biz_cert_files as certfile
+        certfile.`file_id` as `fileId`,
+        certfile.`file_url` as `fileUrl`,
+        applyfile.`describe` as `describe`,
+        certfile.`thumb_url` as `thumbUrl`
+        from biz_cert_files as `certfile`
         inner join biz_item_apply_files as applyfile
         on certfile.file_id = applyfile.fileid
         where file_id in
         <foreach collection="array" item="fileid" open="(" close=")" separator=",">
             #{fileid}
         </foreach>
-        order by file_seq asc
+        GROUP BY fileId
+        ORDER BY
+        applyfile.created_date DESC
     </select>
 </mapper>

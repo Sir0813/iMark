@@ -168,6 +168,7 @@
 	    itemapply.apply_no AS applyNo,
     	itemapply.certid AS certid,
     	itemapply.created_date AS createdDate,
+    	itemapply.submit_date AS submitDate,
     	itemapply.`describe` AS `describe`,
 	    itemapply.itemid AS itemid,
 	    itemapply.item_value AS itemValue,
@@ -175,14 +176,15 @@
         itemapply.`status` AS `status`,
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
-        orgitem.item_name AS itemName
+        orgitem.item_name AS itemName,
+        orgitem.logo_url AS logoUrl
         FROM
             biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         WHERE
             userid = #{userid,jdbcType=INTEGER}
         ORDER BY
-	    createdDate DESC
+	    submitDate DESC , createdDate DESC
     </select>
     <select id="pendList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -261,7 +263,7 @@
             </otherwise>
         </choose>
         and itemapply.handle_userid = #{userId}
-        order by createdDate desc
+        order by submitDate desc
     </select>
     <select id="selectWaitList" parameterType="java.lang.String" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -336,7 +338,7 @@
         <if test="itemId != null">
             AND itemapply.itemid = #{itemId}
         </if>
-        order by createdDate desc
+        order by submitDate desc
     </select>
     <select id="dealList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -355,7 +357,9 @@
         orgitem.item_name AS itemName,
         usercard.real_name AS realName
         FROM
-        biz_item_apply AS itemapply
+        `wf_inst_audit_track` AS track
+        LEFT JOIN
+        biz_item_apply AS itemapply ON track.instid = itemapply.wf_instance_id
         INNER JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
         AND usercard.real_state = 2)

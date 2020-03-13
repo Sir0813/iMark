@@ -10,6 +10,8 @@ import com.dm.user.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,7 +68,6 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 itemApply.setApplyNo(format1);
                 itemApply.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
                 itemApply.setCreatedDate(new Date());
-                itemApply.setSubmitDate(new Date());
                 itemApplyMapper.insertSelective(itemApply);
             } else {
                 itemApply.setSubmitDate(new Date());
@@ -77,7 +78,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 String requeredid = applyFile.getRequeredid();
                 String fileid = applyFile.getFileid();
                 String[] split = fileid.split(",");
-                if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus()) {
+                if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus() || ItemApplyEnum.REVIEW.getCode() == itemApply.getStatus()) {
                     itemApplyFilesService.deleteByApplyIdAndRequeredId(itemApply.getApplyid(), requeredid);
                 }
                 for (int j = 0; j < split.length; j++) {
@@ -156,6 +157,24 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                         ids[j] = fileid.toString();
                     }
                     List<CertFiles> cfList = certFilesService.findByFilesIds2(ids);
+                    String logoUrl = itemRequered.getLogoUrl();
+                    JSONArray json = JSONArray.fromObject(logoUrl);
+                    if (cfList.size() > 0) {
+                        for (int j = 0; j < cfList.size(); j++) {
+                            if (json.size() > 0) {
+                                CertFiles certFiles = cfList.get(j);
+                                for (int k = 0; k < json.size(); k++) {
+                                    if (cfList.size() == json.size()) {
+                                        JSONObject job = json.getJSONObject(j);
+                                        certFiles.setDetail(job.get("describe").toString());
+                                        break;
+                                    } else {
+                                        certFiles.setDetail(json.getJSONObject(k).get("describe").toString());
+                                    }
+                                }
+                            }
+                        }
+                    }
                     itemRequered.setCertFilesList(cfList);
                 }
             }
@@ -344,7 +363,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
                 WfItemNode wfItemNode = wfItemNodeService.selectByItemId(itemApply.getItemid());
                 // 如果是第一个审批人
-                if (wfInstance.getNodeid() == wfItemNode.getId()) {
+                if (wfInstance.getNodeid().equals(wfItemNode.getId())) {
                     map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
                     itemApplyFilesService.updateDelState(itemApply.getApplyid());
                     wfInstanceService.updateByInstanceId(map);
@@ -431,7 +450,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
         WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
         WfItemNode wfItemNode = wfItemNodeService.selectByItemIdDesc(itemApply.getItemid());
         // 当前节点 不是 审批最后一个节点  当前节点 需 +1
-        if (wfInstance.getNodeid() != wfItemNode.getId()) {
+        if (!wfInstance.getNodeid().equals(wfItemNode.getId())) {
             WfItemNode wfItemNode1 = wfItemNodeService.selectById(wfInstance.getNodeid());
             map.put("itemId", wfItemNode1.getItemid());
             map.put("order", wfItemNode1.getOrder() + 1);
