@@ -4,8 +4,8 @@ import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
+import com.dm.user.entity.AppUser;
 import com.dm.user.entity.PushMsg;
-import com.dm.user.entity.User;
 import com.dm.user.entity.UserCard;
 import com.dm.user.service.InformationService;
 import com.dm.user.service.PushMsgService;
@@ -63,7 +63,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "用户注册", response = ResultUtil.class)
     @RequestMapping(value = "/api/register", method = RequestMethod.POST)
-    public Result register(@Valid @RequestBody User user) throws Exception {
+    public Result register(@Valid @RequestBody AppUser user) throws Exception {
         return userService.userRegister(user);
     }
 
@@ -111,7 +111,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "个人信息(修改)", response = ResultUtil.class)
     @RequestMapping(value = "/user/update", method = RequestMethod.POST)
-    public Result userUpdate(@RequestBody User user) throws Exception {
+    public Result userUpdate(@RequestBody AppUser user) throws Exception {
         return userService.userUpdate(user);
     }
 

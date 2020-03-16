@@ -138,7 +138,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
             List<ItemRequered> list = itemRequeredService.selectByItemId(itemApply.getItemid());
             UserCard userCard = userCardService.selectByUserId(itemApply.getUserid().toString(), "2");
-            User user = userService.selectByPrimaryKey(itemApply.getUserid());
+            AppUser user = userService.selectByPrimaryKey(itemApply.getUserid());
             /**
              * 用户提交的文件清单
              */

@@ -23,6 +23,8 @@ upload:
   applyFilePath: /opt/czt-upload/apply
   # 公正文件访问路径
   applyFilePrefix: apply
+  # baseUrl
+  baseUrl: http://114.244.37.10:9082
 # 邮箱设置
 email:
   # 发送人邮箱地址

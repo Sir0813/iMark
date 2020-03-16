@@ -3,6 +3,8 @@ package com.dm.user.mapper;
 import com.dm.user.entity.UserCard;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 /**
  * @author cui
  * @date 2019-09-26
@@ -45,10 +47,10 @@ public interface UserCardMapper {
     /**
      * 根据用户ID查询
      *
-     * @param userid
+     * @param map
      * @return
      */
-    UserCard selectByUserId(String userid, String realState);
+    UserCard selectByUserId(Map<String, Object> map);
 
     /**
      * 根据身份证号查询

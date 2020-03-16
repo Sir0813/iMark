@@ -65,7 +65,7 @@ public class QRCodeGenerator {
         return resMatrix;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         try {
             generateQRCodeImage("ASDFOIUIONN235OA98DAUFJADSNFJK", QR_CODE_IMAGE_PATH);
         } catch (WriterException e) {
@@ -73,9 +73,9 @@ public class QRCodeGenerator {
         } catch (IOException e) {
             System.out.println("Could not generate QR Code, IOException :: " + e.getMessage());
         }
-        /*String s = decodeQR("D:/QRCode.png");
-        System.out.println(s);*/
-    }
+        *//*String s = decodeQR("D:/QRCode.png");
+        System.out.println(s);*//*
+    }*/
 
     /**
      * 解析二维码图片

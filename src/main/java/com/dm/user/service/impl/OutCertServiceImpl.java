@@ -85,7 +85,7 @@ public class OutCertServiceImpl implements OutCertService {
         } else {
             configuration.setDirectoryForTemplateLoading(new File("/opt/czt-upload/outcert/"));
             outFile = new File("/opt/czt-upload/outcert/" + fileName);
-            resultPath = baseUrl + "dms-czt/outcert/" + fileName;
+            resultPath = baseUrl + "dms/outcert/" + fileName;
         }
         //以utf-8的编码读取ftl文件
         Template t = configuration.getTemplate("outcert.ftl", "utf-8");
@@ -104,7 +104,7 @@ public class OutCertServiceImpl implements OutCertService {
             List<Contact> contactList = outCert.getContactList();
             for (int i = 0; i < contactList.size(); i++) {
                 Contact contact = contactList.get(i);
-                User user = userService.findByName(contact.getContactPhone());
+                AppUser user = userService.findByName(contact.getContactPhone());
                 PushMsg pm = new PushMsg();
                 pm.setTitle(StateMsg.OUT_CERT_TITLE);
                 pm.setContent(StateMsg.OUT_CERT_CONTENT.replace("outCertName", outCert.getOutCertName()));
@@ -177,7 +177,7 @@ public class OutCertServiceImpl implements OutCertService {
     public OutCert details(String outCertId) throws Exception {
         try {
             OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
-            User user = userService.selectByPrimaryKey(outCert.getUserId());
+            AppUser user = userService.selectByPrimaryKey(outCert.getUserId());
             /*发起人*/
             outCert.setPromoter(user.getUsername());
             CertFiles certFiles = certFilesService.selectByPrimaryKey(outCert.getFileId());
@@ -240,7 +240,7 @@ public class OutCertServiceImpl implements OutCertService {
                 downloadPath = "http://192.168.3.101/img/" + path + ".zip";
             } else {
                 zipFilePath = "/opt/czt-upload/outcert/zip";
-                downloadPath = baseUrl + "dms-czt/outcert/zip/" + path + ".zip";
+                downloadPath = baseUrl + "dms/outcert/zip/" + path + ".zip";
             }
             boolean b = fileUtil.fileToZip(fileList, zipFilePath, path);
             if (!b) {

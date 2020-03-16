@@ -1,7 +1,7 @@
 package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
-import com.dm.user.entity.User;
+import com.dm.user.entity.AppUser;
 
 import java.util.Map;
 
@@ -14,12 +14,11 @@ public interface UserService {
     /**
      * 用户注册
      *
-     * @param request
-     * @param user    用户对象
+     * @param user 用户对象
      * @return
      * @throws Exception
      */
-    Result userRegister(User user) throws Exception;
+    Result userRegister(AppUser user) throws Exception;
 
     /**
      * 重置密码
@@ -71,7 +70,7 @@ public interface UserService {
      * @return Result
      * @throws Exception
      */
-    Result userUpdate(User user) throws Exception;
+    Result userUpdate(AppUser user) throws Exception;
 
     /**
      * 修改密码
@@ -107,7 +106,7 @@ public interface UserService {
      * @return
      * @throws Exception
      */
-    User findByName(String confirmPhone) throws Exception;
+    AppUser findByName(String confirmPhone) throws Exception;
 
     /**
      * 根据邮箱查询
@@ -116,7 +115,7 @@ public interface UserService {
      * @return
      * @throws Exception
      */
-    User selectByEamil(String email) throws Exception;
+    AppUser selectByEamil(String email) throws Exception;
 
     /**
      * 修改
@@ -124,7 +123,7 @@ public interface UserService {
      * @param u
      * @throws Exception
      */
-    void updateByPrimaryKeySelective(User u) throws Exception;
+    void updateByPrimaryKeySelective(AppUser u) throws Exception;
 
     /**
      * 根据主键ID查询
@@ -133,6 +132,6 @@ public interface UserService {
      * @return
      * @throws Exception
      */
-    User selectByPrimaryKey(Integer userId) throws Exception;
+    AppUser selectByPrimaryKey(Integer userId) throws Exception;
 
 }

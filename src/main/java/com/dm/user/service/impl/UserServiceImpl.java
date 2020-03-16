@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
                     return ResultUtil.info("login.account.no.code","login.account.no.msg");
                 }
             }*/
-            User u = userMapper.findByName(phone);
+            AppUser u = userMapper.findByName(phone);
             switch (type) {
                 case StateMsg.REGISTER:
                     if (null != u) {
@@ -136,9 +136,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result userRegister(User user) throws Exception {
+    public Result userRegister(AppUser user) throws Exception {
         try {
-            User u = userMapper.findByName(user.getUsername());
+            AppUser u = userMapper.findByName(user.getUsername());
             if (null != u) {
                 return ResultUtil.info("register.has.name.code", "register.has.name.msg");
             }
@@ -223,7 +223,7 @@ public class UserServiceImpl implements UserService {
     public Result userInfo() throws Exception {
         try {
             Map<String, Object> map = new HashMap<>(16);
-            User user = userMapper.findByName(LoginUserHelper.getUserName());
+            AppUser user = userMapper.findByName(LoginUserHelper.getUserName());
             UserCard userCard = userCardService.selectByUserId(user.getUserid().toString(), "2");
             OrgUser orgUser = orgUserService.selectByUserId(user.getUserid());
             map.put("isAdmin", null == orgUser ? false : true);
@@ -274,7 +274,7 @@ public class UserServiceImpl implements UserService {
     public String getRegistrationId(Map<String, Object> map) throws Exception {
         try {
             String registrationId = map.get("registrationId").toString();
-            User user = userMapper.findByName(LoginUserHelper.getUserName());
+            AppUser user = userMapper.findByName(LoginUserHelper.getUserName());
             user.setUsercode(registrationId);
             userMapper.updateByPrimaryKeySelective(user);
             JSONObject json = new JSONObject();
@@ -302,7 +302,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result userUpdate(User user) throws Exception {
+    public Result userUpdate(AppUser user) throws Exception {
         userMapper.updateByPrimaryKeySelective(user);
         return ResultUtil.success();
     }
@@ -310,7 +310,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result retrievePwd(Map<String, Object> map) throws Exception {
         try {
-            User user = userMapper.findByName(map.get("phone").toString());
+            AppUser user = userMapper.findByName(map.get("phone").toString());
             if (null == user) {
                 return ResultUtil.info("login.account.no.code", "login.account.no.msg");
             }
@@ -344,7 +344,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result dynamicLogin(Map<String, Object> map) throws Exception {
-        User user = userMapper.findByName(map.get("username").toString());
+        AppUser user = userMapper.findByName(map.get("username").toString());
         if (null == user) {
             return ResultUtil.info("login.account.no.code", "login.account.no.msg");
         }
@@ -369,7 +369,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByName(String confirmPhone) throws Exception {
+    public AppUser findByName(String confirmPhone) throws Exception {
         try {
             return userMapper.findByName(confirmPhone);
         } catch (Exception e) {
@@ -378,7 +378,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectByEamil(String email) throws Exception {
+    public AppUser selectByEamil(String email) throws Exception {
         try {
             return userMapper.selectByEamil(email);
         } catch (Exception e) {
@@ -387,7 +387,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateByPrimaryKeySelective(User u) throws Exception {
+    public void updateByPrimaryKeySelective(AppUser u) throws Exception {
         try {
             userMapper.updateByPrimaryKeySelective(u);
         } catch (Exception e) {
@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectByPrimaryKey(Integer userId) throws Exception {
+    public AppUser selectByPrimaryKey(Integer userId) throws Exception {
         try {
             return userMapper.selectByPrimaryKey(userId);
         } catch (Exception e) {

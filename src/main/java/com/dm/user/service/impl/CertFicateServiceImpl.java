@@ -210,7 +210,7 @@ public class CertFicateServiceImpl implements CertFicateService {
                 if (null == certConfirm.getConfirmState()) {
                     certConfirm.setConfirmState(ConfirmEnum.NO_CONFIRM.getCode());
                 }
-                User u = userService.findByName(certConfirm.getConfirmPhone());
+                AppUser u = userService.findByName(certConfirm.getConfirmPhone());
                 if (null != u) {
                     certConfirm.setUserId(u.getUserid());
                 }
@@ -260,12 +260,12 @@ public class CertFicateServiceImpl implements CertFicateService {
             if (list.size() > 0) {
                 list.forEach(cc -> {
                     if (null != cc.getUserId()) {
-                        if (cc.getUserId() == Integer.parseInt(LoginUserHelper.getUserId()) &&
+                        if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                 cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
                             certFicate.setCertIsconf(1);//1待自己确认 仅前端判断用
                             return;
                         }
-                        if (cc.getUserId() != Integer.parseInt(LoginUserHelper.getUserId()) &&
+                        if (!cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                 cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
                             certFicate.setCertIsconf(2);//2待他人确认 仅前端判断用
                             return;
@@ -365,18 +365,18 @@ public class CertFicateServiceImpl implements CertFicateService {
                                 // 用户确认人添加自己去除重复
                                 if (StringUtils.isNotBlank(state)) {
                                     if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) &&
-                                            cc.getUserId() == Integer.parseInt(LoginUserHelper.getUserId()) &&
+                                            cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                             cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
                                         iterator.remove();
                                         return;
                                     }
                                 }
-                                if (cc.getUserId() == Integer.parseInt(LoginUserHelper.getUserId()) &&
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                         cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
                                     l.setCertIsconf(1);//1待自己确认 仅前端判断用
                                     return;
                                 }
-                                if (cc.getUserId() != Integer.parseInt(LoginUserHelper.getUserId()) &&
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                         cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
                                     l.setCertIsconf(2);//1待他人确认 仅前端判断用
                                     return;
@@ -401,7 +401,7 @@ public class CertFicateServiceImpl implements CertFicateService {
                     if (certConfirms.size() > 0) {
                         for (CertConfirm cc : certConfirms) {
                             if (null != cc.getUserId()) {
-                                if (cc.getUserId() == Integer.parseInt(LoginUserHelper.getUserId()) &&
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
                                         cc.getConfirmState() != ConfirmEnum.ORIGINATOR.getCode() &&
                                         cc.getConfirmState() != ConfirmEnum.REVOKE_CONFIRM.getCode()) {
                                     iterator.remove();

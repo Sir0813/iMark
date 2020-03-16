@@ -23,7 +23,7 @@
         where card_number = #{cardNumber}
         and real_state = 2
     </select>
-    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"></include>
         from sys_user_card

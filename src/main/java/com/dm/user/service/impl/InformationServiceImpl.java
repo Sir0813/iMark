@@ -59,7 +59,7 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public Result sendEmailCode(Map<String, Object> map) throws Exception {
         try {
-            User email = userService.selectByEamil(map.get("email").toString());
+            AppUser email = userService.selectByEamil(map.get("email").toString());
             if (null != email) {
                 return ResultUtil.info("email.code.have.code", "email.code.have.msg");
             }
@@ -93,11 +93,11 @@ public class InformationServiceImpl implements InformationService {
             if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
                 return result;
             }
-            User user = userService.selectByEamil(map.get("email").toString());
+            AppUser user = userService.selectByEamil(map.get("email").toString());
             if (null != user) {
                 return ResultUtil.info("email.code.have.code", "email.code.have.msg");
             }
-            User u = userService.findByName(LoginUserHelper.getUserName());
+            AppUser u = userService.findByName(LoginUserHelper.getUserName());
             u.setEmail(map.get("email").toString());
             userService.updateByPrimaryKeySelective(u);
             info.setInfoState("1");
@@ -128,7 +128,7 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public Result changePhone(Map<String, Object> map) throws Exception {
         try {
-            User user = userService.findByName(map.get("newPhone").toString());
+            AppUser user = userService.findByName(map.get("newPhone").toString());
             if (null != user) {
                 return ResultUtil.info("register.has.name.code", "register.has.name.msg");
             }
@@ -138,7 +138,7 @@ public class InformationServiceImpl implements InformationService {
             if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
                 return result;
             }
-            User u = userService.findByName(LoginUserHelper.getUserName());
+            AppUser u = userService.findByName(LoginUserHelper.getUserName());
             u.setUsername(map.get("newPhone").toString());
             userService.updateByPrimaryKeySelective(u);
             info.setInfoState("1");

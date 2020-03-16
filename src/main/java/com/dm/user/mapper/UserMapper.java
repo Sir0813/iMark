@@ -1,6 +1,6 @@
 package com.dm.user.mapper;
 
-import com.dm.user.entity.User;
+import com.dm.user.entity.AppUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public interface UserMapper {
      * @param record
      * @return
      */
-    int insert(User record);
+    int insert(AppUser record);
 
     /**
      * 新增
@@ -34,7 +34,7 @@ public interface UserMapper {
      * @param record
      * @return
      */
-    int insertSelective(User record);
+    int insertSelective(AppUser record);
 
     /**
      * 根据主键查询
@@ -42,7 +42,7 @@ public interface UserMapper {
      * @param userid
      * @return
      */
-    User selectByPrimaryKey(Integer userid);
+    AppUser selectByPrimaryKey(Integer userid);
 
     /**
      * 修改
@@ -50,7 +50,7 @@ public interface UserMapper {
      * @param record
      * @return
      */
-    int updateByPrimaryKeySelective(User record);
+    int updateByPrimaryKeySelective(AppUser record);
 
     /**
      * 修改
@@ -58,14 +58,14 @@ public interface UserMapper {
      * @param record
      * @return
      */
-    int updateByPrimaryKey(User record);
+    int updateByPrimaryKey(AppUser record);
 
     /**
      * 注册
      *
      * @param user
      */
-    void userRegister(User user);
+    void userRegister(AppUser user);
 
     /**
      * 根据用户手机号查找
@@ -73,7 +73,7 @@ public interface UserMapper {
      * @param username
      * @return
      */
-    User findByName(String username);
+    AppUser findByName(String username);
 
     /**
      * 根据ID修改密码
@@ -88,5 +88,5 @@ public interface UserMapper {
      * @param email
      * @return
      */
-    User selectByEamil(String email);
+    AppUser selectByEamil(String email);
 }

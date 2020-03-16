@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author cui
@@ -50,7 +52,9 @@ public class UserCardServiceImpl implements UserCardService {
     @Override
     public Result realInfo() throws Exception {
         try {
-            UserCard userCard = userCardMapper.selectByUserId(LoginUserHelper.getUserId(), "");
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("userid", LoginUserHelper.getUserId());
+            UserCard userCard = userCardMapper.selectByUserId(map);
             if (null == userCard) {
                 return ResultUtil.success();
             }
@@ -67,7 +71,10 @@ public class UserCardServiceImpl implements UserCardService {
     @Override
     public UserCard selectByUserId(String toString, String realState) throws Exception {
         try {
-            return userCardMapper.selectByUserId(toString, realState);
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("userid", LoginUserHelper.getUserId());
+            map.put("realState", realState);
+            return userCardMapper.selectByUserId(map);
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -76,7 +83,9 @@ public class UserCardServiceImpl implements UserCardService {
     @Override
     public void updateRealState() throws Exception {
         try {
-            UserCard userCard = userCardMapper.selectByUserId(LoginUserHelper.getUserId(), "");
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("userid", LoginUserHelper.getUserId());
+            UserCard userCard = userCardMapper.selectByUserId(map);
             if (null != userCard) {
                 userCard.setRealState(UserCardEnum.NOT_REAL.getCode());
                 userCard.setRealTime(null);
