@@ -21,6 +21,7 @@ import static java.lang.String.format;
 public class AppTest {
 
     public static void main(String[] args) {
+
         int rand = (int) (Math.random() * 1000000000);
         TIDService tidService = new TIDServiceImpl();
         TID tid = new TID();
