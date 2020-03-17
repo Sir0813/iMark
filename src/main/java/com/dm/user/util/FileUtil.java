@@ -4,8 +4,8 @@ import com.ahdms.exception.*;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
+import com.dm.user.entity.AppUser;
 import com.dm.user.entity.CertFiles;
-import com.dm.user.entity.User;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
@@ -13,8 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,8 +22,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.List;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -55,11 +55,11 @@ public class FileUtil {
     @Value("${upload.headFilePath}")
     private String headFilePath;
 
-    /*@Value("${upload.applyFilePath}")
+    @Value("${upload.applyFilePath}")
     private String applyFilePath;
 
     @Value("${upload.applyFilePrefix}")
-    private String applyFilePrefix;*/
+    private String applyFilePrefix;
 
     @Autowired
     private CertFilesService certFilesService;
@@ -185,7 +185,7 @@ public class FileUtil {
             certFiles.setFileType(suffix);
             certFiles.setFileSeq("0");
             certFilesService.insertSelective(certFiles);
-            User user = userMapper.findByName(LoginUserHelper.getUserName());
+            AppUser user = userMapper.findByName(LoginUserHelper.getUserName());
             CertFiles cf = certFilesService.selectByUrl(user.getHeadPhoto());
             if (null != cf) {
                 File file = new File(cf.getFilePath());
@@ -253,32 +253,35 @@ public class FileUtil {
      */
     public static void fetchFrame(String videofile, String framefile)
             throws Exception {
-        try {
-            FFmpegFrameGrabber ff = FFmpegFrameGrabber.createDefault(videofile);
-            ff.start();
-            String rotate = ff.getVideoMetadata("rotate");
-            Frame f;
-            int i = 0;
-            while (i < 1) {
-                f = ff.grabImage();
-                opencv_core.IplImage src = null;
-                if (null != rotate && rotate.length() > 1) {
-                    OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-                    src = converter.convert(f);
-                    f = converter.convert(rotate(src, Integer.valueOf(rotate)));
-                }
-                doExecuteFrame(f, framefile);
-                i++;
+        File targetFile = new File(framefile);
+        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
+        ff.start();
+        int lenght = ff.getLengthInFrames();
+        int i = 0;
+        Frame f = null;
+        while (i < lenght) {
+            // 过滤前5帧，避免出现全黑的图片，依自己情况而定
+            f = ff.grabFrame();
+            if ((i > 5) && (f.image != null)) {
+                break;
             }
-            ff.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
+            i++;
         }
+        opencv_core.IplImage img = f.image;
+        int owidth = img.width();
+        int oheight = img.height();
+        int width = 800;
+        int height = (int) (((double) width / owidth) * oheight);
+        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        bi.getGraphics().drawImage(f.image.getBufferedImage().getScaledInstance(width, height, Image.SCALE_SMOOTH),
+                0, 0, null);
+        ImageIO.write(bi, "jpg", targetFile);
+        ff.stop();
     }
 
-    /*
+    /*    *//*
      * 旋转角度的
-     */
+     *//*
     public static opencv_core.IplImage rotate(opencv_core.IplImage src, int angle) {
         opencv_core.IplImage img = opencv_core.IplImage.create(src.height(), src.width(), src.depth(), src.nChannels());
         opencv_core.cvTranspose(src, img);
@@ -287,7 +290,7 @@ public class FileUtil {
     }
 
     public static void doExecuteFrame(Frame f, String targerFilePath) {
-        if (null == f || null == f.image) {
+       *//* if (null == f || null == f.image) {
             return;
         }
         Java2DFrameConverter converter = new Java2DFrameConverter();
@@ -298,8 +301,8 @@ public class FileUtil {
             ImageIO.write(bi, imageMat, output);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
+        }*//*
+    }*/
 
     /**
      * 打包下载
@@ -416,14 +419,20 @@ public class FileUtil {
                         suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
                     }
                     UUID randomUuid = UUID.randomUUID();
-                    String filePath = certFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
-                    String fileUrl = certFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+                    String filePath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+                    String fileUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
                     boolean uploadBoolean = uploadFile(filePath, "", multipartFile);
                     if (!uploadBoolean) {
                         throw new Exception("上传失败");
                     }
-                    // 文件表插入文件
                     CertFiles certFiles = new CertFiles();
+                    // 缩略图
+                    boolean b = ImageUtil.thumbnailImage(filePath, 100, 150, ImageUtil.DEFAULT_PREVFIX, ImageUtil.DEFAULT_FORCE);
+                    if (b) {
+                        String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
+                        certFiles.setThumbUrl(thumbUrl);
+                    }
+                    // 文件表插入文件
                     certFiles.setFileName(fileName);
                     certFiles.setFileUrl(fileUrl);
                     certFiles.setFilePath(filePath);

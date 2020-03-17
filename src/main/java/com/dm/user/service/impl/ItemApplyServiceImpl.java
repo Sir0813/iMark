@@ -68,9 +68,12 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 itemApply.setApplyNo(format1);
                 itemApply.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
                 itemApply.setCreatedDate(new Date());
+                itemApply.setSubmitDate(new Date());
                 itemApplyMapper.insertSelective(itemApply);
             } else {
-                itemApply.setSubmitDate(new Date());
+                if (ItemApplyEnum.REVIEW.getCode() == itemApply.getStatus()) {
+                    itemApply.setSubmitDate(new Date());
+                }
             }
             List<ApplyFile> applyFileList = itemApply.getApplyFileList();
             for (int i = 0; i < applyFileList.size(); i++) {
