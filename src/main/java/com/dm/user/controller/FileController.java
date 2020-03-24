@@ -39,13 +39,12 @@ public class FileController {
         Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile, aid, signature);
         if (map.containsKey("nofile")) {
             return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
-        } else if (map.containsKey("fileIds")) {
+        } /*else if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        }*/ else if (map.containsKey("fileIds")) {
             return ResultUtil.success(map);
         }
         return null;
-        /*else if (map.containsKey("verifyFailed")) {
-            return ResultUtil.info("error.code", "signature.error.msg");
-        } */
     }
 
     @ApiOperation(value = "出证上传图片", response = ResultUtil.class)
@@ -63,6 +62,9 @@ public class FileController {
     @RequestMapping(value = "/item/upload", method = RequestMethod.POST)
     public Result itemUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> map = fileUtil.itemUpload(request, response);
+        /*if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        }*/
         return ResultUtil.success(map);
     }
 
@@ -70,7 +72,13 @@ public class FileController {
     @RequestMapping(value = "/apply/upload", method = RequestMethod.POST)
     public Result applyUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> map = fileUtil.applyUpload(request, response);
-        return ResultUtil.success(map);
+        /*if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        } else */
+        if (map.containsKey("fileid")) {
+            return ResultUtil.success(map);
+        }
+        return null;
     }
 
 }

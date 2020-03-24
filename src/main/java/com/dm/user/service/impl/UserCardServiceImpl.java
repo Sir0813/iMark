@@ -69,10 +69,10 @@ public class UserCardServiceImpl implements UserCardService {
     }
 
     @Override
-    public UserCard selectByUserId(String toString, String realState) throws Exception {
+    public UserCard selectByUserId(String userId, String realState) throws Exception {
         try {
             Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("userid", LoginUserHelper.getUserId());
+            map.put("userid", userId);
             map.put("realState", realState);
             return userCardMapper.selectByUserId(map);
         } catch (Exception e) {

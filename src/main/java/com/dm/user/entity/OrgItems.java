@@ -32,6 +32,11 @@ public class OrgItems {
 
     private Double lowestPrice;
 
+    /**
+     * 公正名称业务字段
+     */
+    private String orgName;
+
     public Integer getItemid() {
         return itemid;
     }
@@ -134,5 +139,13 @@ public class OrgItems {
 
     public void setLowestPrice(Double lowestPrice) {
         this.lowestPrice = lowestPrice;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 }

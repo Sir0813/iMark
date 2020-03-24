@@ -1,6 +1,5 @@
 package com.dm.user.util;
 
-import com.ahdms.exception.*;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
@@ -9,10 +8,11 @@ import com.dm.user.entity.CertFiles;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
-import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
+import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,10 +22,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.List;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -119,43 +117,13 @@ public class FileUtil {
                 certFilesService.insertSelective(certFiles);
                 certIds[i] = String.valueOf(certFiles.getFileId());
             }
-            boolean verifyState = false;
+            /*boolean verifyState = false;
             if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(inData) && StringUtils.isNotBlank(signature)) {
-                try {
-                    verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
-                } catch (SVS_ServerConnectException e) {
-                    throw new Exception(e);
-                } catch (SVS_SignatureEncodeException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertExpiredException e) {
-                    throw new Exception(e);
-                } catch (SVS_NotFoundPKMException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertException e) {
-                    throw new Exception(e);
-                } catch (SVS_SignatureException e) {
-                    throw new Exception(e);
-                } catch (SVS_VerifyDataException e) {
-                    throw new Exception(e);
-                } catch (SVS_InvalidParameterException e) {
-                    throw new Exception(e);
-                } catch (SVS_CheckIRLException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertNotTrustException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertIneffectiveException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertTypeException e) {
-                    throw new Exception(e);
-                } catch (SVS_CertCancelException e) {
-                    throw new Exception(e);
-                } catch (SVS_GetIRLException e) {
-                    throw new Exception(e);
-                }
+                verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
             }
             if (!verifyState) {
                 map.put("verifyFailed", "verifyFailed");
-            }
+            }*/
             map.put("fileIds", certIds);
             return map;
         } catch (Exception e) {
@@ -253,35 +221,37 @@ public class FileUtil {
      */
     public static void fetchFrame(String videofile, String framefile)
             throws Exception {
-        File targetFile = new File(framefile);
-        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(videofile);
-        ff.start();
-        int lenght = ff.getLengthInFrames();
-        int i = 0;
-        Frame f = null;
-        while (i < lenght) {
-            // 过滤前5帧，避免出现全黑的图片，依自己情况而定
-            f = ff.grabFrame();
-            if ((i > 5) && (f.image != null)) {
-                break;
+        try {
+            FFmpegFrameGrabber ff = FFmpegFrameGrabber.createDefault(videofile);
+            ff.start();
+            String rotate = ff.getVideoMetadata("rotate");
+            Frame f;
+            int i = 0;
+            while (i < 1) {
+                f = ff.grabImage();
+                opencv_core.IplImage src = null;
+                if (null != rotate && rotate.length() > 1) {
+                    OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+                    src = converter.convert(f);
+                    f = converter.convert(rotate(src, Integer.valueOf(rotate)));
+                }
+                doExecuteFrame(f, framefile);
+                i++;
             }
-            i++;
+            ff.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        opencv_core.IplImage img = f.image;
-        int owidth = img.width();
-        int oheight = img.height();
-        int width = 800;
-        int height = (int) (((double) width / owidth) * oheight);
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        bi.getGraphics().drawImage(f.image.getBufferedImage().getScaledInstance(width, height, Image.SCALE_SMOOTH),
-                0, 0, null);
-        ImageIO.write(bi, "jpg", targetFile);
-        ff.stop();
     }
 
-    /*    *//*
+
+    /**
      * 旋转角度的
-     *//*
+     *
+     * @param src
+     * @param angle
+     * @return
+     */
     public static opencv_core.IplImage rotate(opencv_core.IplImage src, int angle) {
         opencv_core.IplImage img = opencv_core.IplImage.create(src.height(), src.width(), src.depth(), src.nChannels());
         opencv_core.cvTranspose(src, img);
@@ -290,7 +260,7 @@ public class FileUtil {
     }
 
     public static void doExecuteFrame(Frame f, String targerFilePath) {
-       *//* if (null == f || null == f.image) {
+        if (null == f || null == f.image) {
             return;
         }
         Java2DFrameConverter converter = new Java2DFrameConverter();
@@ -301,8 +271,8 @@ public class FileUtil {
             ImageIO.write(bi, imageMat, output);
         } catch (IOException e) {
             e.printStackTrace();
-        }*//*
-    }*/
+        }
+    }
 
     /**
      * 打包下载
@@ -402,10 +372,13 @@ public class FileUtil {
             request.setCharacterEncoding("utf-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("text/html;charset=utf-8");
+            String aid = request.getParameter("aid");
+            String signature = request.getParameter("signature");
             MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
             String requeredids = multipartHttpServletRequest.getParameter("requeredids");
             String[] split = requeredids.split(",");
             Map<String, Object> map = new LinkedHashMap<>(16);
+            StringBuilder inData = new StringBuilder();
             for (int i = 0; i < split.length; i++) {
                 String s = split[i];
                 List<MultipartFile> file = multipartHttpServletRequest.getFiles("row" + s);
@@ -441,9 +414,18 @@ public class FileUtil {
                     certFiles.setFileSeq(j + "");
                     certFilesService.insertSelective(certFiles);
                     fileIds += (certFiles.getFileId() + ",");
+                    // String md5 = ShaUtil.getMD5(filePath);
+                    // inData.append(md5);
                 }
                 map.put("row" + s, fileIds);
             }
+            /*boolean verifyState = false;
+            if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(inData) && StringUtils.isNotBlank(signature)) {
+                verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
+            }
+            if (!verifyState) {
+                map.put("verifyFailed", "verifyFailed");
+            }*/
             return map;
         } catch (Exception e) {
             throw new Exception(e);
@@ -455,6 +437,8 @@ public class FileUtil {
             request.setCharacterEncoding("utf-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("text/html;charset=utf-8");
+            String aid = request.getParameter("aid");
+            String signature = request.getParameter("signature");
             MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
             List<MultipartFile> file = multipartHttpServletRequest.getFiles("file");
             String fileName = file.get(0).getOriginalFilename();
@@ -464,8 +448,8 @@ public class FileUtil {
                 suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
             }
             UUID randomUuid = UUID.randomUUID();
-            String filePath = certFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
-            String fileUrl = certFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            String filePath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            String fileUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
             boolean uploadBoolean = uploadFile(filePath, "", file.get(0));
             if (!uploadBoolean) {
                 throw new Exception("上传失败");
@@ -480,6 +464,16 @@ public class FileUtil {
             certFilesService.insertSelective(certFiles);
             Map<String, Object> map = new LinkedHashMap<>(16);
             map.put("fileid", certFiles.getFileId());
+            StringBuilder inData = new StringBuilder();
+            // String md5 = ShaUtil.getMD5(filePath);
+            // inData.append(md5);
+            /*boolean verifyState = false;
+            if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(inData) && StringUtils.isNotBlank(signature)) {
+                verifyState = IkiUtil.verifyData(aid, inData.toString(), signature);
+            }
+            if (!verifyState) {
+                map.put("verifyFailed", "verifyFailed");
+            }*/
             return map;
         } catch (Exception e) {
             throw new Exception(e);

@@ -33,7 +33,7 @@
         <include refid="Base_Column_List"/>
         from biz_push
         where receive = #{username}
-        and state = '0'
+        and (state = '1' or state = `2`)
     </select>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select

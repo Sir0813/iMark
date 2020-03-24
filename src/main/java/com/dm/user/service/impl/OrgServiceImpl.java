@@ -31,7 +31,7 @@ public class OrgServiceImpl implements OrgService {
             }
             return pageInfo;
         } catch (Exception e) {
-            throw new Exception();
+            throw new Exception(e);
         }
     }
 
@@ -41,7 +41,16 @@ public class OrgServiceImpl implements OrgService {
             Org org = orgMapper.selectByPrimaryKey(orgId);
             return org.getServeDesc();
         } catch (Exception e) {
-            throw new Exception();
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public Org selectById(Integer orgid) throws Exception {
+        try {
+            return orgMapper.selectByPrimaryKey(orgid);
+        } catch (Exception e) {
+            throw new Exception(e);
         }
     }
 }

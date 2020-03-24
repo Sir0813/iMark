@@ -136,16 +136,16 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv-platform</artifactId>
             <version>1.4.2</version>
-        </dependency>-->
-        <dependency>
+        </dependency>
+        <!--<dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
             <version>0.8</version>
-        </dependency>
+        </dependency>-->
         <!-- iki jar包 -->
         <dependency>
             <groupId>com.dm.iki</groupId>

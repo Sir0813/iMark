@@ -19,6 +19,10 @@ upload:
   headFilePath: D:\upload\headfile
   # 用户头像访问路径
   headFilePrefix: http://192.168.3.101/img/headfile
+  # 公正文件存储路径
+  applyFilePath: D:\upload\cert
+  # 公正文件访问路径
+  applyFilePrefix: apply
   # baseUrl
   baseUrl: http://192.168.3.101/
 # 邮箱设置

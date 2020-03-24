@@ -25,4 +25,12 @@ public interface OrgService {
      * @return
      */
     String notice(int orgId) throws Exception;
+
+    /**
+     * 主键查询
+     *
+     * @param orgid
+     * @return
+     */
+    Org selectById(Integer orgid) throws Exception;
 }

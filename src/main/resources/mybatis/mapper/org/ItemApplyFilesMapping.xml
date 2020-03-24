@@ -74,7 +74,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.ItemApplyFiles">
+    <update id="updateByPrimaryKeySelective" parameterType="java.util.Map">
         update biz_item_apply_files
         <set>
             <if test="describe != null">

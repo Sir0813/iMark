@@ -15,7 +15,7 @@ public interface ItemApplyFilesMapper {
 
     ItemApplyFiles selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(ItemApplyFiles record);
+    int updateByPrimaryKeySelective(Map<String, Object> map);
 
     List<ItemApplyFiles> selectByApplyIdAndRequeredId(Map<String, Object> m);
 

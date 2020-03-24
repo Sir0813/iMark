@@ -30,10 +30,25 @@
     delete from biz_org_items
     where itemid = #{itemid,jdbcType=INTEGER}
   </delete>
-    <select id="itemList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    <select id="itemList" resultType="com.dm.user.entity.OrgItems" parameterType="java.lang.Integer">
         select
-        <include refid="Base_Column_List"></include>
+        oitem.itemid as itemid,
+        oitem.orgid as orgid,
+        oitem.item_code as itemCode,
+        oitem.item_name as itemName,
+        oitem.item_desc as itemDesc,
+        oitem.logo_url as logoUrl,
+        oitem.status as status,
+        oitem.version as version,
+        oitem.created_date as createdDate,
+        oitem.created_by as createdBy,
+        oitem.valuation as valuation,
+        oitem.price as price,
+        oitem.lowest_price as lowestPrice,
+        org.orgname as orgName
         from biz_org_items oitem
+        LEFT JOIN biz_org org
+        ON oitem.orgid = org.itemid
         where orgId = #{orgId}
         and oitem.status = 2
         group by oitem.item_code

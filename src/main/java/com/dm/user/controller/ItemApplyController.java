@@ -35,6 +35,24 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.insert(itemApply);
     }
 
+    @ApiOperation(value = "公正改为草稿", response = ResultUtil.class)
+    @RequestMapping(value = "/updateToDraft", method = RequestMethod.POST)
+    public Result updateToDraft(@RequestBody ItemApply itemApply) throws Exception {
+        return itemApplyService.updateToDraft(itemApply);
+    }
+
+    @ApiOperation(value = "支付金额 提交申请", response = ResultUtil.class)
+    @RequestMapping(value = "/submitApply", method = RequestMethod.POST)
+    public Result submitApply(@RequestBody ItemApply itemApply) throws Exception {
+        return itemApplyService.submitApply(itemApply);
+    }
+
+    @ApiOperation(value = "支付尾款提交", response = ResultUtil.class)
+    @RequestMapping(value = "/payBalance", method = RequestMethod.POST)
+    public Result payBalance(@RequestBody ItemApply itemApply) throws Exception {
+        return itemApplyService.payBalance(itemApply);
+    }
+
     @ApiOperation(value = "用户已经提交的公正申请列表", response = ResultUtil.class)
     @RequestMapping(value = "/list/{pageNum}", method = RequestMethod.GET)
     public Result list(@PathVariable int pageNum) throws Exception {
@@ -70,6 +88,12 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.takeOrder(itemApply);
     }
 
+    @ApiOperation(value = "公正自定义价格提交", response = ResultUtil.class)
+    @RequestMapping(value = "/submit/customPrice", method = RequestMethod.POST)
+    public Result submitCustomPrice(@RequestBody ItemApply itemApply) throws Exception {
+        return itemApplyService.submitCustomPrice(itemApply);
+    }
+
     @ApiOperation(value = "资料待审核列表", response = ResultUtil.class)
     @RequestMapping(value = "/pending/review", method = RequestMethod.GET)
     public Result pendReview(Page<ItemApply> page, int itemId, int type) throws Exception {
@@ -95,8 +119,14 @@ public class ItemApplyController extends BaseController {
 
     @ApiOperation(value = "文件添加修改批注", response = ResultUtil.class)
     @RequestMapping(value = "/notes", method = RequestMethod.POST)
-    public Result notes(@RequestBody ItemApplyFiles itemApplyFiles) throws Exception {
-        return itemApplyService.notes(itemApplyFiles);
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "describe", value = "批注内容", dataType = "String"),
+            @ApiImplicitParam(name = "id", value = "ID", dataType = "int"),
+            @ApiImplicitParam(name = "aid", value = "用户aid", dataType = "String"),
+            @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String")
+    })
+    public Result notes(@RequestBody Map<String, Object> map) throws Exception {
+        return itemApplyService.notes(map);
     }
 
     @ApiOperation(value = "审批待处理", response = ResultUtil.class)

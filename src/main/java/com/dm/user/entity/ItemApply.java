@@ -36,6 +36,10 @@ public class ItemApply {
 
     private Integer handleUserid;
 
+    private Integer payStatus;
+
+    private Double payEndPrice;
+
     /**
      * 公正文件业务字段
      */
@@ -47,12 +51,12 @@ public class ItemApply {
     private String itemName;
 
     /**
-     * 用户真实姓名
+     * 用户真实姓名业务字段
      */
     private String realName;
 
     /**
-     * 公正logo
+     * 公正logo业务字段
      */
     private String logoUrl;
 
@@ -198,5 +202,21 @@ public class ItemApply {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public Integer getPayStatus() {
+        return payStatus;
+    }
+
+    public void setPayStatus(Integer payStatus) {
+        this.payStatus = payStatus;
+    }
+
+    public Double getPayEndPrice() {
+        return payEndPrice;
+    }
+
+    public void setPayEndPrice(Double payEndPrice) {
+        this.payEndPrice = payEndPrice;
     }
 }

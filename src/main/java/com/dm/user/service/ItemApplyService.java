@@ -91,11 +91,11 @@ public interface ItemApplyService {
     /**
      * 添加修改文件批注
      *
-     * @param itemApplyFiles
+     * @param map
      * @return
      * @throws Exception
      */
-    Result notes(ItemApplyFiles itemApplyFiles) throws Exception;
+    Result notes(Map<String, Object> map) throws Exception;
 
     /**
      * 审批待处理列表
@@ -122,4 +122,38 @@ public interface ItemApplyService {
      * @param map
      */
     void approved(Map<String, Object> map) throws Exception;
+
+    /**
+     * 更改已提交订单为草稿
+     *
+     * @param itemApply
+     * @return
+     */
+    Result updateToDraft(ItemApply itemApply) throws Exception;
+
+    /**
+     * 支付金额提交公正
+     *
+     * @param itemApply
+     * @return
+     * @throws Exception
+     */
+    Result submitApply(ItemApply itemApply) throws Exception;
+
+    /**
+     * 提交自定义价格
+     *
+     * @param itemApply
+     * @return
+     */
+    Result submitCustomPrice(ItemApply itemApply) throws Exception;
+
+    /**
+     * 支付尾款
+     *
+     * @param itemApply
+     * @return
+     * @throws Exception
+     */
+    Result payBalance(ItemApply itemApply) throws Exception;
 }

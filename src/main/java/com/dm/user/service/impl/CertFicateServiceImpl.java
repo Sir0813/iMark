@@ -224,7 +224,7 @@ public class CertFicateServiceImpl implements CertFicateService {
                         pm.setCertName(certFicate.getCertName());
                         pm.setServerTime(DateUtil.timeToString2(new Date()));
                         pm.setType("1");
-                        pm.setState("0");
+                        pm.setState("2");
                         pm.setIsRead("0");
                         pm.setReceive(certConfirm.getConfirmPhone());
                         pushMsgService.insertSelective(pm);
@@ -238,6 +238,8 @@ public class CertFicateServiceImpl implements CertFicateService {
                                 int resout = PushUtil.getInstance().sendToRegistrationId(u.getUsername(), pm.getTitle(), json);
                                 if (1 == resout) {
                                     pm.setState("1");
+                                } else {
+                                    pm.setState("0");
                                 }
                             }
                             pushMsgService.updateByPrimaryKeySelective(pm);

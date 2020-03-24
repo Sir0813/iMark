@@ -17,7 +17,8 @@ public class PushMsg {
     private String serverTime;
 
     /**
-     * 1存证通知2出证通知
+     * 1 存证通知 2 出证通知 (存证)
+     * 1 存证消息  2 支付消息 3 审核消息
      */
     private String type;
 
@@ -26,7 +27,7 @@ public class PushMsg {
     private String receive;
 
     /**
-     * 0推送失败 1 推送成功
+     * 0推送失败 1 推送成功 2 待推送
      */
     private String state;
 

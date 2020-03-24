@@ -22,11 +22,12 @@
         <result column="describe" property="describe" jdbcType="VARCHAR"/>
         <result column="valid_end_date" property="validEndDate" jdbcType="TIMESTAMP"/>
         <result column="head_photo" property="headPhoto" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
     userid, usercode, username, mobile, email, `password`, sex, is_enabled, is_expired, 
     is_credentials_expired, is_locked, salt, bad_login_num, last_pwd_date, last_active, 
-    created_date, source, `describe`, valid_end_date, head_photo
+    created_date, source, `describe`, valid_end_date, head_photo, address
   </sql>
     <select id="selectByEamil" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -102,6 +103,9 @@
             <if test="headPhoto != null">
                 head_Photo,
             </if>
+            <if test="address != null">
+                address,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="usercode != null">
@@ -160,6 +164,9 @@
             </if>
             <if test="headPhoto != null">
                 #{headPhoto,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -238,6 +245,9 @@
             </if>
             <if test="headPhoto != null">
                 head_photo = #{headPhoto,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
             </if>
         </set>
         where userid = #{userid,jdbcType=INTEGER}

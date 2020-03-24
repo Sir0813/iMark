@@ -62,9 +62,9 @@ public class ItemApplyFilesServiceImpl implements ItemApplyFilesService {
     }
 
     @Override
-    public Result notes(ItemApplyFiles itemApplyFiles) throws Exception {
+    public Result notes(Map<String, Object> map) throws Exception {
         try {
-            itemApplyFilesMapper.updateByPrimaryKeySelective(itemApplyFiles);
+            itemApplyFilesMapper.updateByPrimaryKeySelective(map);
             return ResultUtil.success();
         } catch (Exception e) {
             throw new Exception(e);

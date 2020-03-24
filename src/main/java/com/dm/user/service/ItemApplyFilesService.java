@@ -42,11 +42,11 @@ public interface ItemApplyFilesService {
     /**
      * 新增修改批注
      *
-     * @param itemApplyFiles
+     * @param map
      * @return
      * @throws Exception
      */
-    Result notes(ItemApplyFiles itemApplyFiles) throws Exception;
+    Result notes(Map<String, Object> map) throws Exception;
 
     /**
      * 申请ID和状态查意见书

@@ -17,12 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
+public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Autowired
     private ItemApplyMapper itemApplyMapper;
@@ -57,10 +58,30 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
     @Autowired
     private WfInstAuditTrackService wfInstAuditTrackService;
 
+    @Autowired
+    private OrgService orgService;
+
+    @Autowired
+    private PushMsgService pushMsgService;
+
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         try {
             boolean insert = null == itemApply.getApplyid();
+            // 按标的计价 计算用户应交总费用
+            if (itemApply.getItemValue() > 0) {
+                OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
+                BigDecimal itemValue = new BigDecimal(itemApply.getItemValue());
+                BigDecimal price = new BigDecimal(orgItems.getPrice());
+                // 按标的总共应收金额
+                BigDecimal multiply = itemValue.multiply(price);
+                if (multiply.compareTo(new BigDecimal(orgItems.getLowestPrice())) > -1) {
+                    // 按标的应收金额大于等于最低收费金额
+                    itemApply.setPrice(multiply.doubleValue());
+                } else {
+                    itemApply.setPrice(orgItems.getLowestPrice());
+                }
+            }
             if (insert) {
                 SimpleDateFormat format = new SimpleDateFormat("yyMMddhhmmssSSS");
                 Date date = new Date();
@@ -70,10 +91,6 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                 itemApply.setCreatedDate(new Date());
                 itemApply.setSubmitDate(new Date());
                 itemApplyMapper.insertSelective(itemApply);
-            } else {
-                if (ItemApplyEnum.REVIEW.getCode() == itemApply.getStatus()) {
-                    itemApply.setSubmitDate(new Date());
-                }
             }
             List<ApplyFile> applyFileList = itemApply.getApplyFileList();
             for (int i = 0; i < applyFileList.size(); i++) {
@@ -97,16 +114,6 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
                         itemApplyFilesService.insert(itemApplyFiles);
                     }
                 }
-            }
-            if (ItemApplyEnum.REVIEW.getCode() == itemApply.getStatus()) {
-                WfItemNode wfItemNode = wfItemNodeService.selectByItemId(itemApply.getItemid());
-                WfInstance wfInstance = new WfInstance();
-                wfInstance.setCreatedBy(Integer.parseInt(LoginUserHelper.getUserId()));
-                wfInstance.setCreatedDate(new Date());
-                wfInstance.setNodeid(wfItemNode.getId());
-                wfInstance.setStatus(InstanceEnum.PENDING_REVIEW.getCode());
-                wfInstanceService.insert(wfInstance);
-                itemApply.setWfInstanceId(wfInstance.getId().toString());
             }
             itemApplyMapper.updateByPrimaryKeySelective(itemApply);
             return ResultUtil.success();
@@ -208,6 +215,8 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             userMap.put("userName", null == userCard ? "" : userCard.getRealName());
             userMap.put("userPhone", user.getUsername());
             userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
+            Org org = orgService.selectById(orgItems.getOrgid());
+            map.put("orgName", org.getOrgname());
             // 公正意见书
             map.put("opinionFile", certFiles);
             map.put("history", applyHistories);
@@ -219,6 +228,8 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             map.put("applyDescribe", itemApply.getDescribe());
             map.put("reason", wfInstance.getRejectReason());
             map.put("valuation", orgItems.getValuation());
+            map.put("payStatus", itemApply.getPayStatus());
+            map.put("payEndPrice", itemApply.getPayEndPrice());
             return map;
         } catch (Exception e) {
             throw new Exception(e);
@@ -305,7 +316,10 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             map.put("userId", LoginUserHelper.getUserId());
             if (1 == type) {
                 // 待审核列表
-                map.put("status", ItemApplyEnum.REVIEW.getCode());
+                int[] ids = new int[2];
+                ids[0] = ItemApplyEnum.REVIEW.getCode();
+                ids[1] = ItemApplyEnum.SUBMISSION.getCode();
+                map.put("status", ids);
             } else if (2 == type) {
                 // 审核通过退回列表(历史记录)
                 int[] ids = new int[3];
@@ -318,6 +332,7 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             }
             List<ItemApply> itemApplyList = new ArrayList<>();
             if (itemId != 0) {
+                // 查询全部数据
                 map.put("itemId", itemId);
                 PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
                 itemApplyList = itemApplyMapper.pendReview(map);
@@ -392,8 +407,13 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
     public Result pass(ItemApplyFiles itemApplyFiles) throws Exception {
         try {
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(itemApplyFiles.getApplyid());
-            itemApply.setStatus(ItemApplyEnum.REVIEW_YES.getCode());
-            itemApplyFiles.setFileTypes(ItemFileTypeEnum.OPINION_FILE.getCode());
+            if (itemApplyFiles.getFileTypes() == 0) {
+                itemApplyFiles.setFileTypes(ItemFileTypeEnum.OPINION_FILE.getCode());
+                itemApply.setStatus(ItemApplyEnum.REVIEW_YES.getCode());
+            } else if (itemApplyFiles.getFileTypes() == 1) {
+                itemApplyFiles.setFileTypes(ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
+                itemApply.setStatus(ItemApplyEnum.REVIEW_SUCCESS.getCode());
+            }
             itemApplyFiles.setCreatedDate(new Date());
             itemApplyFiles.setIsDel(ItemFileTypeEnum.FILE_EXISTENCE.getCode());
             itemApplyFilesService.insert(itemApplyFiles);
@@ -405,9 +425,19 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
     }
 
     @Override
-    public Result notes(ItemApplyFiles itemApplyFiles) throws Exception {
+    public Result notes(Map<String, Object> map) throws Exception {
         try {
-            return itemApplyFilesService.notes(itemApplyFiles);
+            // boolean verifyState = false;
+            String aid = String.valueOf(map.get("aid"));
+            String signature = String.valueOf(map.get("signature"));
+            String describe = String.valueOf(map.get("describe"));
+            /*if (StringUtils.isNotBlank(aid) && StringUtils.isNotBlank(describe) && StringUtils.isNotBlank(signature)) {
+                verifyState = IkiUtil.verifyData(aid, describe, signature);
+            }
+            if (!verifyState) {
+                return ResultUtil.info("error.code", "signature.error.msg");
+            }*/
+            return itemApplyFilesService.notes(map);
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -461,10 +491,115 @@ public class ItemApplyServiceImpl<pendList> implements ItemApplyService {
             wfInstance.setNodeid(wfItemNode2.getId());
         } else {
             wfInstance.setStatus(InstanceEnum.REVIEW_PASS.getCode());
-            itemApply.setStatus(ItemApplyEnum.REVIEW_SUCCESS.getCode());
+            itemApply.setStatus(ItemApplyEnum.SUBMISSION.getCode());
             itemApplyMapper.updateByPrimaryKeySelective(itemApply);
         }
         wfInstance.setUpdateDate(new Date());
         wfInstanceService.updateById(wfInstance);
+    }
+
+    @Override
+    public Result updateToDraft(ItemApply itemApply) throws Exception {
+        try {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("state", ItemApplyEnum.DRAFT.getCode());
+            map.put("applyid", itemApply.getApplyid());
+            itemApplyMapper.updateState(map);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public Result submitApply(ItemApply itemApply) throws Exception {
+        try {
+            // 交钱成功之后在修改状态 后续集成支付
+            ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getApplyid());
+            if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
+                itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
+            } else {
+                itemApply1.setPayStatus(ItemApplyEnum.PAY_PRE.getCode());
+            }
+            itemApply1.setStatus(ItemApplyEnum.REVIEW.getCode());
+            itemApply1.setSubmitDate(new Date());
+            WfItemNode wfItemNode = wfItemNodeService.selectByItemId(itemApply1.getItemid());
+            WfInstance wfInstance = new WfInstance();
+            wfInstance.setCreatedBy(Integer.parseInt(LoginUserHelper.getUserId()));
+            wfInstance.setCreatedDate(new Date());
+            wfInstance.setNodeid(wfItemNode.getId());
+            wfInstance.setStatus(InstanceEnum.PENDING_REVIEW.getCode());
+            wfInstanceService.insert(wfInstance);
+            itemApply1.setWfInstanceId(wfInstance.getId().toString());
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public Result submitCustomPrice(ItemApply itemApply) throws Exception {
+        try {
+            ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getApplyid());
+            itemApply1.setPrice(itemApply.getPrice());
+            BigDecimal price = new BigDecimal(itemApply.getPrice());
+            BigDecimal lowestPrice = new BigDecimal(orgItems.getLowestPrice());
+            PushMsg pushMsg = new PushMsg();
+            if (price.compareTo(lowestPrice) == 1) {
+                // 输入金额 > 预付款 (要缴纳尾款)
+                itemApply1.setPayEndPrice(price.subtract(lowestPrice).doubleValue());
+                itemApply1.setPayStatus(ItemApplyEnum.PAY_BALANCE.getCode());
+                pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
+                pushMsg.setTitle("支付通知");
+                pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "支付尾款通知！待支付金额:" + itemApply1.getPayEndPrice());
+                pushMsg.setServerTime(new Date().toString());
+                pushMsg.setType(PushEnum.PAY_MSG.getCode());
+                pushMsg.setState("1"); // 成功
+                pushMsg.setIsRead("0"); // 未读取
+                pushMsg.setUserId(itemApply1.getUserid());
+            } else {
+                // 输入金额 <= 预付款 通知管理员审核资料
+                itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
+                pushMsg.setTitle("审核通知");
+                pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
+                pushMsg.setServerTime(new Date().toString());
+                pushMsg.setType(PushEnum.REVIEW_MSG.getCode());
+                pushMsg.setState("1");
+                pushMsg.setIsRead("0");
+                pushMsg.setUserId(Integer.valueOf(LoginUserHelper.getUserId()));
+            }
+            pushMsgService.insertSelective(pushMsg);
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public Result payBalance(ItemApply itemApply) throws Exception {
+        // 支付尾款 后续集成支付接口
+        try {
+            ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
+            itemApply1.setPayEndPrice(0.00);
+            itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+            PushMsg pushMsg = new PushMsg();
+            pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
+            pushMsg.setTitle("审核通知");
+            pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
+            pushMsg.setServerTime(new Date().toString());
+            pushMsg.setType(PushEnum.REVIEW_MSG.getCode());
+            pushMsg.setState("1"); // 成功
+            pushMsg.setIsRead("0"); // 未读取
+            pushMsg.setUserId(itemApply1.getHandleUserid());
+            pushMsgService.insertSelective(pushMsg);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

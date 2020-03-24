@@ -16,10 +16,12 @@
         <result column="wf_instance_id" jdbcType="VARCHAR" property="wfInstanceId"/>
         <result column="handle_created_date" jdbcType="TIMESTAMP" property="handleCreatedDate"/>
         <result column="handle_userid" jdbcType="INTEGER" property="handleUserid"/>
+        <result column="pay_status" jdbcType="INTEGER" property="payStatus"/>
+        <result column="pay_end_price" jdbcType="DECIMAL" property="payEndPrice"/>
     </resultMap>
     <sql id="Base_Column_List">
     applyid, apply_no, itemid, userid, `status`, `describe`, certid, created_date, submit_date,
-    item_value, price, wf_instance_id, handle_created_date, handle_userid
+    item_value, price, wf_instance_id, handle_created_date, handle_userid, pay_status, pay_end_price
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -74,6 +76,12 @@
             <if test="handleUserid != null">
                 handle_userid,
             </if>
+            <if test="paySatus != null">
+                pay_status,
+            </if>
+            <if test="payEndPrice != null">
+                pay_end_price,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="applyNo != null">
@@ -114,6 +122,12 @@
             </if>
             <if test="handleUserid != null">
                 #{handle_userid,jdbcType=INTEGER},
+            </if>
+            <if test="payStatus != null">
+                #{pay_status,jdbcType=INTEGER},
+            </if>
+            <if test="payEndPrice != null">
+                #{pay_end_price,jdbcType=DECIMAL},
             </if>
         </trim>
     </insert>
@@ -159,6 +173,12 @@
             <if test="handleUserid != null">
                 handle_userid = #{handleUserid,jdbcType=INTEGER},
             </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus,jdbcType=INTEGER},
+            </if>
+            <if test="payEndPrice != null">
+                pay_end_price = #{payEndPrice,jdbcType=DECIMAL},
+            </if>
         </set>
         where applyid = #{applyid,jdbcType=INTEGER}
     </update>
@@ -201,7 +221,8 @@
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
-        usercard.real_name AS realName
+        usercard.real_name AS realName,
+        orgitem.logo_url AS logoUrl
         FROM biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
@@ -236,7 +257,8 @@
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
-        usercard.real_name AS realName
+        usercard.real_name AS realName,
+        orgitem.logo_url AS logoUrl
         FROM biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
@@ -251,17 +273,12 @@
                 #{itemId}
             </foreach>
         </if>
-        <choose>
-            <when test="status == 2">
-                and itemapply.`status` = #{status}
-            </when>
-            <otherwise>
-                and itemapply.`status` in
-                <foreach collection="status" item="state" open="(" close=")" separator=",">
-                    #{state}
-                </foreach>
-            </otherwise>
-        </choose>
+        <if test="status!=null and status.length!=0">
+            and itemapply.`status` in
+            <foreach collection="status" item="state" open="(" close=")" separator=",">
+                #{state}
+            </foreach>
+        </if>
         and itemapply.handle_userid = #{userId}
         order by submitDate desc
     </select>
@@ -280,7 +297,8 @@
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
-        usercard.real_name AS realName
+        usercard.real_name AS realName,
+        orgitem.logo_url AS logoUrl
         FROM
         biz_item_apply AS itemapply
         INNER JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
@@ -355,7 +373,8 @@
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
-        usercard.real_name AS realName
+        usercard.real_name AS realName,
+        orgitem.logo_url AS logoUrl
         FROM
         `wf_inst_audit_track` AS track
         LEFT JOIN

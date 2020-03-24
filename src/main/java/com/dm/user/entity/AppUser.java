@@ -62,6 +62,8 @@ public class AppUser {
 
     private String headPhoto;
 
+    private String address;
+
     public Integer getUserid() {
         return userid;
     }
@@ -220,5 +222,13 @@ public class AppUser {
 
     public void setHeadPhoto(String headPhoto) {
         this.headPhoto = headPhoto;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

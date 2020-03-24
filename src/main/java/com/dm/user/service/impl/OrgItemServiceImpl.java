@@ -3,20 +3,15 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
-import com.dm.user.entity.ItemRequered;
-import com.dm.user.entity.OrgItems;
-import com.dm.user.entity.OrgUser;
-import com.dm.user.entity.UserCard;
+import com.dm.user.entity.*;
 import com.dm.user.mapper.OrgItemsMapper;
 import com.dm.user.msg.OrgItemEnum;
 import com.dm.user.msg.StateMsg;
-import com.dm.user.service.ItemRequeredService;
-import com.dm.user.service.OrgItemService;
-import com.dm.user.service.OrgUserService;
-import com.dm.user.service.UserCardService;
+import com.dm.user.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +35,9 @@ public class OrgItemServiceImpl implements OrgItemService {
 
     @Autowired
     private OrgUserService orgUserService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public OrgItems selectByPrimaryKey(Integer itemid) throws Exception {
@@ -73,6 +71,7 @@ public class OrgItemServiceImpl implements OrgItemService {
             OrgItems orgItems = orgItemsMapper.selectByPrimaryKey(itemId);
             List<ItemRequered> list = itemRequeredService.selectByItemId(itemId);
             UserCard userCard = userCardService.selectByUserId(LoginUserHelper.getUserId(), "2");
+            AppUser appUser = userService.selectByPrimaryKey(Integer.valueOf(LoginUserHelper.getUserId()));
             if (null == userCard) {
                 throw new Exception(StateMsg.NOTREAL);
             }
@@ -90,6 +89,7 @@ public class OrgItemServiceImpl implements OrgItemService {
             map.put("itemDesc", orgItems.getItemDesc());
             map.put("itemRequered", list);
             map.put("userInfo", userMap);
+            map.put("address", StringUtils.isBlank(appUser.getAddress()) ? "" : appUser.getAddress());
             return map;
         } catch (Exception e) {
             throw new Exception(e);

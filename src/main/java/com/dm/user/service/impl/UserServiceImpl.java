@@ -235,6 +235,7 @@ public class UserServiceImpl implements UserService {
             map.put("sex", user.getSex());
             map.put("nickName", null == user.getDescribe() ? "" : user.getDescribe());
             map.put("userid", user.getUserid());
+            map.put("address", user.getAddress());
             return ResultUtil.success(map);
         } catch (Exception e) {
             throw new Exception(e);
