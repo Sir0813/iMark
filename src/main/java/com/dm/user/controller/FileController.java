@@ -58,7 +58,7 @@ public class FileController {
         return ResultUtil.error();
     }
 
-    @ApiOperation(value = "公正用户上传资料", response = ResultUtil.class)
+    @ApiOperation(value = "公正用户上传资料(批量上传)", response = ResultUtil.class)
     @RequestMapping(value = "/item/upload", method = RequestMethod.POST)
     public Result itemUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> map = fileUtil.itemUpload(request, response);
@@ -66,6 +66,13 @@ public class FileController {
             return ResultUtil.info("error.code", "signature.error.msg");
         }*/
         return ResultUtil.success(map);
+    }
+
+    @ApiOperation(value = "公正用户上传资料(单张上传)", response = ResultUtil.class)
+    @RequestMapping(value = "/item/uploadOne", method = RequestMethod.POST)
+    public Result itemUploadOne(HttpServletRequest request, HttpServletResponse response,
+                                @RequestParam(value = "file") MultipartFile multipartFile) throws Exception {
+        return fileUtil.itemUploadOne(request, response, multipartFile);
     }
 
     @ApiOperation(value = "上传公正意见书", response = ResultUtil.class)

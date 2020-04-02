@@ -17,7 +17,7 @@ public interface OrgItemService {
      * @return
      * @throws Exception
      */
-    PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId) throws Exception;
+    PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception;
 
     /**
      * 申请公正内容填充展示

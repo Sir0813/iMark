@@ -26,11 +26,11 @@
         from biz_org_items
         where itemid = #{itemid,jdbcType=INTEGER}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_org_items
     where itemid = #{itemid,jdbcType=INTEGER}
-  </delete>
-    <select id="itemList" resultType="com.dm.user.entity.OrgItems" parameterType="java.lang.Integer">
+  </delete>-->
+    <select id="itemList" resultType="com.dm.user.entity.OrgItems" parameterType="java.util.Map">
         select
         oitem.itemid as itemid,
         oitem.orgid as orgid,
@@ -51,6 +51,9 @@
         ON oitem.orgid = org.itemid
         where orgId = #{orgId}
         and oitem.status = 2
+        <if test="itemName!=null and itemName!=''">
+            and oitem.item_name like CONCAT('%',#{itemName},'%')
+        </if>
         group by oitem.item_code
         order by oitem.created_date asc
     </select>

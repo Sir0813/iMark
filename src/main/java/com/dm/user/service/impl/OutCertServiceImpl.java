@@ -109,7 +109,7 @@ public class OutCertServiceImpl implements OutCertService {
                 pm.setTitle(StateMsg.OUT_CERT_TITLE);
                 pm.setContent(StateMsg.OUT_CERT_CONTENT.replace("outCertName", outCert.getOutCertName()));
                 pm.setCertName(outCert.getOutCertName());
-                pm.setServerTime(DateUtil.timeToString2(new Date()));
+                pm.setServerTime(DateUtil.getSystemTimeStr());
                 pm.setType("2");
                 pm.setState("0");
                 pm.setIsRead("0");

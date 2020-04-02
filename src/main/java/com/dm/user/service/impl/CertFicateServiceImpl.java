@@ -222,7 +222,7 @@ public class CertFicateServiceImpl implements CertFicateService {
                         pm.setTitle(StateMsg.SAVE_CERT_TITLE);
                         pm.setContent(StateMsg.SAVE_CERT_CONTENT.replace("certName", certFicate.getCertName()));
                         pm.setCertName(certFicate.getCertName());
-                        pm.setServerTime(DateUtil.timeToString2(new Date()));
+                        pm.setServerTime(DateUtil.getSystemTimeStr());
                         pm.setType("1");
                         pm.setState("2");
                         pm.setIsRead("0");

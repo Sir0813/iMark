@@ -143,10 +143,10 @@ public interface ItemApplyService {
     /**
      * 提交自定义价格
      *
-     * @param itemApply
+     * @param map
      * @return
      */
-    Result submitCustomPrice(ItemApply itemApply) throws Exception;
+    Result submitCustomPrice(Map<String, Object> map) throws Exception;
 
     /**
      * 支付尾款

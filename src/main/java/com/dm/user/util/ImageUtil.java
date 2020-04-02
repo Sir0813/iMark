@@ -34,7 +34,6 @@ public class ImageUtil {
                     suffix = imgFile.getName().substring(imgFile.getName().lastIndexOf(".") + 1);
                 }// 类型和图片后缀全部小写，然后判断后缀是否合法
                 if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase()) < 0) {
-                    System.out.println("tu bu he fa ");
                     return false;
                 }
                 Image img = ImageIO.read(imgFile);

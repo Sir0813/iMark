@@ -49,10 +49,13 @@ public class OrgItemServiceImpl implements OrgItemService {
     }
 
     @Override
-    public PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId) throws Exception {
+    public PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception {
         try {
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("orgId", orgId);
+            map.put("itemName", itemName);
             PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            List<OrgItems> orgItemsList = orgItemsMapper.itemList(orgId);
+            List<OrgItems> orgItemsList = orgItemsMapper.itemList(map);
             PageInfo<OrgItems> pageInfo = new PageInfo<>(orgItemsList);
             if (page.getPageNum() > pageInfo.getPages()) {
                 return null;

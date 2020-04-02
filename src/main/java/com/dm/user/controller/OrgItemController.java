@@ -31,8 +31,8 @@ public class OrgItemController extends BaseController {
 
     @ApiOperation(value = "公证业务列表", response = ResultUtil.class)
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result itemList(Page<OrgItems> page, int orgId) throws Exception {
-        PageInfo<OrgItems> orgItemsList = orgItemService.itemList(page, orgId);
+    public Result itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception {
+        PageInfo<OrgItems> orgItemsList = orgItemService.itemList(page, orgId, itemName);
         return ResultUtil.success(orgItemsList);
     }
 

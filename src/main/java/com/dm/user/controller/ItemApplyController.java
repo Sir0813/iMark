@@ -88,10 +88,15 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.takeOrder(itemApply);
     }
 
-    @ApiOperation(value = "公正自定义价格提交", response = ResultUtil.class)
+    @ApiOperation(value = "公正发送通知", response = ResultUtil.class)
     @RequestMapping(value = "/submit/customPrice", method = RequestMethod.POST)
-    public Result submitCustomPrice(@RequestBody ItemApply itemApply) throws Exception {
-        return itemApplyService.submitCustomPrice(itemApply);
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
+            @ApiImplicitParam(name = "price", value = "退回原因", dataType = "String"),
+            @ApiImplicitParam(name = "type", value = "退回类型 1 自定义价格通知 2 标的价格通知", dataType = "int")
+    })
+    public Result submitCustomPrice(@RequestBody Map<String, Object> map) throws Exception {
+        return itemApplyService.submitCustomPrice(map);
     }
 
     @ApiOperation(value = "资料待审核列表", response = ResultUtil.class)

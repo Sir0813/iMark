@@ -242,5 +242,4 @@ public class UserController extends BaseController {
         userCardService.updateRealState();
         return ResultUtil.success();
     }
-
 }

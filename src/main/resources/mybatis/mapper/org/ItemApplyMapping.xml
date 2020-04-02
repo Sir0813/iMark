@@ -76,7 +76,7 @@
             <if test="handleUserid != null">
                 handle_userid,
             </if>
-            <if test="paySatus != null">
+            <if test="payStatus != null">
                 pay_status,
             </if>
             <if test="payEndPrice != null">
@@ -115,19 +115,19 @@
                 #{price,jdbcType=DECIMAL},
             </if>
             <if test="wfInstanceId != null">
-                #{wf_instance_id,jdbcType=VARCHAR},
+                #{wfInstanceId,jdbcType=VARCHAR},
             </if>
             <if test="handleCreatedDate != null">
-                #{handle_created_date,jdbcType=TIMESTAMP},
+                #{handleCreatedDate,jdbcType=TIMESTAMP},
             </if>
             <if test="handleUserid != null">
-                #{handle_userid,jdbcType=INTEGER},
+                #{handleUserid,jdbcType=INTEGER},
             </if>
             <if test="payStatus != null">
-                #{pay_status,jdbcType=INTEGER},
+                #{payStatus,jdbcType=INTEGER},
             </if>
             <if test="payEndPrice != null">
-                #{pay_end_price,jdbcType=DECIMAL},
+                #{payEndPrice,jdbcType=DECIMAL},
             </if>
         </trim>
     </insert>

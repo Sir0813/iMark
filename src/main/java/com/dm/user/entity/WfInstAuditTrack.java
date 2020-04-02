@@ -15,6 +15,8 @@ public class WfInstAuditTrack {
 
     private String reason;
 
+    private Integer fileid;
+
     public Integer getId() {
         return id;
     }
@@ -69,5 +71,13 @@ public class WfInstAuditTrack {
 
     public void setReason(String reason) {
         this.reason = reason == null ? null : reason.trim();
+    }
+
+    public Integer getFileid() {
+        return fileid;
+    }
+
+    public void setFileid(Integer fileid) {
+        this.fileid = fileid;
     }
 }

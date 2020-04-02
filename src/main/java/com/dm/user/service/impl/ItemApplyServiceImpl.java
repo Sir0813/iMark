@@ -3,6 +3,7 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
+import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.*;
 import com.dm.user.mapper.ItemApplyMapper;
 import com.dm.user.msg.*;
@@ -98,7 +99,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 String requeredid = applyFile.getRequeredid();
                 String fileid = applyFile.getFileid();
                 String[] split = fileid.split(",");
-                if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus() || ItemApplyEnum.REVIEW.getCode() == itemApply.getStatus()) {
+                if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus() || ItemApplyEnum.WAIT_PAY.getCode() == itemApply.getStatus()) {
                     itemApplyFilesService.deleteByApplyIdAndRequeredId(itemApply.getApplyid(), requeredid);
                 }
                 for (int j = 0; j < split.length; j++) {
@@ -215,9 +216,19 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             userMap.put("userName", null == userCard ? "" : userCard.getRealName());
             userMap.put("userPhone", user.getUsername());
             userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
+            userMap.put("userId", user.getUserid());
             Org org = orgService.selectById(orgItems.getOrgid());
             map.put("orgName", org.getOrgname());
-            // 公正意见书
+            if (itemApply.getStatus() == ItemApplyEnum.REVIEW_SUCCESS.getCode()) {
+                // 审核完成显示盖章意见书
+                Map<String, Object> map2 = new HashMap<>(16);
+                map2.put("applyId", applyid);
+                map2.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
+                ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(map2);
+                CertFiles certFiles1 = certFilesService.selectByPrimaryKey(itemApplyFiles.getFileid());
+                map.put("fileUrl", certFiles1.getFileUrl());
+            }
+            // 审批历史公正意见书 (未盖章)
             map.put("opinionFile", certFiles);
             map.put("history", applyHistories);
             map.put("applyid", applyid);
@@ -516,11 +527,21 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         try {
             // 交钱成功之后在修改状态 后续集成支付
             ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getApplyid());
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply1.getItemid());
             if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
                 itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
             } else {
                 itemApply1.setPayStatus(ItemApplyEnum.PAY_PRE.getCode());
+                if (orgItems.getValuation() == OrgItemEnum.SUBJECT_PRICE.getCode()) {
+                    BigDecimal itemValue = new BigDecimal(itemApply1.getItemValue());
+                    BigDecimal price = new BigDecimal(orgItems.getPrice());
+                    // 按标的总共应收金额
+                    BigDecimal multiply = itemValue.multiply(price);
+                    if (multiply.compareTo(new BigDecimal(orgItems.getLowestPrice())) == 1) {
+                        // 费率金额 > 最低收费
+                        itemApply1.setPrice(multiply.doubleValue());
+                    }
+                }
             }
             itemApply1.setStatus(ItemApplyEnum.REVIEW.getCode());
             itemApply1.setSubmitDate(new Date());
@@ -540,12 +561,14 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     }
 
     @Override
-    public Result submitCustomPrice(ItemApply itemApply) throws Exception {
+    public Result submitCustomPrice(Map<String, Object> map) throws Exception {
         try {
-            ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getApplyid());
-            itemApply1.setPrice(itemApply.getPrice());
-            BigDecimal price = new BigDecimal(itemApply.getPrice());
+            ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(Integer.parseInt(map.get("applyid").toString()));
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply1.getItemid());
+            if (map.get("type").toString().equals("1")) {
+                itemApply1.setPrice(Double.valueOf(map.get("price").toString()));
+            }
+            BigDecimal price = new BigDecimal(itemApply1.getPrice());
             BigDecimal lowestPrice = new BigDecimal(orgItems.getLowestPrice());
             PushMsg pushMsg = new PushMsg();
             if (price.compareTo(lowestPrice) == 1) {
@@ -555,7 +578,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
                 pushMsg.setTitle("支付通知");
                 pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "支付尾款通知！待支付金额:" + itemApply1.getPayEndPrice());
-                pushMsg.setServerTime(new Date().toString());
+                pushMsg.setServerTime(DateUtil.getSystemTimeStr());
                 pushMsg.setType(PushEnum.PAY_MSG.getCode());
                 pushMsg.setState("1"); // 成功
                 pushMsg.setIsRead("0"); // 未读取
@@ -565,7 +588,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
                 pushMsg.setTitle("审核通知");
                 pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
-                pushMsg.setServerTime(new Date().toString());
+                pushMsg.setServerTime(DateUtil.getSystemTimeStr());
                 pushMsg.setType(PushEnum.REVIEW_MSG.getCode());
                 pushMsg.setState("1");
                 pushMsg.setIsRead("0");
@@ -591,7 +614,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
             pushMsg.setTitle("审核通知");
             pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
-            pushMsg.setServerTime(new Date().toString());
+            pushMsg.setServerTime(DateUtil.getSystemTimeStr());
             pushMsg.setType(PushEnum.REVIEW_MSG.getCode());
             pushMsg.setState("1"); // 成功
             pushMsg.setIsRead("0"); // 未读取

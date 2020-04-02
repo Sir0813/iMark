@@ -36,10 +36,10 @@
         from biz_org
         where itemid = #{itemid,jdbcType=INTEGER}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_org
     where itemid = #{itemid,jdbcType=INTEGER}
-    </delete>
+    </delete>-->
     <select id="orgList" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>

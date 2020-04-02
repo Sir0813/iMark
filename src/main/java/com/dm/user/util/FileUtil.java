@@ -8,6 +8,7 @@ import com.dm.user.entity.CertFiles;
 import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
+import net.coobird.thumbnailator.Thumbnails;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -400,11 +401,16 @@ public class FileUtil {
                     }
                     CertFiles certFiles = new CertFiles();
                     // 缩略图
-                    boolean b = ImageUtil.thumbnailImage(filePath, 100, 150, ImageUtil.DEFAULT_PREVFIX, ImageUtil.DEFAULT_FORCE);
-                    if (b) {
+                    if (".bmp.jpg.wbmp.jpeg.png.gif".contains(suffix.toLowerCase())) {
+                        Thumbnails.of(filePath).size(200, 300).toFile(applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix);
                         String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
                         certFiles.setThumbUrl(thumbUrl);
                     }
+                    /*boolean b = ImageUtil.thumbnailImage(filePath, 100, 150, ImageUtil.DEFAULT_PREVFIX, ImageUtil.DEFAULT_FORCE);
+                    if (b) {
+                        String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
+                        certFiles.setThumbUrl(thumbUrl);
+                    }*/
                     // 文件表插入文件
                     certFiles.setFileName(fileName);
                     certFiles.setFileUrl(fileUrl);
@@ -475,6 +481,57 @@ public class FileUtil {
                 map.put("verifyFailed", "verifyFailed");
             }*/
             return map;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    public Result itemUploadOne(HttpServletRequest request, HttpServletResponse response, MultipartFile multipartFile) throws Exception {
+        try {
+            request.setCharacterEncoding("utf-8");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("text/html;charset=utf-8");
+            String row = request.getParameter("row");
+            String item = request.getParameter("item");
+            String fileName = multipartFile.getOriginalFilename();
+            String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+            UUID randomUuid = UUID.randomUUID();
+            String filePath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            String fileUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            boolean uploadBoolean = uploadFile(filePath, "", multipartFile);
+            if (!uploadBoolean) {
+                throw new Exception();
+            }
+            CertFiles certFiles = new CertFiles();
+            if (".bmp.jpg.wbmp.jpeg.png.gif".contains(suffix.toLowerCase())) {
+                Thumbnails.of(filePath).size(200, 300).toFile(applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix);
+                String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
+                certFiles.setThumbUrl(thumbUrl);
+            }
+            String osname = System.getProperty("os.name").toLowerCase();
+            if (".mp4".equals(suffix) || ".mov".equals(suffix)) {
+                String uuid = UUID.randomUUID().toString() + ".png";
+                if (osname.startsWith(StateMsg.OS_NAME)) {
+                    FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
+                    certFiles.setThumbUrl("vidopng" + File.separator + uuid);
+                } else {
+                    FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
+                    certFiles.setThumbUrl("vidopng" + File.separator + uuid);
+                }
+            }
+            certFiles.setFileName(fileName);
+            certFiles.setFileUrl(fileUrl);
+            certFiles.setFilePath(filePath);
+            certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+            certFiles.setFileType(suffix);
+            certFiles.setFileSeq("0");
+            certFilesService.insertSelective(certFiles);
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("row", Integer.parseInt(row));
+            map.put("item", Integer.parseInt(item));
+            map.put("fileid", certFiles.getFileId());
+            map.put("thumbUrl", certFiles.getThumbUrl());
+            return ResultUtil.success(map);
         } catch (Exception e) {
             throw new Exception(e);
         }

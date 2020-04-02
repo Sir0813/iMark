@@ -26,7 +26,7 @@ public interface OrgItemsMapper {
      *
      * @return
      */
-    List<OrgItems> itemList(int orgId);
+    List<OrgItems> itemList(Map<String, Object> map);
 
     /**
      * 上架的公正类型
