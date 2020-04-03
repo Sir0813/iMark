@@ -230,6 +230,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             }
             // 审批历史公正意见书 (未盖章)
             map.put("opinionFile", certFiles);
+            map.put("handleUserId", itemApply.getHandleUserid());
             map.put("history", applyHistories);
             map.put("applyid", applyid);
             map.put("itemDesc", orgItems.getItemDesc());

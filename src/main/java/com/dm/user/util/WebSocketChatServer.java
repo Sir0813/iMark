@@ -54,7 +54,6 @@ public class WebSocketChatServer {
             }
             userMap.remove(String.valueOf(userId));
         }
-        //System.out.println("websocket连接成功<" + userId + ">加入!!!");
         logger.info("websocket连接成功<" + userId + ">加入!!!");
     }
 
@@ -107,7 +106,6 @@ public class WebSocketChatServer {
     @OnClose
     public void onClose(Session session, @PathParam("userId") int userId) {
         onlineSessions.remove(String.valueOf(userId));
-        //System.out.println("websocket连接关闭<" + userId + ">退出!!!");
         logger.info("websocket连接关闭<" + userId + ">退出!!!");
     }
 

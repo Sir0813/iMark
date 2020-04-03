@@ -136,31 +136,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
-            <version>1.4.2</version>
-        </dependency>-->
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacpp</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>opencv-platform</artifactId>
-            <version>3.4.1-1.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>ffmpeg-platform</artifactId>
-            <version>3.4.2-1.4.1</version>
-        </dependency>
         <!-- iki jar包 -->
         <dependency>
             <groupId>com.dm.iki</groupId>
@@ -180,18 +155,24 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- 缩略图 -->
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>0.4.8</version>
         </dependency>
+        <!--start:视频获取某一帧的图片-->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>ffmpeg-platform</artifactId>
+            <version>4.0.2-1.4.3</version>
+        </dependency>
+        <!--end:视频获取某一帧的图片-->
         <!-- 排除spring-boot-starter-web中的Tomcat -->
         <!--<dependency>
             <groupId>org.springframework.boot</groupId>

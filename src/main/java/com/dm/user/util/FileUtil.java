@@ -9,11 +9,9 @@ import com.dm.user.mapper.UserMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.CertFilesService;
 import net.coobird.thumbnailator.Thumbnails;
-import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,8 +21,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.List;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -172,14 +172,6 @@ public class FileUtil {
         return ResultUtil.error();
     }
 
-    /**
-     * 文件上传
-     *
-     * @param filePath      文件路径
-     * @param fileName      文件名称
-     * @param multipartFile 文件
-     * @return
-     */
     public static boolean uploadFile(String filePath, String fileName, MultipartFile multipartFile) {
         try {
             File file = new File(filePath + fileName);
@@ -213,66 +205,63 @@ public class FileUtil {
         return sb.toString();
     }
 
-    /**
-     * 获取指定视频的帧并保存为图片至指定目录
-     *
-     * @param videofile 源视频文件路径
-     * @param framefile 截取帧的图片存放路径
-     * @throws Exception
-     */
-    public static void fetchFrame(String videofile, String framefile)
-            throws Exception {
+    public static void fetchFrame(String filePath, String targerFilePath) {
+        Frame frame = null;
+        int flag = 0;
         try {
-            FFmpegFrameGrabber ff = FFmpegFrameGrabber.createDefault(videofile);
-            ff.start();
-            String rotate = ff.getVideoMetadata("rotate");
-            Frame f;
-            int i = 0;
-            while (i < 1) {
-                f = ff.grabImage();
-                opencv_core.IplImage src = null;
-                if (null != rotate && rotate.length() > 1) {
-                    OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-                    src = converter.convert(f);
-                    f = converter.convert(rotate(src, Integer.valueOf(rotate)));
+            FFmpegFrameGrabber fFmpegFrameGrabber = new FFmpegFrameGrabber(filePath);
+            fFmpegFrameGrabber.start();
+            String rotate = fFmpegFrameGrabber.getVideoMetadata("rotate");
+            int ftp = fFmpegFrameGrabber.getLengthInFrames();
+            while (flag <= ftp) {
+                frame = fFmpegFrameGrabber.grabImage();
+                if (frame != null && flag == 5) {
+                    File outPut = new File(targerFilePath);
+                    ImageIO.write(FrameToBufferedImage(frame), "jpg", outPut);
+                    break;
                 }
-                doExecuteFrame(f, framefile);
-                i++;
+                flag++;
             }
-            ff.stop();
+            fFmpegFrameGrabber.stop();
+            fFmpegFrameGrabber.close();
+            if (rotate != null && !rotate.isEmpty()) {
+                int rotate1 = Integer.parseInt(rotate);
+                rotatePhonePhoto(targerFilePath, rotate1);
+            }
+        } catch (Exception E) {
+            E.printStackTrace();
+        }
+    }
+
+    public static String rotatePhonePhoto(String fullPath, int angel) {
+        BufferedImage src;
+        try {
+            src = ImageIO.read(new File(fullPath));
+            int src_width = src.getWidth(null);
+            int src_height = src.getHeight(null);
+            int swidth = src_width;
+            int sheight = src_height;
+            if (angel == 90 || angel == 270) {
+                swidth = src_height;
+                sheight = src_width;
+            }
+            Rectangle rect_des = new Rectangle(new Dimension(swidth, sheight));
+            BufferedImage res = new BufferedImage(rect_des.width, rect_des.height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = res.createGraphics();
+            g2.translate((rect_des.width - src_width) / 2, (rect_des.height - src_height) / 2);
+            g2.rotate(Math.toRadians(angel), src_width / 2, src_height / 2);
+            g2.drawImage(src, null, null);
+            ImageIO.write(res, "jpg", new File(fullPath));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return fullPath;
     }
 
-
-    /**
-     * 旋转角度的
-     *
-     * @param src
-     * @param angle
-     * @return
-     */
-    public static opencv_core.IplImage rotate(opencv_core.IplImage src, int angle) {
-        opencv_core.IplImage img = opencv_core.IplImage.create(src.height(), src.width(), src.depth(), src.nChannels());
-        opencv_core.cvTranspose(src, img);
-        opencv_core.cvFlip(img, img, angle);
-        return img;
-    }
-
-    public static void doExecuteFrame(Frame f, String targerFilePath) {
-        if (null == f || null == f.image) {
-            return;
-        }
+    public static BufferedImage FrameToBufferedImage(Frame frame) {
         Java2DFrameConverter converter = new Java2DFrameConverter();
-        String imageMat = "jpg";
-        BufferedImage bi = converter.getBufferedImage(f);
-        File output = new File(targerFilePath);
-        try {
-            ImageIO.write(bi, imageMat, output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        BufferedImage bufferedImage = converter.getBufferedImage(frame);
+        return bufferedImage;
     }
 
     /**
@@ -515,8 +504,8 @@ public class FileUtil {
                     FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
                     certFiles.setThumbUrl("vidopng" + File.separator + uuid);
                 } else {
-                    FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
-                    certFiles.setThumbUrl("vidopng" + File.separator + uuid);
+                    FileUtil.fetchFrame(filePath, applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + uuid);
+                    certFiles.setThumbUrl(applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + uuid);
                 }
             }
             certFiles.setFileName(fileName);
