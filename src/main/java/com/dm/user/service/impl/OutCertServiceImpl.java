@@ -97,159 +97,139 @@ public class OutCertServiceImpl implements OutCertService {
 
     @Override
     public void save(OutCert outCert) throws Exception {
-        try {
-            outCert.setOutCertTime(new Date());
-            outCert.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-            outCertMapper.insertSelective(outCert);
-            List<Contact> contactList = outCert.getContactList();
-            for (int i = 0; i < contactList.size(); i++) {
-                Contact contact = contactList.get(i);
-                AppUser user = userService.findByName(contact.getContactPhone());
-                PushMsg pm = new PushMsg();
-                pm.setTitle(StateMsg.OUT_CERT_TITLE);
-                pm.setContent(StateMsg.OUT_CERT_CONTENT.replace("outCertName", outCert.getOutCertName()));
-                pm.setCertName(outCert.getOutCertName());
-                pm.setServerTime(DateUtil.getSystemTimeStr());
-                pm.setType("2");
-                pm.setState("0");
-                pm.setIsRead("0");
-                pm.setReceive(contact.getContactPhone());
-                pm.setCertFicateId(String.valueOf(outCert.getOutCertId()));
-                pushMsgService.insertSelective(pm);
-                if (null != user) {
-                    contact.setUserId(user.getUserid());
-                    /*出证通知*/
-                    pm.setUserId(user.getUserid());
-                    String json = new Gson().toJson(pm);
-                    int resout = PushUtil.getInstance().sendToRegistrationId(contact.getContactPhone(), pm.getTitle(), json);
-                    if (resout == 1) {
-                        pm.setState("1");
-                    }
-                    pushMsgService.updateByPrimaryKeySelective(pm);
+        outCert.setOutCertTime(new Date());
+        outCert.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+        outCertMapper.insertSelective(outCert);
+        List<Contact> contactList = outCert.getContactList();
+        for (int i = 0; i < contactList.size(); i++) {
+            Contact contact = contactList.get(i);
+            AppUser user = userService.findByName(contact.getContactPhone());
+            PushMsg pm = new PushMsg();
+            pm.setTitle(StateMsg.OUT_CERT_TITLE);
+            pm.setContent(StateMsg.OUT_CERT_CONTENT.replace("outCertName", outCert.getOutCertName()));
+            pm.setCertName(outCert.getOutCertName());
+            pm.setServerTime(DateUtil.getSystemTimeStr());
+            pm.setType("2");
+            pm.setState("0");
+            pm.setIsRead("0");
+            pm.setReceive(contact.getContactPhone());
+            pm.setCertFicateId(String.valueOf(outCert.getOutCertId()));
+            pushMsgService.insertSelective(pm);
+            if (null != user) {
+                contact.setUserId(user.getUserid());
+                /*出证通知*/
+                pm.setUserId(user.getUserid());
+                String json = new Gson().toJson(pm);
+                int resout = PushUtil.getInstance().sendToRegistrationId(contact.getContactPhone(), pm.getTitle(), json);
+                if (resout == 1) {
+                    pm.setState("1");
                 }
-                contact.setOutCertId(outCert.getOutCertId());
-                contactMapper.insertSelective(contact);
+                pushMsgService.updateByPrimaryKeySelective(pm);
             }
-            outCertMapper.updateByPrimaryKeySelective(outCert);
-        } catch (NumberFormatException e) {
-            throw new Exception(e);
-        } catch (Exception e) {
-            throw new Exception(e);
+            contact.setOutCertId(outCert.getOutCertId());
+            contactMapper.insertSelective(contact);
         }
+        outCertMapper.updateByPrimaryKeySelective(outCert);
     }
 
     @Override
     public PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception {
-        try {
-            List<OutCert> list = new ArrayList<>();
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            String userId = LoginUserHelper.getUserId();
-            String mySend = "mysend";
-            String toMe = "tome";
-            if (mySend.equals(state)) {
-                list = outCertMapper.list(userId);
-            } else if (toMe.equals(state)) {
-                List<Contact> contacts = contactMapper.selectByUserId(userId);
-                if (contacts.size() > 0) {
-                    for (int i = 0; i < contacts.size(); i++) {
-                        Contact contact = contacts.get(i);
-                        OutCert outCert = outCertMapper.selectByPrimaryKey(contact.getOutCertId());
-                        list.add(outCert);
-                    }
+        List<OutCert> list = new ArrayList<>();
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        String userId = LoginUserHelper.getUserId();
+        String mySend = "mysend";
+        String toMe = "tome";
+        if (mySend.equals(state)) {
+            list = outCertMapper.list(userId);
+        } else if (toMe.equals(state)) {
+            List<Contact> contacts = contactMapper.selectByUserId(userId);
+            if (contacts.size() > 0) {
+                for (int i = 0; i < contacts.size(); i++) {
+                    Contact contact = contacts.get(i);
+                    OutCert outCert = outCertMapper.selectByPrimaryKey(contact.getOutCertId());
+                    list.add(outCert);
                 }
-            } else {
-                return null;
             }
-            if (list.size() == 0) {
-                return null;
-            }
-            PageInfo<OutCert> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum() > pageInfo.getPages()) {
-                return null;
-            }
-            return pageInfo;
-        } catch (Exception e) {
-            throw new Exception(e);
+        } else {
+            return null;
         }
+        if (list.size() == 0) {
+            return null;
+        }
+        PageInfo<OutCert> pageInfo = new PageInfo<>(list);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
+        }
+        return pageInfo;
     }
 
     @Override
     public OutCert details(String outCertId) throws Exception {
-        try {
-            OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
-            AppUser user = userService.selectByPrimaryKey(outCert.getUserId());
-            /*发起人*/
-            outCert.setPromoter(user.getUsername());
-            CertFiles certFiles = certFilesService.selectByPrimaryKey(outCert.getFileId());
-            /*存证说明文件*/
-            outCert.setOutCertExplain(certFiles.getFileUrl());
-            String[] split = outCert.getCertId().split(",");
-            List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
-            String filesId = "";
-            for (int i = 0; i < certFicates.size(); i++) {
-                CertFicate certFicate = certFicates.get(i);
-                String certFilesid = certFicate.getCertFilesid();
-                filesId += certFilesid;
-            }
-            String id = distinctStringWithDot(filesId);
-            List<CertFiles> list = certFilesService.findByFilesIds(id.split(","));
-            for (int i = 0; i < list.size(); i++) {
-                CertFiles files = list.get(i);
-                CertFicate certFicate = certFicateService.selectByPrimaryKey(files.getCertId());
-                files.setFileHash(certFicate.getCertName());
-            }
-            outCert.setList(list);
-            return outCert;
-        } catch (NumberFormatException e) {
-            throw new Exception(e);
-        } catch (Exception e) {
-            throw new Exception(e);
+        OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
+        AppUser user = userService.selectByPrimaryKey(outCert.getUserId());
+        /*发起人*/
+        outCert.setPromoter(user.getUsername());
+        CertFiles certFiles = certFilesService.selectByPrimaryKey(outCert.getFileId());
+        /*存证说明文件*/
+        outCert.setOutCertExplain(certFiles.getFileUrl());
+        String[] split = outCert.getCertId().split(",");
+        List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
+        String filesId = "";
+        for (int i = 0; i < certFicates.size(); i++) {
+            CertFicate certFicate = certFicates.get(i);
+            String certFilesid = certFicate.getCertFilesid();
+            filesId += certFilesid;
         }
+        String id = distinctStringWithDot(filesId);
+        List<CertFiles> list = certFilesService.findByFilesIds(id.split(","));
+        for (int i = 0; i < list.size(); i++) {
+            CertFiles files = list.get(i);
+            CertFicate certFicate = certFicateService.selectByPrimaryKey(files.getCertId());
+            files.setFileHash(certFicate.getCertName());
+        }
+        outCert.setList(list);
+        return outCert;
     }
 
     @Override
     public String downZip(String outCertId) throws Exception {
-        try {
-            List<File> fileList = new ArrayList<>();
-            OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
-            /*发起人*/
-            CertFiles certFiles = certFilesService.selectByPrimaryKey(outCert.getFileId());
-            /*出证说明文件*/
-            String filePath = certFiles.getFilePath();
-            fileList.add(new File(filePath));
-            String[] split = outCert.getCertId().split(",");
-            List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
-            String filesId = "";
-            for (int i = 0; i < certFicates.size(); i++) {
-                CertFicate certFicate = certFicates.get(i);
-                String certFilesid = certFicate.getCertFilesid();
-                filesId += certFilesid;
-            }
-            String id = distinctStringWithDot(filesId);
-            List<CertFiles> list = certFilesService.findByFilesIds(id.split(","));
-            for (int i = 0; i < list.size(); i++) {
-                CertFiles files = list.get(i);
-                fileList.add(new File(files.getFilePath()));
-            }
-            String osname = System.getProperty("os.name").toLowerCase();
-            String zipFilePath = "";
-            String downloadPath = "";
-            String path = UUID.randomUUID().toString();
-            if (osname.startsWith(StateMsg.OS_NAME)) {
-                zipFilePath = "D:\\upload";
-                downloadPath = "http://192.168.3.101/img/" + path + ".zip";
-            } else {
-                zipFilePath = "/opt/czt-upload/outcert/zip";
-                downloadPath = baseUrl + "dms/outcert/zip/" + path + ".zip";
-            }
-            boolean b = fileUtil.fileToZip(fileList, zipFilePath, path);
-            if (!b) {
-                throw new Exception("压缩失败");
-            }
-            return downloadPath;
-        } catch (Exception e) {
-            throw new Exception(e);
+        List<File> fileList = new ArrayList<>();
+        OutCert outCert = outCertMapper.selectByPrimaryKey(Integer.parseInt(outCertId));
+        /*发起人*/
+        CertFiles certFiles = certFilesService.selectByPrimaryKey(outCert.getFileId());
+        /*出证说明文件*/
+        String filePath = certFiles.getFilePath();
+        fileList.add(new File(filePath));
+        String[] split = outCert.getCertId().split(",");
+        List<CertFicate> certFicates = certFicateService.selectByCertIDs(split);
+        String filesId = "";
+        for (int i = 0; i < certFicates.size(); i++) {
+            CertFicate certFicate = certFicates.get(i);
+            String certFilesid = certFicate.getCertFilesid();
+            filesId += certFilesid;
         }
+        String id = distinctStringWithDot(filesId);
+        List<CertFiles> list = certFilesService.findByFilesIds(id.split(","));
+        for (int i = 0; i < list.size(); i++) {
+            CertFiles files = list.get(i);
+            fileList.add(new File(files.getFilePath()));
+        }
+        String osname = System.getProperty("os.name").toLowerCase();
+        String zipFilePath = "";
+        String downloadPath = "";
+        String path = UUID.randomUUID().toString();
+        if (osname.startsWith(StateMsg.OS_NAME)) {
+            zipFilePath = "D:\\upload";
+            downloadPath = "http://192.168.3.101/img/" + path + ".zip";
+        } else {
+            zipFilePath = "/opt/czt-upload/outcert/zip";
+            downloadPath = baseUrl + "dms/outcert/zip/" + path + ".zip";
+        }
+        boolean b = fileUtil.fileToZip(fileList, zipFilePath, path);
+        if (!b) {
+            throw new Exception("压缩失败");
+        }
+        return downloadPath;
     }
 
     private static String distinctStringWithDot(String str) {

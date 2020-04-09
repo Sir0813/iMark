@@ -37,38 +37,26 @@ public class PushMsgServiceImpl implements PushMsgService {
 
     @Override
     public void updateByPrimaryKeySelective(PushMsg pm) throws Exception {
-        try {
-            pushMsgMapper.updateByPrimaryKeySelective(pm);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        pushMsgMapper.updateByPrimaryKeySelective(pm);
     }
 
     @Override
     public PageInfo<PushMsg> historyInfo(Page<PushMsg> page) throws Exception {
-        try {
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            List<PushMsg> list = pushMsgMapper.historyInfo(LoginUserHelper.getUserId());
-            if (list.size() == 0) {
-                return null;
-            }
-            PageInfo<PushMsg> pageInfo = new PageInfo<>(list);
-            if (page.getPageNum() > pageInfo.getPages()) {
-                return null;
-            }
-            return pageInfo;
-        } catch (Exception e) {
-            throw new Exception(e);
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        List<PushMsg> list = pushMsgMapper.historyInfo(LoginUserHelper.getUserId());
+        if (list.size() == 0) {
+            return null;
         }
+        PageInfo<PushMsg> pageInfo = new PageInfo<>(list);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
+        }
+        return pageInfo;
     }
 
     @Override
     public void readInfo(String pushId) throws Exception {
-        try {
-            pushMsgMapper.updateByRead(pushId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        pushMsgMapper.updateByRead(pushId);
     }
 
     @Override

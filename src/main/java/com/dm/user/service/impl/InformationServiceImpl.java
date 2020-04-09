@@ -58,161 +58,129 @@ public class InformationServiceImpl implements InformationService {
 
     @Override
     public Result sendEmailCode(Map<String, Object> map) throws Exception {
-        try {
-            AppUser email = userService.selectByEamil(map.get("email").toString());
-            if (null != email) {
-                return ResultUtil.info("email.code.have.code", "email.code.have.msg");
-            }
-            Information info = new Information();
-            long randomNumber = RandomCode.generateRandomNumber(6);
-            String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
-            boolean sendEmail = sendMailSmtp.sendEmail(map.get("email").toString(), replaceContent, subject);
-            if (!sendEmail) {
-                return ResultUtil.error();
-            }
-            Date date = new Date();
-            info.setInfoCode(String.valueOf(randomNumber));
-            info.setInfoMsg(replaceContent);
-            info.setInfoPhone(map.get("email").toString());
-            info.setInfoSenddate(date);
-            info.setInfoUser(LoginUserHelper.getUserName());
-            info.setInfoExpireddate(new Date(date.getTime() + expired));
-            info.setInfoState("0");
-            informationMapper.insertSelective(info);
-            return ResultUtil.success();
-        } catch (Exception e) {
-            throw new Exception(e);
+        AppUser email = userService.selectByEamil(map.get("email").toString());
+        if (null != email) {
+            return ResultUtil.info("email.code.have.code", "email.code.have.msg");
         }
+        Information info = new Information();
+        long randomNumber = RandomCode.generateRandomNumber(6);
+        String replaceContent = emailContent.replace("$code$", String.valueOf(randomNumber));
+        boolean sendEmail = sendMailSmtp.sendEmail(map.get("email").toString(), replaceContent, subject);
+        if (!sendEmail) {
+            return ResultUtil.error();
+        }
+        Date date = new Date();
+        info.setInfoCode(String.valueOf(randomNumber));
+        info.setInfoMsg(replaceContent);
+        info.setInfoPhone(map.get("email").toString());
+        info.setInfoSenddate(date);
+        info.setInfoUser(LoginUserHelper.getUserName());
+        info.setInfoExpireddate(new Date(date.getTime() + expired));
+        info.setInfoState("0");
+        informationMapper.insertSelective(info);
+        return ResultUtil.success();
     }
 
     @Override
     public Result bindEmail(Map<String, Object> map) throws Exception {
-        try {
-            Information info = informationMapper.selectByPhone(map);
-            Result result = checkVeriCode(info, map);
-            if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
-                return result;
-            }
-            AppUser user = userService.selectByEamil(map.get("email").toString());
-            if (null != user) {
-                return ResultUtil.info("email.code.have.code", "email.code.have.msg");
-            }
-            AppUser u = userService.findByName(LoginUserHelper.getUserName());
-            u.setEmail(map.get("email").toString());
-            userService.updateByPrimaryKeySelective(u);
-            info.setInfoState("1");
-            informationMapper.updateByPrimaryKeySelective(info);
-            return ResultUtil.success();
-        } catch (Exception e) {
-            throw new Exception(e);
+        Information info = informationMapper.selectByPhone(map);
+        Result result = checkVeriCode(info, map);
+        if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+            return result;
         }
+        AppUser user = userService.selectByEamil(map.get("email").toString());
+        if (null != user) {
+            return ResultUtil.info("email.code.have.code", "email.code.have.msg");
+        }
+        AppUser u = userService.findByName(LoginUserHelper.getUserName());
+        u.setEmail(map.get("email").toString());
+        userService.updateByPrimaryKeySelective(u);
+        info.setInfoState("1");
+        informationMapper.updateByPrimaryKeySelective(info);
+        return ResultUtil.success();
     }
 
     @Override
     public Result checkCode(Map<String, Object> map) throws Exception {
-        try {
-            map.put("email", map.get("oldPhone").toString());
-            Information info = informationMapper.selectByPhone(map);
-            Result result = checkVeriCode(info, map);
-            if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
-                return result;
-            }
-            info.setInfoState("1");
-            informationMapper.updateByPrimaryKeySelective(info);
-            return ResultUtil.success();
-        } catch (Exception e) {
-            throw new Exception(e);
+        map.put("email", map.get("oldPhone").toString());
+        Information info = informationMapper.selectByPhone(map);
+        Result result = checkVeriCode(info, map);
+        if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+            return result;
         }
+        info.setInfoState("1");
+        informationMapper.updateByPrimaryKeySelective(info);
+        return ResultUtil.success();
     }
 
     @Override
     public Result changePhone(Map<String, Object> map) throws Exception {
-        try {
-            AppUser user = userService.findByName(map.get("newPhone").toString());
-            if (null != user) {
-                return ResultUtil.info("register.has.name.code", "register.has.name.msg");
-            }
-            map.put("email", map.get("newPhone").toString());
-            Information info = informationMapper.selectByPhone(map);
-            Result result = checkVeriCode(info, map);
-            if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
-                return result;
-            }
-            AppUser u = userService.findByName(LoginUserHelper.getUserName());
-            u.setUsername(map.get("newPhone").toString());
-            userService.updateByPrimaryKeySelective(u);
-            info.setInfoState("1");
-            informationMapper.updateByPrimaryKeySelective(info);
-            /*待自己确认 需要更新注册用户ID*/
-            List<CertConfirm> list = certConfirmService.selectByPhone(u.getUsername());
-            if (list.size() > 0) {
-                list.forEach(cc -> {
-                    cc.setUserId(u.getUserid());
-                    certConfirmService.updateByPrimaryKeySelective(cc);
-                });
-            }
-            /*出证发送给我的添加用户ID*/
-            List<Contact> contacts = contactMapper.selectByPhone(u.getUsername());
-            if (contacts.size() > 0) {
-                contacts.forEach(contact -> {
-                    contact.setUserId(u.getUserid());
-                    contactMapper.updateByPrimaryKey(contact);
-                });
-            }
-            /*历史消息添加用户ID*/
-            List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(u.getUsername());
-            if (pushMsgs.size() > 0) {
-                for (int i = 0; i < pushMsgs.size(); i++) {
-                    PushMsg pushMsg = pushMsgs.get(i);
-                    pushMsg.setUserId(u.getUserid());
-                    pushMsgService.updateByPrimaryKeySelective(pushMsg);
-                }
-            }
-            return ResultUtil.success();
-        } catch (Exception e) {
-            throw new Exception(e);
+        AppUser user = userService.findByName(map.get("newPhone").toString());
+        if (null != user) {
+            return ResultUtil.info("register.has.name.code", "register.has.name.msg");
         }
+        map.put("email", map.get("newPhone").toString());
+        Information info = informationMapper.selectByPhone(map);
+        Result result = checkVeriCode(info, map);
+        if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
+            return result;
+        }
+        AppUser u = userService.findByName(LoginUserHelper.getUserName());
+        u.setUsername(map.get("newPhone").toString());
+        userService.updateByPrimaryKeySelective(u);
+        info.setInfoState("1");
+        informationMapper.updateByPrimaryKeySelective(info);
+        /*待自己确认 需要更新注册用户ID*/
+        List<CertConfirm> list = certConfirmService.selectByPhone(u.getUsername());
+        if (list.size() > 0) {
+            list.forEach(cc -> {
+                cc.setUserId(u.getUserid());
+                certConfirmService.updateByPrimaryKeySelective(cc);
+            });
+        }
+        /*出证发送给我的添加用户ID*/
+        List<Contact> contacts = contactMapper.selectByPhone(u.getUsername());
+        if (contacts.size() > 0) {
+            contacts.forEach(contact -> {
+                contact.setUserId(u.getUserid());
+                contactMapper.updateByPrimaryKey(contact);
+            });
+        }
+        /*历史消息添加用户ID*/
+        List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(u.getUsername());
+        if (pushMsgs.size() > 0) {
+            for (int i = 0; i < pushMsgs.size(); i++) {
+                PushMsg pushMsg = pushMsgs.get(i);
+                pushMsg.setUserId(u.getUserid());
+                pushMsgService.updateByPrimaryKeySelective(pushMsg);
+            }
+        }
+        return ResultUtil.success();
     }
 
     @Override
     public void insertSelective(Information info) throws Exception {
-        try {
-            informationMapper.insertSelective(info);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        informationMapper.insertSelective(info);
     }
 
     @Override
     public Information selectByPhone(Map<String, Object> map) throws Exception {
-        try {
-            return informationMapper.selectByPhone(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return informationMapper.selectByPhone(map);
     }
 
     @Override
     public void updateByPrimaryKeySelective(Information information) throws Exception {
-        try {
-            informationMapper.updateByPrimaryKeySelective(information);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        informationMapper.updateByPrimaryKeySelective(information);
     }
 
     private Result checkVeriCode(Information info, Map<String, Object> map) throws Exception {
-        try {
-            if (null == info || !map.get("veriCode").toString().equals(info.getInfoCode())) {
-                return ResultUtil.info("email.code.error.code", "email.code.error.msg");
-            }
-            Date date = new Date();
-            if (date.after(info.getInfoExpireddate())) {
-                return ResultUtil.info("email.code.expire.code", "email.code.expire.msg");
-            }
-            return ResultUtil.success();
-        } catch (Exception e) {
-            throw new Exception(e);
+        if (null == info || !map.get("veriCode").toString().equals(info.getInfoCode())) {
+            return ResultUtil.info("email.code.error.code", "email.code.error.msg");
         }
+        Date date = new Date();
+        if (date.after(info.getInfoExpireddate())) {
+            return ResultUtil.info("email.code.expire.code", "email.code.expire.msg");
+        }
+        return ResultUtil.success();
     }
 }

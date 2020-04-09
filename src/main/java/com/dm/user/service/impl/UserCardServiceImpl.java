@@ -27,72 +27,59 @@ public class UserCardServiceImpl implements UserCardService {
 
     @Override
     public Result authentication(UserCard userCard) throws Exception {
-        try {
-            UserCard uc = userCardMapper.selectByCardNumber(userCard.getCardNumber());
-            if (null != uc) {
-                return ResultUtil.info("card.code.error.code", "card.code.error.msg");
-            }
-            // 实名认证成功
-            if (userCard.getCardid() != null) {
-                if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
-                    userCard.setRealTime(new Date());
-                }
-                userCardMapper.updateByPrimaryKeySelective(userCard);
-            } else {
-                userCard.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
-                userCard.setPostTime(new Date());
-                userCardMapper.insertSelective(userCard);
-            }
-            return ResultUtil.success(userCard.getCardid());
-        } catch (NumberFormatException e) {
-            throw new Exception(e);
+        UserCard uc = userCardMapper.selectByCardNumber(userCard.getCardNumber());
+        if (null != uc) {
+            return ResultUtil.info("card.code.error.code", "card.code.error.msg");
         }
+        if (userCard.getCardid() != null) {
+            if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
+                userCard.setRealTime(new Date());
+            }
+            userCardMapper.updateByPrimaryKeySelective(userCard);
+        } else {
+            userCard.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
+            userCard.setPostTime(new Date());
+            userCardMapper.insertSelective(userCard);
+        }
+        return ResultUtil.success(userCard.getCardid());
     }
 
     @Override
     public Result realInfo() throws Exception {
-        try {
-            Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("userid", LoginUserHelper.getUserId());
-            UserCard userCard = userCardMapper.selectByUserId(map);
-            if (null == userCard) {
-                return ResultUtil.success();
-            }
-            // 身份证号保密显示
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        map.put("userid", LoginUserHelper.getUserId());
+        UserCard userCard = userCardMapper.selectByUserId(map);
+        if (null == userCard) {
+            return ResultUtil.success();
+        }
+        // 身份证号保密显示
 			/*String cardNumber = userCard.getCardNumber();
 			String starString = ShaUtil.getStarString(cardNumber, 1, cardNumber.length() - 1);
 			userCard.setCardNumber(starString);*/
-            return ResultUtil.success(userCard);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return ResultUtil.success(userCard);
     }
 
     @Override
     public UserCard selectByUserId(String userId, String realState) throws Exception {
-        try {
-            Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("userid", userId);
-            map.put("realState", realState);
-            return userCardMapper.selectByUserId(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        map.put("userid", userId);
+        map.put("realState", realState);
+        return userCardMapper.selectByUserId(map);
     }
 
     @Override
     public void updateRealState() throws Exception {
-        try {
-            Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("userid", LoginUserHelper.getUserId());
-            UserCard userCard = userCardMapper.selectByUserId(map);
-            if (null != userCard) {
-                userCard.setRealState(UserCardEnum.NOT_REAL.getCode());
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        map.put("userid", LoginUserHelper.getUserId());
+        UserCard userCard = userCardMapper.selectByUserId(map);
+        if (null != userCard) {
+            if (userCard.getRealState().equals(UserCardEnum.REAL_SUCCESS.getCode())) {
+                userCard.setRealState(UserCardEnum.IS_REAL_SUCCESS.getCode());
                 userCard.setRealTime(null);
-                userCardMapper.updateByPrimaryKey(userCard);
+            } else {
+                return;
             }
-        } catch (Exception e) {
-            throw new Exception(e);
         }
+        userCardMapper.updateByPrimaryKey(userCard);
     }
 }

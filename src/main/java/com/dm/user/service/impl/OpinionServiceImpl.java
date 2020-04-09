@@ -26,13 +26,9 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public void opinionSubmit(Opinion opinion) throws Exception {
-        try {
-            opinion.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-            opinion.setPostTime(new Date());
-            opinionMapper.insertSelective(opinion);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        opinion.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+        opinion.setPostTime(new Date());
+        opinionMapper.insertSelective(opinion);
     }
 
 }

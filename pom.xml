@@ -146,7 +146,7 @@
         <dependency>
             <groupId>com.dm.app.tid</groupId>
             <artifactId>tid-sdk-java</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.9</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.sf.json-lib/json-lib -->
         <dependency>

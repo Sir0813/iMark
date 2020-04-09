@@ -18,39 +18,21 @@ public class WfInstanceServiceImpl implements WfInstanceService {
 
     @Override
     public void insert(WfInstance wfInstance) throws Exception {
-        try {
-            wfInstanceMapper.insertSelective(wfInstance);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        wfInstanceMapper.insertSelective(wfInstance);
     }
 
     @Override
     public WfInstance selectById(String wfInstanceId) throws Exception {
-        try {
-            return wfInstanceMapper.selectByPrimaryKey(Integer.parseInt(wfInstanceId));
-        } catch (NumberFormatException e) {
-            throw new Exception(e);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return wfInstanceMapper.selectByPrimaryKey(Integer.parseInt(wfInstanceId));
     }
 
     @Override
     public void updateById(WfInstance wfInstance) throws Exception {
-        try {
-            wfInstanceMapper.updateByPrimaryKeySelective(wfInstance);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        wfInstanceMapper.updateByPrimaryKeySelective(wfInstance);
     }
 
     @Override
     public void updateByInstanceId(Map<String, Object> map) throws Exception {
-        try {
-            wfInstanceMapper.updateByInstanceId(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        wfInstanceMapper.updateByInstanceId(map);
     }
 }

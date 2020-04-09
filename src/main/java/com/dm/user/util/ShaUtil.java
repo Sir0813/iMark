@@ -2,12 +2,10 @@ package com.dm.user.util;
 
 import org.bouncycastle.util.encoders.Base64;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
 /**
  * @author cui
@@ -104,6 +102,14 @@ public class ShaUtil {
         }
         return content.substring(0, begin) + starStr + content.substring(end, content.length());
 
+    }
+
+    public static String readProperty(String key) throws IOException {
+        Properties properties = new Properties();
+        InputStream inputStream = Object.class.getResourceAsStream("/tid.properties");
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "GBK");
+        properties.load(inputStreamReader);
+        return properties.get(key).toString();
     }
 
 }

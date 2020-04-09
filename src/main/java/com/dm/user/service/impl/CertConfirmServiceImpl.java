@@ -23,87 +23,51 @@ public class CertConfirmServiceImpl implements CertConfirmService {
 
     @Override
     public void deleteByCertId(Integer certId) throws Exception {
-        try {
-            certConfirmMapper.deleteByCertId(certId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certConfirmMapper.deleteByCertId(certId);
     }
 
     @Override
     public void insertSelective(CertConfirm certConfirm) throws Exception {
-        try {
-            certConfirmMapper.insertSelective(certConfirm);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certConfirmMapper.insertSelective(certConfirm);
     }
 
     @Override
     public List<CertConfirm> selectByCertId(int parseInt) throws Exception {
-        try {
-            return certConfirmMapper.selectByCertId(parseInt);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certConfirmMapper.selectByCertId(parseInt);
     }
 
     @Override
     public List<CertConfirm> selectByUserId(int parseInt) throws Exception {
-        try {
-            return certConfirmMapper.selectByUserId(parseInt);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certConfirmMapper.selectByUserId(parseInt);
     }
 
     @Override
     public List<CertConfirm> selectByuserIdAndState(String userId, String s) throws Exception {
-        try {
-            return certConfirmMapper.selectByuserIdAndState(userId, s);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certConfirmMapper.selectByuserIdAndState(userId, s);
     }
 
     @Override
     public void updateByCertId(Map<String, Object> map) throws Exception {
-        try {
-            map.put("returnConfirm", ConfirmEnum.RETURN_CONFIRM.getCode());
-            map.put("originator", ConfirmEnum.ORIGINATOR.getCode());
-            certConfirmMapper.updateByCertId(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        map.put("returnConfirm", ConfirmEnum.RETURN_CONFIRM.getCode());
+        map.put("originator", ConfirmEnum.ORIGINATOR.getCode());
+        certConfirmMapper.updateByCertId(map);
     }
 
     @Override
     public void updateConfirmState(Map<String, Object> map) throws Exception {
-        try {
-            map.put("isConfirm", ConfirmEnum.IS_CONFIRM.getCode());
-            certConfirmMapper.updateConfirmState(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        map.put("isConfirm", ConfirmEnum.IS_CONFIRM.getCode());
+        certConfirmMapper.updateConfirmState(map);
     }
 
     @Override
     public List<CertConfirm> selectByState(Map<String, Object> map) throws Exception {
-        try {
-            map.put("noConfirm", ConfirmEnum.NO_CONFIRM.getCode());
-            return certConfirmMapper.selectByState(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        map.put("noConfirm", ConfirmEnum.NO_CONFIRM.getCode());
+        return certConfirmMapper.selectByState(map);
     }
 
     @Override
     public List<CertConfirm> selectByPhone(String username) throws Exception {
-        try {
-            return certConfirmMapper.selectByPhone(username);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certConfirmMapper.selectByPhone(username);
     }
 
     @Override

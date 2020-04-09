@@ -18,11 +18,7 @@ public class ItemRequeredServiceImpl implements ItemRequeredService {
 
     @Override
     public List<ItemRequered> selectByItemId(int itemId) throws Exception {
-        try {
-            List<ItemRequered> list = itemRequeredMapper.selectByItemId(itemId);
-            return list;
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        List<ItemRequered> list = itemRequeredMapper.selectByItemId(itemId);
+        return list;
     }
 }

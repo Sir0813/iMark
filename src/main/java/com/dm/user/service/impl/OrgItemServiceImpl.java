@@ -41,89 +41,67 @@ public class OrgItemServiceImpl implements OrgItemService {
 
     @Override
     public OrgItems selectByPrimaryKey(Integer itemid) throws Exception {
-        try {
-            return orgItemsMapper.selectByPrimaryKey(itemid);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return orgItemsMapper.selectByPrimaryKey(itemid);
     }
 
     @Override
     public PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception {
-        try {
-            Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("orgId", orgId);
-            map.put("itemName", itemName);
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            List<OrgItems> orgItemsList = orgItemsMapper.itemList(map);
-            PageInfo<OrgItems> pageInfo = new PageInfo<>(orgItemsList);
-            if (page.getPageNum() > pageInfo.getPages()) {
-                return null;
-            }
-            return pageInfo;
-        } catch (Exception e) {
-            throw new Exception(e);
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        map.put("orgId", orgId);
+        map.put("itemName", itemName);
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        List<OrgItems> orgItemsList = orgItemsMapper.itemList(map);
+        PageInfo<OrgItems> pageInfo = new PageInfo<>(orgItemsList);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
         }
+        return pageInfo;
     }
 
     @Override
     public Map<String, Object> content(int itemId) throws Exception {
-        try {
-            Map<String, Object> map = new LinkedHashMap<>(16);
-            Map<String, Object> userMap = new LinkedHashMap<>(16);
-            OrgItems orgItems = orgItemsMapper.selectByPrimaryKey(itemId);
-            List<ItemRequered> list = itemRequeredService.selectByItemId(itemId);
-            UserCard userCard = userCardService.selectByUserId(LoginUserHelper.getUserId(), "2");
-            AppUser appUser = userService.selectByPrimaryKey(Integer.valueOf(LoginUserHelper.getUserId()));
-            if (null == userCard) {
-                throw new Exception(StateMsg.NOTREAL);
-            }
-            if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
-                // 固定价格计费 返回本次公正所需费用
-                map.put("price", orgItems.getPrice());
-            } else {
-                // 按标的 或公正人员自定义先缴纳最低价格
-                map.put("price", orgItems.getLowestPrice());
-            }
-            userMap.put("userName", userCard.getRealName());
-            userMap.put("userPhone", LoginUserHelper.getUserName());
-            userMap.put("userCard", userCard.getCardNumber());
-            map.put("valuation", orgItems.getValuation());
-            map.put("itemDesc", orgItems.getItemDesc());
-            map.put("itemRequered", list);
-            map.put("userInfo", userMap);
-            map.put("address", StringUtils.isBlank(appUser.getAddress()) ? "" : appUser.getAddress());
-            return map;
-        } catch (Exception e) {
-            throw new Exception(e);
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        Map<String, Object> userMap = new LinkedHashMap<>(16);
+        OrgItems orgItems = orgItemsMapper.selectByPrimaryKey(itemId);
+        List<ItemRequered> list = itemRequeredService.selectByItemId(itemId);
+        UserCard userCard = userCardService.selectByUserId(LoginUserHelper.getUserId(), "2");
+        AppUser appUser = userService.selectByPrimaryKey(Integer.valueOf(LoginUserHelper.getUserId()));
+        if (null == userCard) {
+            throw new Exception(StateMsg.NOTREAL);
         }
+        if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
+            // 固定价格计费 返回本次公正所需费用
+            map.put("price", orgItems.getPrice());
+        } else {
+            // 按标的 或公正人员自定义先缴纳最低价格
+            map.put("price", orgItems.getLowestPrice());
+        }
+        userMap.put("userName", userCard.getRealName());
+        userMap.put("userPhone", LoginUserHelper.getUserName());
+        userMap.put("userCard", userCard.getCardNumber());
+        map.put("valuation", orgItems.getValuation());
+        map.put("itemDesc", orgItems.getItemDesc());
+        map.put("itemRequered", list);
+        map.put("userInfo", userMap);
+        map.put("address", StringUtils.isBlank(appUser.getAddress()) ? "" : appUser.getAddress());
+        return map;
     }
 
     @Override
     public Result typeList() throws Exception {
-        try {
-            OrgUser orgUser = orgUserService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-            if (null != orgUser) {
-                Map<String, Object> map = new LinkedHashMap<>(16);
-                map.put("status", OrgItemEnum.SHELVES.getCode());
-                map.put("orgId", orgUser.getOrgid());
-                List<OrgItems> orgItemsList = orgItemsMapper.selectByOrgIdAndStatus(map);
-                return ResultUtil.success(orgItemsList);
-            }
-            return null;
-        } catch (NumberFormatException e) {
-            throw new Exception(e);
-        } catch (Exception e) {
-            throw new Exception(e);
+        OrgUser orgUser = orgUserService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+        if (null != orgUser) {
+            Map<String, Object> map = new LinkedHashMap<>(16);
+            map.put("status", OrgItemEnum.SHELVES.getCode());
+            map.put("orgId", orgUser.getOrgid());
+            List<OrgItems> orgItemsList = orgItemsMapper.selectByOrgIdAndStatus(map);
+            return ResultUtil.success(orgItemsList);
         }
+        return null;
     }
 
     @Override
     public List<OrgItems> selectByOrgIdAndStatus(Map<String, Object> map) throws Exception {
-        try {
-            return orgItemsMapper.selectByOrgIdAndStatus(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return orgItemsMapper.selectByOrgIdAndStatus(map);
     }
 }

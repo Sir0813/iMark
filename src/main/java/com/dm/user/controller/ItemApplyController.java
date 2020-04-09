@@ -29,13 +29,13 @@ public class ItemApplyController extends BaseController {
     @Autowired
     private ItemApplyService itemApplyService;
 
-    @ApiOperation(value = "用户办理公正申请", response = ResultUtil.class)
+    @ApiOperation(value = "申请公正", response = ResultUtil.class)
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     public Result insert(@RequestBody ItemApply itemApply) throws Exception {
         return itemApplyService.insert(itemApply);
     }
 
-    @ApiOperation(value = "公正改为草稿", response = ResultUtil.class)
+    @ApiOperation(value = "公正申请改为草稿", response = ResultUtil.class)
     @RequestMapping(value = "/updateToDraft", method = RequestMethod.POST)
     public Result updateToDraft(@RequestBody ItemApply itemApply) throws Exception {
         return itemApplyService.updateToDraft(itemApply);
@@ -47,20 +47,20 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.submitApply(itemApply);
     }
 
-    @ApiOperation(value = "支付尾款提交", response = ResultUtil.class)
+    @ApiOperation(value = "支付尾款", response = ResultUtil.class)
     @RequestMapping(value = "/payBalance", method = RequestMethod.POST)
     public Result payBalance(@RequestBody ItemApply itemApply) throws Exception {
         return itemApplyService.payBalance(itemApply);
     }
 
-    @ApiOperation(value = "用户已经提交的公正申请列表", response = ResultUtil.class)
+    @ApiOperation(value = "公正申请列表", response = ResultUtil.class)
     @RequestMapping(value = "/list/{pageNum}", method = RequestMethod.GET)
     public Result list(@PathVariable int pageNum) throws Exception {
         PageInfo<ItemApply> itemApplyList = itemApplyService.list(pageNum);
         return ResultUtil.success(itemApplyList);
     }
 
-    @ApiOperation(value = "用户已经提交的公正申请详情及办理进度", response = ResultUtil.class)
+    @ApiOperation(value = "详情", response = ResultUtil.class)
     @RequestMapping(value = "/detail/{applyid}", method = RequestMethod.GET)
     public Result detail(@PathVariable int applyid) throws Exception {
         Map<String, Object> map = itemApplyService.detail(applyid);

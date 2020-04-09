@@ -21,74 +21,42 @@ public class CertFilesServiceImpl implements CertFilesService {
 
     @Override
     public void insertSelective(CertFiles certFiles) throws Exception {
-        try {
-            certFilesMapper.insertSelective(certFiles);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certFilesMapper.insertSelective(certFiles);
     }
 
     @Override
     public void updateByPrimaryKeySelective(CertFiles cf) throws Exception {
-        try {
-            certFilesMapper.updateByPrimaryKeySelective(cf);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certFilesMapper.updateByPrimaryKeySelective(cf);
     }
 
     @Override
     public void deleteByCertId(Integer certId) throws Exception {
-        try {
-            certFilesMapper.deleteByCertId(certId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certFilesMapper.deleteByCertId(certId);
     }
 
     @Override
     public List<CertFiles> findByFilesIds(String[] filesId) throws Exception {
-        try {
-            return certFilesMapper.findByFilesIds(filesId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certFilesMapper.findByFilesIds(filesId);
     }
 
     @Override
     public List<CertFiles> findByFilesIds2(String[] filesId) throws Exception {
-        try {
-            return certFilesMapper.findByFilesIds2(filesId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certFilesMapper.findByFilesIds2(filesId);
     }
 
     @Override
     public void deleteByPrimaryKey(Integer fileId) throws Exception {
-        try {
-            certFilesMapper.deleteByPrimaryKey(fileId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        certFilesMapper.deleteByPrimaryKey(fileId);
     }
 
     @Override
     public CertFiles selectByPrimaryKey(Integer fileId) throws Exception {
-        try {
-            return certFilesMapper.selectByPrimaryKey(fileId);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certFilesMapper.selectByPrimaryKey(fileId);
     }
 
     @Override
     public CertFiles selectByUrl(String frontPath) throws Exception {
-        try {
-            return certFilesMapper.selectByUrl(frontPath);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return certFilesMapper.selectByUrl(frontPath);
     }
 
 }

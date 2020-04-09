@@ -18,30 +18,18 @@ public class WfItemNodeServiceImpl implements WfItemNodeService {
 
     @Override
     public WfItemNode selectByItemId(Integer itemid) throws Exception {
-        try {
-            return wfItemNodeMapper.selectByItemId(itemid.toString());
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return wfItemNodeMapper.selectByItemId(itemid.toString());
     }
 
     @Override
     public WfItemNode selectByItemIdDesc(Integer itemid) throws Exception {
-        try {
-            return wfItemNodeMapper.selectByItemIdDesc(itemid.toString());
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return wfItemNodeMapper.selectByItemIdDesc(itemid.toString());
     }
 
     @Override
     public WfItemNode selectById(Integer nodeid) throws Exception {
-        try {
-            WfItemNode wfItemNode = wfItemNodeMapper.selectByPrimaryKey(nodeid);
-            return wfItemNode;
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        WfItemNode wfItemNode = wfItemNodeMapper.selectByPrimaryKey(nodeid);
+        return wfItemNode;
     }
 
     @Override

@@ -22,35 +22,23 @@ public class OrgServiceImpl implements OrgService {
 
     @Override
     public PageInfo<Org> orgList(Page<Org> page) throws Exception {
-        try {
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            List<Org> orgList = orgMapper.orgList();
-            PageInfo<Org> pageInfo = new PageInfo<>(orgList);
-            if (page.getPageNum() > pageInfo.getPages()) {
-                return null;
-            }
-            return pageInfo;
-        } catch (Exception e) {
-            throw new Exception(e);
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        List<Org> orgList = orgMapper.orgList();
+        PageInfo<Org> pageInfo = new PageInfo<>(orgList);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
         }
+        return pageInfo;
     }
 
     @Override
     public String notice(int orgId) throws Exception {
-        try {
-            Org org = orgMapper.selectByPrimaryKey(orgId);
-            return org.getServeDesc();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        Org org = orgMapper.selectByPrimaryKey(orgId);
+        return org.getServeDesc();
     }
 
     @Override
     public Org selectById(Integer orgid) throws Exception {
-        try {
-            return orgMapper.selectByPrimaryKey(orgid);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        return orgMapper.selectByPrimaryKey(orgid);
     }
 }

@@ -2,7 +2,6 @@ package com.dm.user.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dm.cid.sdk.service.CIDService;
-import com.dm.fchain.sdk.exception.GlobalException;
 import com.dm.fchain.sdk.helper.CryptoHelper;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.CertFiles;
@@ -39,41 +38,35 @@ public class CertVerifyServiceImpl implements CertVerifyService {
 
     @Override
     public boolean verifyCert(CertFicate certFicate) throws Exception {
-        try {
-            CertFicate cf = certFicateService.selectByIdAndState(certFicate.getCertId());
-            String[] filesId = certFicate.getCertFilesid().split(",");
-            List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
-            if (null == cf) {
+        CertFicate cf = certFicateService.selectByIdAndState(certFicate.getCertId());
+        String[] filesId = certFicate.getCertFilesid().split(",");
+        List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
+        if (null == cf) {
+            deleteCertFile(certFiles);
+            return false;
+        }
+        String[] ids = cf.getCertFilesid().split(",");
+        List<CertFiles> fileList = certFilesService.findByFilesIds(ids);
+        StringBuilder fhash = new StringBuilder();
+        String chash = "";
+        for (CertFiles files : fileList) {
+            fhash.append(files.getFileHash() + ",");
+        }
+        for (CertFiles files : certFiles) {
+            chash = ShaUtil.getMD5(files.getFilePath());
+            if (!fhash.toString().contains(chash)) {
                 deleteCertFile(certFiles);
                 return false;
             }
-            String[] ids = cf.getCertFilesid().split(",");
-            List<CertFiles> fileList = certFilesService.findByFilesIds(ids);
-            StringBuilder fhash = new StringBuilder();
-            String chash = "";
-            for (CertFiles files : fileList) {
-                fhash.append(files.getFileHash() + ",");
-            }
-            for (CertFiles files : certFiles) {
-                chash = ShaUtil.getMD5(files.getFilePath());
-                if (!fhash.toString().contains(chash)) {
-                    deleteCertFile(certFiles);
-                    return false;
-                }
-            }
-            deleteCertFile(certFiles);
-            String realHash = CryptoHelper.hash(cf.getCertHash() + cf.getCertId());
-            String result = cidService.query(realHash);
-            JSONObject jsonObject = JSONObject.parseObject(result);
-            if ("200".equals(jsonObject.get("code").toString()) && "Success".equals(jsonObject.get("msg").toString())) {
-                return true;
-            }
-            return false;
-        } catch (GlobalException e) {
-            throw new Exception(e.getMessage());
-        } catch (Exception e) {
-            throw new Exception(e);
         }
+        deleteCertFile(certFiles);
+        String realHash = CryptoHelper.hash(cf.getCertHash() + cf.getCertId());
+        String result = cidService.query(realHash);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        if ("200".equals(jsonObject.get("code").toString()) && "Success".equals(jsonObject.get("msg").toString())) {
+            return true;
+        }
+        return false;
     }
 
     private void deleteCertFile(List<CertFiles> certFiles) throws Exception {

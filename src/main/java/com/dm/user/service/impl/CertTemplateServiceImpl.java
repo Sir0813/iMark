@@ -28,31 +28,19 @@ public class CertTemplateServiceImpl implements CertTemplateService {
 
     @Override
     public Result list() throws Exception {
-        try {
-            List<CertTemplate> templateList = certTemplateMapper.list();
-            return ResultUtil.success(templateList);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        List<CertTemplate> templateList = certTemplateMapper.list();
+        return ResultUtil.success(templateList);
     }
 
     @Override
     public CertTemplate getByTemplateType(String type) throws Exception {
-        try {
-            CertTemplate ct = certTemplateMapper.getByTemplateType(type);
-            return ct;
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        CertTemplate ct = certTemplateMapper.getByTemplateType(type);
+        return ct;
     }
 
     @Override
     public String fileEdit(String certId) throws Exception {
-        try {
-            TemFile tf = temFileMapper.selectByCertId(certId);
-            return tf.getTemFileText();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        TemFile tf = temFileMapper.selectByCertId(certId);
+        return tf.getTemFileText();
     }
 }

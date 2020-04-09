@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.Message;
-import com.dm.user.entity.UserInfoMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -67,27 +66,23 @@ public class WebSocketChatServer {
     @OnMessage
     public void onMessage(Session session, String jsonStr) throws Exception {
         try {
-            JSONObject jsonObject = JSONObject.parseObject(jsonStr);
-            UserInfoMsg reciver = JSONObject.parseObject(jsonObject.get("reciver").toString(), UserInfoMsg.class);
-            int userId = reciver.getUserId();
-            UserInfoMsg sender = JSONObject.parseObject(jsonObject.get("sender").toString(), UserInfoMsg.class);
             Message message = JSONObject.parseObject(jsonStr, Message.class);
+            Integer userId = message.getReciverId();
             message.setCreateTime(DateUtil.getSystemTimeStr());
-            message.setReciver(reciver);
-            message.setSender(sender);
             message.setOnlineCount(onlineSessions.size());
             String json = JSON.toJSONString(message);
             if (null != onlineSessions.get(String.valueOf(userId))) {
-                // 对方在线
+                /** 对方在线 立即发送消息 **/
                 onlineSessions.get(String.valueOf(userId)).getBasicRemote().sendText(json);
             } else {
-                // 对方离线
+                /** 对方离线 暂时存储消息至服务器 (服务重启信息丢失) **/
                 if (null == userMap.get(String.valueOf(userId))) {
-                    // 第一条离线消息
+                    /** 新增第一条离线消息 **/
                     List<String> msg = new ArrayList<>(16);
                     msg.add(json);
                     userMap.put(String.valueOf(userId), msg);
                 } else {
+                    /** 追加消息 **/
                     List<String> strings = userMap.get(String.valueOf(userId));
                     strings.add(json);
                 }

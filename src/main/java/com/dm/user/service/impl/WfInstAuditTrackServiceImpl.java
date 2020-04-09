@@ -17,19 +17,11 @@ public class WfInstAuditTrackServiceImpl implements WfInstAuditTrackService {
 
     @Override
     public void insertData(Map<String, Object> map) throws Exception {
-        try {
-            wfInstAuditTrackMapper.insertData(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        wfInstAuditTrackMapper.insertData(map);
     }
 
     @Override
     public void insertApproved(Map<String, Object> map) throws Exception {
-        try {
-            wfInstAuditTrackMapper.insertApproved(map);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        wfInstAuditTrackMapper.insertApproved(map);
     }
 }

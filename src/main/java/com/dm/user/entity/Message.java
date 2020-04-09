@@ -1,16 +1,18 @@
 package com.dm.user.entity;
 
-import com.alibaba.fastjson.JSON;
-
 public class Message {
 
-    public static final String ENTER = "ENTER";
-    public static final String SPEAK = "SPEAK";
-    public static final String QUIT = "QUIT";
+    private Integer senderId;
 
-    private UserInfoMsg sender;
+    private Integer reciverId;
 
-    private UserInfoMsg reciver;
+    private String senderName;
+
+    private String senderFaceUrl;
+
+    private String reciverName;
+
+    private String reciverFaceUrl;
 
     private int type;//消息类型  0 文字 1 图片
 
@@ -20,15 +22,70 @@ public class Message {
 
     private int onlineCount; //在线用户数
 
-    public static String jsonStr(int type, String msg, String createTime, int onlineCount) {
-        return JSON.toJSONString(new Message(type, msg, createTime, onlineCount));
-    }
+    private String chatId;
 
-    public Message(int type, String msg, String createTime, int onlineCount) {
+    public Message(Integer senderId, Integer reciverId, String senderName, String senderFaceUrl,
+                   String reciverName, String reciverFaceUrl, int type, String msg,
+                   String createTime, int onlineCount, String chatId) {
+        this.senderId = senderId;
+        this.reciverId = reciverId;
+        this.senderName = senderName;
+        this.senderFaceUrl = senderFaceUrl;
+        this.reciverName = reciverName;
+        this.reciverFaceUrl = reciverFaceUrl;
         this.type = type;
         this.msg = msg;
         this.createTime = createTime;
         this.onlineCount = onlineCount;
+        this.chatId = chatId;
+    }
+
+    public Integer getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Integer senderId) {
+        this.senderId = senderId;
+    }
+
+    public Integer getReciverId() {
+        return reciverId;
+    }
+
+    public void setReciverId(Integer reciverId) {
+        this.reciverId = reciverId;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getSenderFaceUrl() {
+        return senderFaceUrl;
+    }
+
+    public void setSenderFaceUrl(String senderFaceUrl) {
+        this.senderFaceUrl = senderFaceUrl;
+    }
+
+    public String getReciverName() {
+        return reciverName;
+    }
+
+    public void setReciverName(String reciverName) {
+        this.reciverName = reciverName;
+    }
+
+    public String getReciverFaceUrl() {
+        return reciverFaceUrl;
+    }
+
+    public void setReciverFaceUrl(String reciverFaceUrl) {
+        this.reciverFaceUrl = reciverFaceUrl;
     }
 
     public int getType() {
@@ -63,19 +120,11 @@ public class Message {
         this.onlineCount = onlineCount;
     }
 
-    public UserInfoMsg getSender() {
-        return sender;
+    public String getChatId() {
+        return chatId;
     }
 
-    public void setSender(UserInfoMsg sender) {
-        this.sender = sender;
-    }
-
-    public UserInfoMsg getReciver() {
-        return reciver;
-    }
-
-    public void setReciver(UserInfoMsg reciver) {
-        this.reciver = reciver;
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }
