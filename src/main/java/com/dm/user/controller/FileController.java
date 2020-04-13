@@ -37,13 +37,12 @@ public class FileController {
     public Result upload(HttpServletRequest request, HttpServletResponse response,
                          @RequestParam(value = "file") MultipartFile[] multipartFile, String aid, String signature) throws Exception {
         Map<String, Object> map = fileUtil.uploadFile(request, response, multipartFile, aid, signature);
-        if (map.containsKey("nofile")) {
-            return ResultUtil.info("file.upload.no.file.code", "file.upload.no.file.msg");
-        } /*else if (map.containsKey("verifyFailed")) {
-            return ResultUtil.info("error.code", "signature.error.msg");
-        }*/ else if (map.containsKey("fileIds")) {
+        if (map.containsKey("fileIds")) {
             return ResultUtil.success(map);
         }
+        /*else if (map.containsKey("verifyFailed")) {
+            return ResultUtil.info("error.code", "signature.error.msg");
+        }*/
         return null;
     }
 

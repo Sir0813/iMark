@@ -82,17 +82,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result sendVeriCode(String phone, String type) throws Exception {
-		    /*if ("register".equals(type)){
-                User u = userMapper.findByName(phone);
-                if (null!=u) {
-                    return ResultUtil.info("register.has.name.code","register.has.name.msg");
-                }
-            } else if ("forgetPwd".equals(type)) {
-                User user = userMapper.findByName(phone);
-                if (null==user) {
-                    return ResultUtil.info("login.account.no.code","login.account.no.msg");
-                }
-            }*/
         AppUser u = userMapper.findByName(phone);
         switch (type) {
             case StateMsg.REGISTER:

@@ -70,10 +70,10 @@ public class OrgItemServiceImpl implements OrgItemService {
             throw new Exception(StateMsg.NOTREAL);
         }
         if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
-            // 固定价格计费 返回本次公正所需费用
+            /** 固定价格计费 返回本次公正所需费用 **/
             map.put("price", orgItems.getPrice());
         } else {
-            // 按标的 或公正人员自定义先缴纳最低价格
+            /** 按标的 或公正人员自定义先缴纳最低价格 **/
             map.put("price", orgItems.getLowestPrice());
         }
         userMap.put("userName", userCard.getRealName());

@@ -60,8 +60,8 @@ public interface AppMapper {
     /**
      * 获取app最新版本
      *
-     * @param app
+     * @param appPlatform APP系统(ios android)
      * @return
      */
-    App getAppVersion(App app);
+    App getAppVersion(String appPlatform);
 }

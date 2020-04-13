@@ -70,10 +70,6 @@ public class FileUtil {
                                           MultipartFile[] multipartFile, String aid, String signature) throws Exception {
         try {
             Map<String, Object> map = new HashMap<>(16);
-            if (multipartFile.length == 0) {
-                map.put("nofile", "请选择文件");
-                return map;
-            }
             request.setCharacterEncoding("utf-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("text/html;charset=utf-8");
@@ -382,25 +378,22 @@ public class FileUtil {
                         suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
                     }
                     UUID randomUuid = UUID.randomUUID();
-                    String filePath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
-                    String fileUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+                    String fpath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator;
+                    String fname = randomUuid + suffix;
+                    String filePath = fpath + fname;
+                    String furl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator;
+                    String fileUrl = furl + fname;
                     boolean uploadBoolean = uploadFile(filePath, "", multipartFile);
                     if (!uploadBoolean) {
                         throw new Exception("上传失败");
                     }
                     CertFiles certFiles = new CertFiles();
-                    // 缩略图
+                    /** 缩略图 **/
                     if (".bmp.jpg.wbmp.jpeg.png.gif".contains(suffix.toLowerCase())) {
-                        Thumbnails.of(filePath).size(200, 300).toFile(applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix);
-                        String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
+                        Thumbnails.of(filePath).size(200, 300).toFile(fpath + ImageUtil.DEFAULT_PREVFIX + fname);
+                        String thumbUrl = furl + ImageUtil.DEFAULT_PREVFIX + fname;
                         certFiles.setThumbUrl(thumbUrl);
                     }
-                    /*boolean b = ImageUtil.thumbnailImage(filePath, 100, 150, ImageUtil.DEFAULT_PREVFIX, ImageUtil.DEFAULT_FORCE);
-                    if (b) {
-                        String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
-                        certFiles.setThumbUrl(thumbUrl);
-                    }*/
-                    // 文件表插入文件
                     certFiles.setFileName(fileName);
                     certFiles.setFileUrl(fileUrl);
                     certFiles.setFilePath(filePath);
@@ -482,32 +475,37 @@ public class FileUtil {
             response.setContentType("text/html;charset=utf-8");
             String row = request.getParameter("row");
             String item = request.getParameter("item");
+            String detail = request.getParameter("detail");
             String fileName = multipartFile.getOriginalFilename();
             String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
             UUID randomUuid = UUID.randomUUID();
-            String filePath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
-            String fileUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + randomUuid + suffix;
+            String fpath = applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator;
+            String fname = randomUuid + suffix;
+            String filePath = fpath + fname;
+            String furl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator;
+            String fileUrl = furl + fname;
             boolean uploadBoolean = uploadFile(filePath, "", multipartFile);
             if (!uploadBoolean) {
                 throw new Exception();
             }
             CertFiles certFiles = new CertFiles();
             if (".bmp.jpg.wbmp.jpeg.png.gif".contains(suffix.toLowerCase())) {
-                Thumbnails.of(filePath).size(200, 300).toFile(applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix);
-                String thumbUrl = applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + ImageUtil.DEFAULT_PREVFIX + randomUuid + suffix;
+                Thumbnails.of(filePath).size(200, 300).toFile(fpath + ImageUtil.DEFAULT_PREVFIX + fname);
+                String thumbUrl = furl + ImageUtil.DEFAULT_PREVFIX + fname;
                 certFiles.setThumbUrl(thumbUrl);
             }
             String osname = System.getProperty("os.name").toLowerCase();
             if (".mp4".equals(suffix) || ".mov".equals(suffix)) {
-                String uuid = UUID.randomUUID().toString() + ".png";
+                String uuidName = UUID.randomUUID().toString() + ".png";
                 if (osname.startsWith(StateMsg.OS_NAME)) {
-                    FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
-                    certFiles.setThumbUrl("vidopng" + File.separator + uuid);
+                    FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuidName);
+                    certFiles.setThumbUrl("vidopng" + File.separator + uuidName);
                 } else {
-                    FileUtil.fetchFrame(filePath, applyFilePath + File.separator + LoginUserHelper.getUserId() + File.separator + uuid);
-                    certFiles.setThumbUrl(applyFilePrefix + File.separator + LoginUserHelper.getUserId() + File.separator + uuid);
+                    FileUtil.fetchFrame(filePath, fpath + uuidName);
+                    certFiles.setThumbUrl(furl + uuidName);
                 }
             }
+            certFiles.setDetail(detail);
             certFiles.setFileName(fileName);
             certFiles.setFileUrl(fileUrl);
             certFiles.setFilePath(filePath);

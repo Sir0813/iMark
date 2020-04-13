@@ -1,16 +1,11 @@
 package com.dm.user.controller;
 
 import com.dm.frame.jboot.base.controller.BaseController;
-import com.dm.frame.jboot.msg.Result;
-import com.dm.frame.jboot.msg.ResultUtil;
-import com.dm.user.entity.OutCert;
 import com.dm.user.service.OutCertService;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author cui
@@ -24,7 +19,7 @@ public class OutCertController extends BaseController {
     @Autowired
     private OutCertService outCertService;
 
-    @ApiOperation(value = "动态下载出证模板", response = ResultUtil.class)
+    /*@ApiOperation(value = "动态下载出证模板", response = ResultUtil.class)
     @RequestMapping(value = "/cert/template/{certIds}", method = RequestMethod.GET)
     public Result downloadOutCertTemplate(@PathVariable String certIds) throws Exception {
         String downloadPath = outCertService.downloadOutCertTemplate(certIds);
@@ -57,6 +52,6 @@ public class OutCertController extends BaseController {
     public Result downZip(@PathVariable String outCertId) throws Exception {
         String downPath = outCertService.downZip(outCertId);
         return ResultUtil.success(downPath);
-    }
+    }*/
 
 }

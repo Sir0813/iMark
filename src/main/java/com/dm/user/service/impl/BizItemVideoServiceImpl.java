@@ -21,7 +21,7 @@ public class BizItemVideoServiceImpl implements BizItemVideoService {
 
     @Override
     public Result insertData(BizItemVideo bizItemVideo) throws Exception {
-        if (bizItemVideo.getId() != null) {
+        if (bizItemVideo.getId() > 0) {
             bizItemVideoMapper.updateByPrimaryKeySelective(bizItemVideo);
         } else {
             bizItemVideo.setCreateTime(new Date());

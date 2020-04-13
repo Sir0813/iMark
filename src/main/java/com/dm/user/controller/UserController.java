@@ -85,14 +85,15 @@ public class UserController extends BaseController {
         return userService.retrievePwd(map);
     }
 
-    @ApiOperation(value = "极光推送获取用户 推送ID", response = ResultUtil.class)
+    @ApiOperation(value = "(极光推送)用户登录给设备设置别名", response = ResultUtil.class)
     @RequestMapping(value = "/user/getRegistrationId", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "registrationId", value = "registrationId", dataType = "String")
     })
     public Result getRegistrationId(@RequestBody Map<String, Object> map) throws Exception {
-        String userId = userService.getRegistrationId(map);
-        return ResultUtil.success(userId);
+        /*String userId = userService.getRegistrationId(map);
+        return ResultUtil.success(userId);*/
+        return ResultUtil.success();
     }
 
     @ApiOperation(value = "获取离线推送消息", response = ResultUtil.class)
@@ -191,7 +192,7 @@ public class UserController extends BaseController {
         return userService.dynamicLogin(map);
     }
 
-    @ApiOperation(value = "用户消息", response = ResultUtil.class)
+    @ApiOperation(value = "用户消息记录", response = ResultUtil.class)
     @RequestMapping(value = "/user/history/info", method = RequestMethod.GET)
     public Result historyInfo(Page<PushMsg> page) throws Exception {
         PageInfo<PushMsg> pageInfo = pushMsgService.historyInfo(page);
@@ -233,7 +234,7 @@ public class UserController extends BaseController {
         return ResultUtil.success();
     }
 
-    @ApiOperation(value = "登录成功修改用户认证状态为未认证", response = ResultUtil.class)
+    @ApiOperation(value = "登录成功后调用--修改实名认证状态", response = ResultUtil.class)
     @RequestMapping(value = "/user/updateRealState", method = RequestMethod.POST)
     public Result updateRealState() throws Exception {
         userCardService.updateRealState();

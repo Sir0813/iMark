@@ -71,8 +71,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         boolean insert = null == itemApply.getApplyid();
-        /** 按标的计价 计算用户应交总费用 **/
         if (itemApply.getItemValue() > 0) {
+            /** 按标的计价 计算用户应交总费用 **/
             OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
             BigDecimal itemValue = new BigDecimal(itemApply.getItemValue());
             BigDecimal price = new BigDecimal(orgItems.getPrice());
@@ -87,8 +87,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         }
         if (insert) {
             SimpleDateFormat format = new SimpleDateFormat("yyMMddhhmmssSSS");
-            Date date = new Date();
-            String format1 = format.format(date);
+            String format1 = format.format(new Date());
             itemApply.setApplyNo(format1);
             itemApply.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
             itemApply.setCreatedDate(new Date());
@@ -97,11 +96,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         }
         List<ApplyFile> applyFileList = itemApply.getApplyFileList();
         for (int i = 0; i < applyFileList.size(); i++) {
-            ApplyFile applyFile = applyFileList.get(i);
-            String requeredid = applyFile.getRequeredid();
-            String fileid = applyFile.getFileid();
-            String[] split = fileid.split(",");
-            if (ItemApplyEnum.DRAFT.getCode() == itemApply.getStatus() || ItemApplyEnum.WAIT_PAY.getCode() == itemApply.getStatus()) {
+            String requeredid = applyFileList.get(i).getRequeredid();
+            String[] split = applyFileList.get(i).getFileid().split(",");
+            if (!insert) {
                 itemApplyFilesService.deleteByApplyIdAndRequeredId(itemApply.getApplyid(), requeredid);
             }
             for (int j = 0; j < split.length; j++) {
@@ -158,6 +155,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                     ids[j] = fileid.toString();
                 }
                 List<CertFiles> cfList = certFilesService.findByFilesIds2(ids);
+                /** 公正上传文件时添加上文件说明 **/
                 String logoUrl = itemRequered.getLogoUrl();
                 JSONArray json = JSONArray.fromObject(logoUrl);
                 if (cfList.size() > 0) {
@@ -313,8 +311,6 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             ids[1] = ItemApplyEnum.REVIEW_NO.getCode();
             ids[2] = ItemApplyEnum.REVIEW_SUCCESS.getCode();
             map.put("status", ids);
-        } else {
-            throw new Exception("状态错误");
         }
         List<ItemApply> itemApplyList = new ArrayList<>();
         if (itemId != 0) {
@@ -484,6 +480,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
         OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply1.getItemid());
         if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
+            /** 固定价格一次付清 **/
             itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
         } else {
             itemApply1.setPayStatus(ItemApplyEnum.PAY_PRE.getCode());
@@ -563,8 +560,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
         pushMsg.setServerTime(DateUtil.getSystemTimeStr());
         pushMsg.setType(PushEnum.REVIEW_MSG.getCode());
-        pushMsg.setState("1"); // 成功
-        pushMsg.setIsRead("0"); // 未读取
+        pushMsg.setState("1");
+        pushMsg.setIsRead("0");
         pushMsg.setUserId(itemApply1.getHandleUserid());
         pushMsgService.insertSelective(pushMsg);
         return ResultUtil.success();

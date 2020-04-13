@@ -72,13 +72,13 @@ public class CertFicateServiceImpl implements CertFicateService {
         certFicate.setCertOwner(LoginUserHelper.getUserId());
         certFicate.setCertIsDelete(StateMsg.CERT_NOT_DELETE);
         List<CertFiles> certFiles = null;
-        // 模板存证
+        /** 模板存证 **/
         if (certFicate.getCertType() == CertTypeEnum.TEMPLATE.getCode()) {
             if (certFicate.getCertStatus() == CertStateEnum.TO_CERT.getCode()) {
                 TemFile temFile = certFicateService.selectByCertId(certFicate.getCertId().toString());
                 Integer fileId = pdfConvertUtil.acceptPage(temFile.getTemFileText(), temFile.getCertId());
                 certFicate.setCertFilesid(fileId.toString());
-                // 生成文件hash
+                /** 文件hash **/
                 certFiles = getHash(certFicate);
             } else {
                 certFiles = new ArrayList<>();
@@ -95,15 +95,15 @@ public class CertFicateServiceImpl implements CertFicateService {
         } else {
             certFicateMapper.insertSelective(certFicate);
         }
-        // 证书编号
+        /** 证书编号 **/
         DecimalFormat df = new DecimalFormat("000000");
         String id = df.format(certFicate.getCertId());
         certFicate.setCertCode("DMS01" + id);
         //map.put("用户", LoginUserHelper.getUserName());
         map.put("证书编号", certFicate.getCertCode());
-        // 存证入链
+        /** 存证入链 **/
         if (CertStateEnum.TO_CERT.getCode() == certFicate.getCertStatus()) {
-            // 对接存证sdk
+            /** 对接存证sdk **/
             String dataHash = CryptoHelper.hash(certFicate.getCertHash() + certFicate.getCertId());
             map.put("文件摘要", certFicate.getCertHash());
             map.put("文件签名", certFicate.getSignature());

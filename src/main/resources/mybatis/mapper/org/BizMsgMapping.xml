@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.BizMsgMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.BizMsg">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chat_id" jdbcType="VARCHAR" property="chatId"/>
+        <result column="sender_id" jdbcType="INTEGER" property="senderId"/>
+        <result column="reciver_id" jdbcType="INTEGER" property="reciverId"/>
+        <result column="sender_name" jdbcType="VARCHAR" property="senderName"/>
+        <result column="msg" jdbcType="VARCHAR" property="msg"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="sender_face_url" jdbcType="VARCHAR" property="senderFaceUrl"/>
+        <result column="reciver_name" jdbcType="VARCHAR" property="reciverName"/>
+        <result column="reciver_face_url" jdbcType="VARCHAR" property="reciverFaceUrl"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="send_type" jdbcType="INTEGER" property="sendType"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, chat_id, sender_id, reciver_id, sender_name, msg, create_time, sender_face_url,
+    reciver_name, reciver_face_url, `type`, send_type
+    </sql>
+    <select id="msgList" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        biz_msg
+        WHERE
+        id IN (
+        SELECT
+        MAX(id) id
+        FROM
+        biz_msg
+        WHERE
+        reciver_id = #{userId}
+        OR sender_id = #{userId}
+        GROUP BY
+        chat_Id
+        )
+        ORDER BY
+        create_Time DESC
+    </select>
+    <select id="msgDetails" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        (
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        biz_msg
+        WHERE
+        chat_id = #{chatId}
+        AND create_time &lt; #{createTime}
+        ORDER BY
+        create_time DESC
+        LIMIT 10
+        ) AS temp_table
+        ORDER BY
+        temp_table.create_time ASC
+    </select>
+</mapper>

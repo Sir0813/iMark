@@ -12,10 +12,11 @@
         <result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
         <result column="file_hash" property="fileHash" jdbcType="VARCHAR"/>
         <result column="thumb_url" property="thumbUrl" jdbcType="VARCHAR"/>
+        <result column="detail" property="detail" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url, file_hash, thumb_url
-  </sql>
+    file_id, file_type, file_name, file_size, file_path, cert_id, file_seq, file_url, file_hash, thumb_url, detail
+    </sql>
     <select id="selectByUrl" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
@@ -68,6 +69,9 @@
             <if test="thumbUrl != null">
                 thumb_url,
             </if>
+            <if test="detail != null">
+                detail,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="fileType != null">
@@ -96,6 +100,9 @@
             </if>
             <if test="thumbUrl != null">
                 #{thumbUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="detail != null">
+                #{detail,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -129,6 +136,9 @@
             <if test="thumbUrl != null">
                 thumb_url = #{thumbUrl,jdbcType=VARCHAR},
             </if>
+            <if test="detail != null">
+                detail = #{detail,jdbcType=VARCHAR},
+            </if>
         </set>
         where file_id = #{fileId,jdbcType=INTEGER}
     </update>
@@ -147,7 +157,8 @@
         certfile.`file_id` as `fileId`,
         certfile.`file_url` as `fileUrl`,
         applyfile.`describe` as `describe`,
-        certfile.`thumb_url` as `thumbUrl`
+        certfile.`thumb_url` as `thumbUrl`,
+        certfile.`detail` as detail
         from biz_cert_files as `certfile`
         inner join biz_item_apply_files as applyfile
         on certfile.file_id = applyfile.fileid

@@ -22,7 +22,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public Result getAppVersion(App app) throws Exception {
-        App appObject = appMapper.getAppVersion(app);
+        App appObject = appMapper.getAppVersion(app.getAppPlatform());
         return ResultUtil.success(appObject);
     }
 }
