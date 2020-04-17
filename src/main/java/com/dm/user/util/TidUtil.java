@@ -40,7 +40,7 @@ public class TidUtil {
         String data = jsonObject.get("data").toString();
         JSONObject jsonObject1 = JSONObject.parseObject(data);
         Object parent = jsonObject1.get("parent");
-        if (null == parent) {
+        if ("".equals(parent)) {
             return true;
         } else {
             return false;
