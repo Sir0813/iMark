@@ -11,8 +11,6 @@ import com.dm.user.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,15 +69,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         boolean insert = null == itemApply.getApplyid();
+        OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
         if (itemApply.getItemValue() > 0) {
-            /** 按标的计价 计算用户应交总费用 **/
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
+            /* 按标的计价 计算用户应交总费用 **/
             BigDecimal itemValue = new BigDecimal(itemApply.getItemValue());
             BigDecimal price = new BigDecimal(orgItems.getPrice());
-            /** 按标的总共应收金额 **/
+            /* 按标的总共应收金额 **/
             BigDecimal multiply = itemValue.multiply(price);
             if (multiply.compareTo(new BigDecimal(orgItems.getLowestPrice())) > -1) {
-                /** 按标的应收金额大于等于最低收费金额 **/
+                /* 按标的应收金额大于等于最低收费金额 **/
                 itemApply.setPrice(multiply.doubleValue());
             } else {
                 itemApply.setPrice(orgItems.getLowestPrice());
@@ -92,6 +90,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             itemApply.setUserid(Integer.parseInt(LoginUserHelper.getUserId()));
             itemApply.setCreatedDate(new Date());
             itemApply.setSubmitDate(new Date());
+            itemApply.setItemCode(orgItems.getItemCode());
             itemApplyMapper.insertSelective(itemApply);
         }
         List<ApplyFile> applyFileList = itemApply.getApplyFileList();
@@ -139,7 +138,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<ItemRequered> list = itemRequeredService.selectByItemId(itemApply.getItemid());
         UserCard userCard = userCardService.selectByUserId(itemApply.getUserid().toString(), "2");
         AppUser user = userService.selectByPrimaryKey(itemApply.getUserid());
-        /** 用户提交的文件清单 **/
+        /* 用户提交的文件清单 **/
         for (int i = 0; i < list.size(); i++) {
             ItemRequered itemRequered = list.get(i);
             Map<String, Object> m = new LinkedHashMap<>(16);
@@ -155,8 +154,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                     ids[j] = fileid.toString();
                 }
                 List<CertFiles> cfList = certFilesService.findByFilesIds2(ids);
-                /** 公正上传文件时添加上文件说明 **/
-                String logoUrl = itemRequered.getLogoUrl();
+                itemRequered.setCertFilesList(cfList);
+                /* 公正上传文件时添加上文件说明 */
+                /*String logoUrl = itemRequered.getLogoUrl();
                 JSONArray json = JSONArray.fromObject(logoUrl);
                 if (cfList.size() > 0) {
                     for (int j = 0; j < cfList.size(); j++) {
@@ -173,8 +173,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                             }
                         }
                     }
-                }
-                itemRequered.setCertFilesList(cfList);
+                }*/
             }
         }
         WfInstance wfInstance = new WfInstance();
@@ -182,10 +181,10 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
         }
         if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
-            /** 固定价格计费 返回本次公正所需费用 **/
+            /* 固定价格计费 返回本次公正所需费用 **/
             map.put("price", orgItems.getPrice());
         } else {
-            /** 按标的 或公正人员自定义先缴纳最低价格 **/
+            /* 按标的 或公正人员自定义先缴纳最低价格 **/
             map.put("price", orgItems.getLowestPrice());
         }
         CertFiles certFiles = null;
@@ -198,7 +197,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             if (null != itemApplyFiles) {
                 certFiles = certFilesService.selectByPrimaryKey(itemApplyFiles.getFileid());
             }
-            /** 审核历史记录 **/
+            /* 审核历史记录 **/
             applyHistories = itemApplyMapper.history(applyid);
         }
         userMap.put("userName", null == userCard ? "" : userCard.getRealName());
@@ -208,7 +207,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Org org = orgService.selectById(orgItems.getOrgid());
         map.put("orgName", org.getOrgname());
         if (itemApply.getStatus() == ItemApplyEnum.REVIEW_SUCCESS.getCode()) {
-            /** 审核完成显示盖章意见书 **/
+            /* 审核完成显示盖章意见书 **/
             Map<String, Object> map2 = new HashMap<>(16);
             map2.put("applyId", applyid);
             map2.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
@@ -218,7 +217,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         }
         List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
         map.put("bizItemVideoList", bizItemVideoList);
-        /** 审批历史公正意见书 (未盖章) **/
+        /* 审批历史公正意见书 (未盖章) **/
         map.put("opinionFile", certFiles);
         map.put("handleUserId", itemApply.getHandleUserid());
         map.put("history", applyHistories);
@@ -254,27 +253,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("status", ItemApplyEnum.REVIEW.getCode());
         List<ItemApply> itemApplyList = new ArrayList<>();
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
         if (itemId != 0) {
-            map.put("itemId", itemId);
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            itemApplyList = itemApplyMapper.pendList(map);
-        } else {
-            OrgUser orgUser = orgUserService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-            if (null != orgUser) {
-                Map<String, Object> linkedHashMap = new LinkedHashMap<>(16);
-                linkedHashMap.put("status", OrgItemEnum.SHELVES.getCode());
-                linkedHashMap.put("orgId", orgUser.getOrgid());
-                List<OrgItems> orgItemsList = orgItemService.selectByOrgIdAndStatus(linkedHashMap);
-                int[] ids = new int[orgItemsList.size()];
-                for (int i = 0; i < orgItemsList.size(); i++) {
-                    OrgItems orgItems = orgItemsList.get(i);
-                    ids[i] = orgItems.getItemid();
-                }
-                map.put("itemIds", ids);
-                PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-                itemApplyList = itemApplyMapper.pendList(map);
-            }
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
+            map.put("itemCode", orgItems.getItemCode());
         }
+        itemApplyList = itemApplyMapper.pendList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
         if (page.getPageNum() > pageInfo.getPages()) {
             return ResultUtil.success();
@@ -299,42 +283,18 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (1 == type) {
-            /** 待审核列表 **/
-            int[] ids = new int[2];
-            ids[0] = ItemApplyEnum.REVIEW.getCode();
-            ids[1] = ItemApplyEnum.SUBMISSION.getCode();
-            map.put("status", ids);
+            /* 处理中 **/
+            map.put("status", new int[]{ItemApplyEnum.REVIEW.getCode(), ItemApplyEnum.SUBMISSION.getCode()});
         } else if (2 == type) {
-            /** 审核通过退回列表(历史记录) **/
-            int[] ids = new int[3];
-            ids[0] = ItemApplyEnum.REVIEW_YES.getCode();
-            ids[1] = ItemApplyEnum.REVIEW_NO.getCode();
-            ids[2] = ItemApplyEnum.REVIEW_SUCCESS.getCode();
-            map.put("status", ids);
+            /* 已处理 **/
+            map.put("status", new int[]{ItemApplyEnum.REVIEW_YES.getCode(), ItemApplyEnum.REVIEW_NO.getCode(), ItemApplyEnum.REVIEW_SUCCESS.getCode()});
         }
-        List<ItemApply> itemApplyList = new ArrayList<>();
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
         if (itemId != 0) {
-            /** 查询全部数据 **/
-            map.put("itemId", itemId);
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            itemApplyList = itemApplyMapper.pendReview(map);
-        } else {
-            OrgUser orgUser = orgUserService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-            if (null != orgUser) {
-                Map<String, Object> linkedHashMap = new LinkedHashMap<>(16);
-                linkedHashMap.put("status", OrgItemEnum.SHELVES.getCode());
-                linkedHashMap.put("orgId", orgUser.getOrgid());
-                List<OrgItems> orgItemsList = orgItemService.selectByOrgIdAndStatus(linkedHashMap);
-                int[] ids = new int[orgItemsList.size()];
-                for (int i = 0; i < orgItemsList.size(); i++) {
-                    OrgItems orgItems = orgItemsList.get(i);
-                    ids[i] = orgItems.getItemid();
-                }
-                map.put("itemIds", ids);
-                PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-                itemApplyList = itemApplyMapper.pendReview(map);
-            }
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
+            map.put("itemCode", orgItems.getItemCode());
         }
+        List<ItemApply> itemApplyList = itemApplyMapper.pendReview(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
         if (page.getPageNum() > pageInfo.getPages()) {
             return ResultUtil.success();
@@ -358,7 +318,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             wfInstAuditTrackService.insertData(map);
             WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
             WfItemNode wfItemNode = wfItemNodeService.selectByItemId(itemApply.getItemid());
-            /** 如果是第一个审批人 **/
+            /* 如果是第一个审批人 **/
             if (wfInstance.getNodeid().equals(wfItemNode.getId())) {
                 map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
                 itemApplyFilesService.updateDelState(itemApply.getApplyid());
@@ -366,7 +326,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 itemApply.setStatus(ItemApplyEnum.REVIEW.getCode());
                 itemApplyMapper.updateByPrimaryKeySelective(itemApply);
             } else {
-                /** 审批节点减一 **/
+                /* 审批节点减一 **/
                 WfItemNode wfItemNode1 = wfItemNodeService.selectById(wfInstance.getNodeid());
                 map.put("itemId", wfItemNode1.getItemid());
                 map.put("order", wfItemNode1.getOrder() - 1);
@@ -412,12 +372,16 @@ public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Override
     public PageInfo<ItemApply> waitList(Page<ItemApply> page, int itemId) throws Exception {
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
-            map.put("itemId", itemId);
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
+            map.put("itemCode", orgItems.getItemCode());
         }
+        map.put("realState", UserCardEnum.REAL_SUCCESS.getCode());
+        map.put("payStatus", ItemApplyEnum.PAY_ALL.getCode());
+        map.put("status", ItemApplyEnum.REVIEW_YES.getCode());
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
         List<ItemApply> itemApplyList = itemApplyMapper.selectWaitList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
         if (page.getPageNum() > pageInfo.getPages()) {
@@ -432,7 +396,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
-            map.put("itemId", itemId);
+            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
+            map.put("itemCode", orgItems.getItemCode());
         }
         List<ItemApply> itemApplyList = itemApplyMapper.dealList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
@@ -449,7 +414,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
         WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
         WfItemNode wfItemNode = wfItemNodeService.selectByItemIdDesc(itemApply.getItemid());
-        /** 当前节点 不是 审批最后一个节点  当前节点 需 +1 **/
+        /* 当前节点 不是 审批最后一个节点  当前节点 需 +1 **/
         if (!wfInstance.getNodeid().equals(wfItemNode.getId())) {
             WfItemNode wfItemNode1 = wfItemNodeService.selectById(wfInstance.getNodeid());
             map.put("itemId", wfItemNode1.getItemid());
@@ -476,21 +441,21 @@ public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Override
     public Result submitApply(ItemApply itemApply) throws Exception {
-        /** 交钱成功之后在修改状态 后续集成支付 **/
+        /* 交钱成功之后在修改状态 后续集成支付 **/
         ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
         OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply1.getItemid());
         if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
-            /** 固定价格一次付清 **/
+            /* 固定价格一次付清 **/
             itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
         } else {
             itemApply1.setPayStatus(ItemApplyEnum.PAY_PRE.getCode());
             if (orgItems.getValuation() == OrgItemEnum.SUBJECT_PRICE.getCode()) {
                 BigDecimal itemValue = new BigDecimal(itemApply1.getItemValue());
                 BigDecimal price = new BigDecimal(orgItems.getPrice());
-                /** 按标的总共应收金额 **/
+                /* 按标的总共应收金额 **/
                 BigDecimal multiply = itemValue.multiply(price);
-                if (multiply.compareTo(new BigDecimal(orgItems.getLowestPrice())) == 1) {
-                    /** 费率金额 > 最低收费 **/
+                if (multiply.compareTo(new BigDecimal(orgItems.getLowestPrice())) > 0) {
+                    /* 费率金额 > 最低收费 **/
                     itemApply1.setPrice(multiply.doubleValue());
                 }
             }
@@ -519,8 +484,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         BigDecimal price = new BigDecimal(itemApply1.getPrice());
         BigDecimal lowestPrice = new BigDecimal(orgItems.getLowestPrice());
         PushMsg pushMsg = new PushMsg();
-        if (price.compareTo(lowestPrice) == 1) {
-            /** 输入金额 > 预付款 (要缴纳尾款) **/
+        if (price.compareTo(lowestPrice) > 0) {
+            /* 输入金额 > 预付款 (要缴纳尾款) **/
             itemApply1.setPayEndPrice(price.subtract(lowestPrice).doubleValue());
             itemApply1.setPayStatus(ItemApplyEnum.PAY_BALANCE.getCode());
             pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
@@ -532,7 +497,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             pushMsg.setIsRead("0"); // 未读取
             pushMsg.setUserId(itemApply1.getUserid());
         } else {
-            /** 输入金额 <= 预付款 通知管理员审核资料 **/
+            /* 输入金额 <= 预付款 通知管理员审核资料 **/
             itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
             pushMsg.setTitle("审核通知");
             pushMsg.setContent("订单号:" + itemApply1.getApplyNo() + "尾款结清，请上传意见书！");
@@ -549,7 +514,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Override
     public Result payBalance(ItemApply itemApply) throws Exception {
-        /** 支付尾款 后续集成支付接口 **/
+        /* 支付尾款 后续集成支付接口 **/
         ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
         itemApply1.setPayEndPrice(0.00);
         itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
@@ -565,5 +530,31 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         pushMsg.setUserId(itemApply1.getHandleUserid());
         pushMsgService.insertSelective(pushMsg);
         return ResultUtil.success();
+    }
+
+    @Override
+    public Result index() throws Exception {
+        Map<String, Object> map = new LinkedHashMap<>(16);
+        Map<String, Object> dataMap = new LinkedHashMap<>(16);
+        dataMap.put("payStatus", ItemApplyEnum.PAY_ALL.getCode());
+        dataMap.put("status", ItemApplyEnum.REVIEW_YES.getCode());
+        dataMap.put("inProcessing", new int[]{ItemApplyEnum.REVIEW.getCode(), ItemApplyEnum.SUBMISSION.getCode()});
+        dataMap.put("userId", LoginUserHelper.getUserId());
+        dataMap.put("isProcessing", new int[]{ItemApplyEnum.REVIEW_YES.getCode(), ItemApplyEnum.REVIEW_NO.getCode(), ItemApplyEnum.REVIEW_SUCCESS.getCode()});
+        Integer newOrderCount = itemApplyMapper.selectOrderCount(ItemApplyEnum.REVIEW.getCode());
+        Integer inProcessingCount = itemApplyMapper.inProcessing(dataMap);
+        Integer isProcessingCount = itemApplyMapper.isProcessing(dataMap);
+        Integer waitApplyCount = itemApplyMapper.selectWaitApplyCount(dataMap);
+        Integer myApplyCount = itemApplyMapper.selectMyApplyCount(dataMap);
+        List<ItemApply> myApplyList = itemApplyMapper.selectMyApply(dataMap);
+        List<ItemApply> newApplyList = itemApplyMapper.selectNewApply(ItemApplyEnum.REVIEW.getCode());
+        map.put("newOrderCount", newOrderCount);
+        map.put("inProcessingCount", inProcessingCount);
+        map.put("isProcessingCount", isProcessingCount);
+        map.put("waitApplyCount", waitApplyCount);
+        map.put("myApplyCount", myApplyCount);
+        map.put("myApplyList", myApplyList);
+        map.put("newApplyList", newApplyList);
+        return ResultUtil.success(map);
     }
 }

@@ -99,4 +99,60 @@ public interface ItemApplyMapper {
      * @return
      */
     List<ApplyHistory> history(int applyid);
+
+    /**
+     * 新订单数量
+     *
+     * @param status
+     * @return
+     */
+    Integer selectOrderCount(int status);
+
+    /**
+     * 处理中数量
+     *
+     * @param dataMap
+     * @return
+     */
+    Integer inProcessing(Map<String, Object> dataMap);
+
+    /**
+     * 已处理数量
+     *
+     * @param dataMap
+     * @return
+     */
+    Integer isProcessing(Map<String, Object> dataMap);
+
+    /**
+     * 我的申请前三条
+     *
+     * @param dataMap
+     * @return
+     */
+    List<ItemApply> selectMyApply(Map<String, Object> dataMap);
+
+    /**
+     * 最新申请前三条
+     *
+     * @param status
+     * @return
+     */
+    List<ItemApply> selectNewApply(int status);
+
+    /**
+     * 待复核数量
+     *
+     * @param dataMap
+     * @return
+     */
+    Integer selectWaitApplyCount(Map<String, Object> dataMap);
+
+    /**
+     * 我的申请总数量
+     *
+     * @param dataMap
+     * @return
+     */
+    Integer selectMyApplyCount(Map<String, Object> dataMap);
 }

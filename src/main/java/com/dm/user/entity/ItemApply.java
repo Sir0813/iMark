@@ -40,6 +40,8 @@ public class ItemApply {
 
     private Double payEndPrice;
 
+    private String itemCode;
+
     /**
      * 公正文件业务字段
      */
@@ -218,5 +220,13 @@ public class ItemApply {
 
     public void setPayEndPrice(Double payEndPrice) {
         this.payEndPrice = payEndPrice;
+    }
+
+    public String getItemCode() {
+        return itemCode;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 }

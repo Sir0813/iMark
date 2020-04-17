@@ -3,13 +3,17 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
+import com.dm.user.entity.AppUser;
 import com.dm.user.entity.UserCard;
 import com.dm.user.mapper.UserCardMapper;
 import com.dm.user.msg.UserCardEnum;
 import com.dm.user.service.UserCardService;
+import com.dm.user.service.UserService;
+import com.dm.user.util.TidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -25,14 +29,33 @@ public class UserCardServiceImpl implements UserCardService {
     @Autowired
     private UserCardMapper userCardMapper;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TidUtil tidUtil;
+
     @Override
     public Result authentication(UserCard userCard) throws Exception {
-        UserCard uc = userCardMapper.selectByCardNumber(userCard.getCardNumber());
-        if (null != uc) {
-            return ResultUtil.info("card.code.error.code", "card.code.error.msg");
-        }
+        AppUser appUser = userService.selectByPrimaryKey(Integer.parseInt(LoginUserHelper.getUserId()));
         if (userCard.getCardid() != null) {
             if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
+                String code = tidUtil.checkTid(LoginUserHelper.getUserName(), userCard.getCardNumber());
+                if ("201".equals(code)) {
+                    if (tidUtil.get(LoginUserHelper.getUserName())) {
+                        if (tidUtil.addTid(userCard.getCardNumber())) {
+                            if (!tidUtil.addBind(LoginUserHelper.getUserName(), appUser.getPassword(), userCard.getCardNumber())) {
+                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                                return ResultUtil.error();
+                            }
+                        } else {
+                            return ResultUtil.error();
+                        }
+                    }
+                } else if (!"200".equals(code)) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultUtil.error();
+                }
                 userCard.setRealTime(new Date());
             }
             userCardMapper.updateByPrimaryKeySelective(userCard);

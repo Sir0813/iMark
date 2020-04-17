@@ -156,4 +156,11 @@ public interface ItemApplyService {
      * @throws Exception
      */
     Result payBalance(ItemApply itemApply) throws Exception;
+
+    /**
+     * 掌上公正首页
+     *
+     * @throws Exception
+     */
+    Result index() throws Exception;
 }

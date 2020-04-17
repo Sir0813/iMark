@@ -20,6 +20,7 @@ import com.dm.user.service.*;
 import com.dm.user.util.HttpSendUtil;
 import com.dm.user.util.PushUtil;
 import com.dm.user.util.RandomCode;
+import com.dm.user.util.TidUtil;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
@@ -73,6 +75,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private OrgUserService orgUserService;
+
+    @Autowired
+    private TidUtil tidUtil;
 
     @Value("${email.emailContent}")
     private String emailContent;
@@ -145,14 +150,13 @@ public class UserServiceImpl implements UserService {
         user.setPassword(md5Password);
         user.setCreatedDate(DateUtil.timeToString2(new Date()));
         informationService.updateByPrimaryKeySelective(information);
-        /** 注册用户身份上链  start **/
-        /*boolean register = TidUtil.register(user.getUsername(), md5Password);
+        /* 注册用户身份上链  start **/
+        boolean register = tidUtil.register(user.getUsername(), md5Password);
         if (!register) {
-            logger.error("链上身份注册失败!");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }*/
-        /** 注册用户身份上链  end **/
+        }
+        /* 注册用户身份上链  end **/
         userMapper.userRegister(user);
         // 待自己确认 需要更新注册用户ID
         List<CertConfirm> list = certConfirmService.selectByPhone(user.getUsername());
@@ -162,7 +166,7 @@ public class UserServiceImpl implements UserService {
                 certConfirmService.updateByPrimaryKeySelective(cc);
             });
         }
-        /** 出证发送给我的添加用户ID **/
+        /* 出证发送给我的添加用户ID **/
         List<Contact> contacts = contactMapper.selectByPhone(user.getUsername());
         if (contacts.size() > 0) {
             contacts.forEach(contact -> {
@@ -170,7 +174,7 @@ public class UserServiceImpl implements UserService {
                 contactMapper.updateByPrimaryKey(contact);
             });
         }
-        /** 历史消息添加用户ID */
+        /* 历史消息添加用户ID */
         List<PushMsg> pushMsgs = pushMsgService.selectByReceiveAndState(user.getUsername());
         if (pushMsgs.size() > 0) {
             for (int i = 0; i < pushMsgs.size(); i++) {
@@ -179,7 +183,7 @@ public class UserServiceImpl implements UserService {
                 pushMsgService.updateByPrimaryKeySelective(pushMsg);
             }
         }
-        /** 注册成功直接登录 **/
+        /* 注册成功直接登录 **/
         Collection<GrantedAuthority> authorities = this.loginUserDetailsService.loadAuthority(user.getUsername());
         LoginUserDetails loginUserDetails = new LoginUserDetails();
         loginUserDetails.setUsername(user.getUsername());
@@ -205,14 +209,13 @@ public class UserServiceImpl implements UserService {
             map.put("password", newPwd);
             userMapper.updateById(map);
         }
-        /** 修改密码修改链上对应身份密码信息 start **/
-        /*boolean b = TidUtil.updatePassword(user.getUsername(), md5Password, newPwd);
+        /* 修改密码修改链上对应身份密码信息 start **/
+        boolean b = tidUtil.updatePassword(user.getUsername(), md5Password, newPwd);
         if (!b) {
-            logger.error("链上身份信息修改失败!");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }*/
-        /** 修改密码修改链上对应身份密码信息 end **/
+        }
+        /* 修改密码修改链上对应身份密码信息 end **/
         return ResultUtil.success();
     }
 
@@ -300,14 +303,13 @@ public class UserServiceImpl implements UserService {
         String newPassword = MD5Util.encode(map.get("password").toString() + user.getSalt());
         user.setPassword(newPassword);
         userMapper.updateByPrimaryKeySelective(user);
-        /** 找回密码修改链上身份信息 start **/
-        /*boolean b = TidUtil.updatePassword(user.getUsername(), oldPassword, newPassword);
+        /* 找回密码修改链上身份信息 start */
+        boolean b = tidUtil.updatePassword(user.getUsername(), oldPassword, newPassword);
         if (!b) {
-            logger.error("链上身份信息修改失败!");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }*/
-        /** 找回密码修改链上身份信息 start **/
+        }
+        /* 找回密码修改链上身份信息 start */
         return ResultUtil.success();
     }
 

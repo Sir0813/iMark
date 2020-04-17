@@ -85,7 +85,7 @@ public class FileUtil {
                 UUID randomUuid = UUID.randomUUID();
                 String filePath = certFilePath + File.separator + randomUuid + suffix;
                 String fileUrl = certFilePrefix + File.separator + randomUuid + suffix;
-                boolean uploadBoolean = FileUtil.uploadFile(certFilePath + File.separator, randomUuid + suffix, multipartFile[i]);
+                boolean uploadBoolean = uploadFile(certFilePath + File.separator, randomUuid + suffix, multipartFile[i]);
                 if (!uploadBoolean) {
                     throw new Exception();
                 }
@@ -94,10 +94,10 @@ public class FileUtil {
                 if (".mp4".equals(suffix) || ".mov".equals(suffix)) {
                     String uuid = UUID.randomUUID().toString() + ".png";
                     if (osname.startsWith(StateMsg.OS_NAME)) {
-                        FileUtil.fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
+                        fetchFrame(filePath, "D:\\upload\\vidopng\\" + uuid);
                         certFiles.setFileName("img/vidopng/" + uuid);
                     } else {
-                        FileUtil.fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
+                        fetchFrame(filePath, "/opt/czt-upload/vidopng/" + uuid);
                         certFiles.setFileName("vidopng/" + uuid);
                     }
                 } else {
@@ -108,7 +108,7 @@ public class FileUtil {
                 certFiles.setFileHash(md5);
                 certFiles.setFileUrl(fileUrl);
                 certFiles.setFilePath(filePath);
-                certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
+                certFiles.setFileSize((double) multipartFile[i].getSize());
                 certFiles.setFileType(suffix);
                 certFiles.setFileSeq(i + "");
                 certFilesService.insertSelective(certFiles);
@@ -146,7 +146,7 @@ public class FileUtil {
             certFiles.setFileName(fileName);
             certFiles.setFileUrl(fileUrl);
             certFiles.setFilePath(headFilePath + File.separator + randomUuid + suffix);
-            certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+            certFiles.setFileSize((double) multipartFile.getSize());
             certFiles.setFileType(suffix);
             certFiles.setFileSeq("0");
             certFilesService.insertSelective(certFiles);
@@ -168,7 +168,7 @@ public class FileUtil {
         return ResultUtil.error();
     }
 
-    public static boolean uploadFile(String filePath, String fileName, MultipartFile multipartFile) {
+    private static boolean uploadFile(String filePath, String fileName, MultipartFile multipartFile) {
         try {
             File file = new File(filePath + fileName);
             if (!file.getParentFile().exists()) {
@@ -201,7 +201,7 @@ public class FileUtil {
         return sb.toString();
     }
 
-    public static void fetchFrame(String filePath, String targerFilePath) {
+    private static void fetchFrame(String filePath, String targerFilePath) {
         Frame frame = null;
         int flag = 0;
         try {
@@ -229,7 +229,7 @@ public class FileUtil {
         }
     }
 
-    public static String rotatePhonePhoto(String fullPath, int angel) {
+    private static void rotatePhonePhoto(String fullPath, int angel) {
         BufferedImage src;
         try {
             src = ImageIO.read(new File(fullPath));
@@ -251,10 +251,10 @@ public class FileUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return fullPath;
+        return;
     }
 
-    public static BufferedImage FrameToBufferedImage(Frame frame) {
+    private static BufferedImage FrameToBufferedImage(Frame frame) {
         Java2DFrameConverter converter = new Java2DFrameConverter();
         BufferedImage bufferedImage = converter.getBufferedImage(frame);
         return bufferedImage;
@@ -268,7 +268,7 @@ public class FileUtil {
      * @param fileName    文件名称
      * @return
      */
-    public boolean fileToZip(List<File> files, String zipFilePath, String fileName) {
+    public boolean fileToZip(List<File> files, String zipFilePath, String fileName) throws IOException {
         FileInputStream fis;
         BufferedInputStream bis = null;
         FileOutputStream fos;
@@ -302,16 +302,11 @@ public class FileUtil {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            try {
-                if (null != bis) {
-                    bis.close();
-                }
-                if (null != zos) {
-                    zos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+            if (null != bis) {
+                bis.close();
+            }
+            if (null != zos) {
+                zos.close();
             }
         }
     }
@@ -343,7 +338,7 @@ public class FileUtil {
             certFiles.setFileName(fileName);
             certFiles.setFileUrl(fileUrl);
             certFiles.setFilePath(filePath);
-            certFiles.setFileSize(Double.valueOf(multipartFile[i].getSize()));
+            certFiles.setFileSize((double) multipartFile[i].getSize());
             certFiles.setFileType(suffix);
             certFiles.setFileSeq(i + "");
             certFilesService.insertSelective(certFiles);
@@ -388,7 +383,7 @@ public class FileUtil {
                         throw new Exception("上传失败");
                     }
                     CertFiles certFiles = new CertFiles();
-                    /** 缩略图 **/
+                    /* 缩略图 **/
                     if (".bmp.jpg.wbmp.jpeg.png.gif".contains(suffix.toLowerCase())) {
                         Thumbnails.of(filePath).size(200, 300).toFile(fpath + ImageUtil.DEFAULT_PREVFIX + fname);
                         String thumbUrl = furl + ImageUtil.DEFAULT_PREVFIX + fname;
@@ -397,7 +392,7 @@ public class FileUtil {
                     certFiles.setFileName(fileName);
                     certFiles.setFileUrl(fileUrl);
                     certFiles.setFilePath(filePath);
-                    certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+                    certFiles.setFileSize((double) multipartFile.getSize());
                     certFiles.setFileType(suffix);
                     certFiles.setFileSeq(j + "");
                     certFilesService.insertSelective(certFiles);
@@ -446,7 +441,7 @@ public class FileUtil {
             certFiles.setFileName(fileName);
             certFiles.setFileUrl(fileUrl);
             certFiles.setFilePath(filePath);
-            certFiles.setFileSize(Double.valueOf(file.get(0).getSize()));
+            certFiles.setFileSize((double) file.get(0).getSize());
             certFiles.setFileType(suffix);
             certFiles.setFileSeq("0");
             certFilesService.insertSelective(certFiles);
@@ -509,7 +504,7 @@ public class FileUtil {
             certFiles.setFileName(fileName);
             certFiles.setFileUrl(fileUrl);
             certFiles.setFilePath(filePath);
-            certFiles.setFileSize(Double.valueOf(multipartFile.getSize()));
+            certFiles.setFileSize((double) multipartFile.getSize());
             certFiles.setFileType(suffix);
             certFiles.setFileSeq("0");
             certFilesService.insertSelective(certFiles);

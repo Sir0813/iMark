@@ -209,9 +209,9 @@ public class UserController extends BaseController {
     @ApiOperation(value = "退出登录", response = ResultUtil.class)
     @RequestMapping(value = "/user/logout", method = RequestMethod.GET)
     public Result logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        /** 退出时修改用户认证状态 **/
+        /* 退出时修改用户认证状态 **/
         userCardService.updateRealState();
-        /** 清除设备已绑定推送别名 **/
+        /* 清除设备已绑定推送别名 **/
         // HttpSendUtil.deleteData("aliases", LoginUserHelper.getUserName());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {

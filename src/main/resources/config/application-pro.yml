@@ -1,7 +1,7 @@
 # application开发环境配置
 server:
   # 不指定默认为8080
-  port: 9085
+  port: 8080
 spring:
   profiles:
     # 配置扩展 profiles 文件
@@ -45,3 +45,6 @@ jpush:
   appKey: f0e7dec1b2aefc534e08fe18
   # 极光推送 秘钥
   masterSecret: 2464890880bcd3f52e00c1d7
+tid:
+  appCode: iMark
+  passWord: 123456

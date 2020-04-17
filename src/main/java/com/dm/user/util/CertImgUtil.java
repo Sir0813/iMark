@@ -22,7 +22,7 @@ public class CertImgUtil {
     /**
      * @param certFicate 存证对象
      * @param path       原图片地址
-     * @param outPath    输出图片地址
+     * @param path       输出图片地址
      * @param qrPath     二维码图片地址
      * @return
      * @throws IOException
@@ -42,22 +42,23 @@ public class CertImgUtil {
         g.setPaint(new Color(0, 0, 0, 64));
         g.setPaint(Color.BLACK);
         g.setFont(new Font("黑体", Font.PLAIN, 35));
-        g.drawString("文件存证证书", (int) 185, (int) 100);
+        g.drawString("文件存证证书", 185, 100);
         g.setFont(new Font("黑体", Font.PLAIN, 20));
-        g.drawString("证书编号：" + certFicate.getCertCode(), (int) 120, (int) 170);
+        g.drawString("证书编号：" + certFicate.getCertCode(), 120, 170);
         g.setFont(new Font("黑体", Font.PLAIN, 15));
         //文件名称
-        g.drawString("文件名称：" + certFicate.getCertName(), (int) 120, (int) 210);
+        g.drawString("文件名称：" + certFicate.getCertName(), 120, 210);
         //用户
-        g.drawString("用户：" + certFicate.getCertOwner(), (int) 120, (int) 250);
+        g.drawString("用户：" + certFicate.getCertOwner(), 120, 250);
         //存证时间
-        g.drawString("存证时间：" + DateUtil.timeToString2(certFicate.getCertDate()), (int) 120, (int) 290);
+        g.drawString("存证时间：" + DateUtil.timeToString2(certFicate.getCertDate()), 120, 290);
         //存证平台
-        g.drawString("存证平台：" + "DMS-iMark", (int) 120, (int) 330);
+        g.drawString("存证平台：" + "DMS-iMark", 120, 330);
         String substring = certFicate.getCertChainno().substring(0, 34);
-        String s = certFicate.getCertChainno().substring(34, certFicate.getCertChainno().length());
-        g.drawString("区块链存证编号：" + substring, (int) 120, (int) 370);
-        g.drawString(s, (int) 120, (int) 390);
+        int length = certFicate.getCertChainno().length();
+        String s = certFicate.getCertChainno().substring(34, length);
+        g.drawString("区块链存证编号：" + substring, 120, 370);
+        g.drawString(s, 120, 390);
         String certAddress = certFicate.getCertAddress();
         String address = "";
         String address2 = "";
@@ -65,14 +66,15 @@ public class CertImgUtil {
             int maxLength = 22;
             if (certAddress.length() > maxLength) {
                 address = certAddress.substring(0, 22);
-                address2 = certAddress.substring(22, certAddress.length());
+                int length1 = certAddress.length();
+                address2 = certAddress.substring(22, length1);
             }
         }
-        g.drawString("存证位置：" + address, (int) 120, (int) 430);
-        g.drawString(address2, (int) 120, (int) 450);
+        g.drawString("存证位置：" + address, 120, 430);
+        g.drawString(address2, 120, 450);
         g.setFont(new Font("黑体", Font.PLAIN, 15));
-        g.drawString("存证声明：", (int) 120, (int) 615);
-        g.drawString("1.本证书最终解释权归北京迪曼森科技有限公司所有。", (int) 120, (int) 640);
+        g.drawString("存证声明：", 120, 615);
+        g.drawString("1.本证书最终解释权归北京迪曼森科技有限公司所有。", 120, 640);
         /*二维码*/
         ImageIcon QrcodeimgIcon = new ImageIcon(qrPath);
         Image img1 = QrcodeimgIcon.getImage();

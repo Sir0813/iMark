@@ -99,7 +99,7 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.submitCustomPrice(map);
     }
 
-    @ApiOperation(value = "资料待审核列表", response = ResultUtil.class)
+    @ApiOperation(value = "资料处理中 已处理", response = ResultUtil.class)
     @RequestMapping(value = "/pending/review", method = RequestMethod.GET)
     public Result pendReview(Page<ItemApply> page, int itemId, int type) throws Exception {
         return itemApplyService.pendReview(page, itemId, type);
@@ -157,6 +157,13 @@ public class ItemApplyController extends BaseController {
     public Result approved(@RequestBody Map<String, Object> map) throws Exception {
         itemApplyService.approved(map);
         return ResultUtil.success();
+    }
+
+    @ApiOperation(value = "公正首页接口", response = ResultUtil.class)
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public Result index() throws Exception {
+        Result index = itemApplyService.index();
+        return index;
     }
 
 
