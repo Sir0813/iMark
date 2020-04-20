@@ -19,7 +19,7 @@
         <result column="updated_by" jdbcType="INTEGER" property="updatedBy"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, userid, org_id, type, status, title, icon_url, writer, from, from_url, pub_date, 
+    `id`, `userid`, org_id, `type`, `status`, `title`, icon_url, `writer`, `from`, from_url, pub_date,
     created_date, created_by, updated_date, updated_by
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -28,6 +28,15 @@
         from pub_article
         where id = #{id,jdbcType=INTEGER}
     </select>
+    <select id="articleTop" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from pub_article
+        where org_id = 11
+        and `status` = 1
+        order by created_date desc
+        limit 3
+    </select>
     <select id="articleList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>
@@ -35,6 +44,5 @@
         where org_id = 11
         and `status` = 1
         order by created_date desc
-        limit 5
     </select>
 </mapper>

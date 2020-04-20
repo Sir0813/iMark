@@ -66,6 +66,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Autowired
     private BizItemVideoService bizItemVideoService;
 
+    @Autowired
+    private PubArticleService pubArticleService;
+
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         boolean insert = null == itemApply.getApplyid();
@@ -548,6 +551,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Integer myApplyCount = itemApplyMapper.selectMyApplyCount(dataMap);
         List<ItemApply> myApplyList = itemApplyMapper.selectMyApply(dataMap);
         List<ItemApply> newApplyList = itemApplyMapper.selectNewApply(ItemApplyEnum.REVIEW.getCode());
+        List<PubArticle> articleList = pubArticleService.articleTop();
+        map.put("articleList", articleList);
         map.put("newOrderCount", newOrderCount);
         map.put("inProcessingCount", inProcessingCount);
         map.put("isProcessingCount", isProcessingCount);

@@ -42,16 +42,10 @@ public class UserCardServiceImpl implements UserCardService {
             if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
                 String code = tidUtil.checkTid(LoginUserHelper.getUserName(), userCard.getCardNumber());
                 if ("201".equals(code)) {
-                    if (tidUtil.get(LoginUserHelper.getUserName())) {
-                        if (tidUtil.addTid(userCard.getCardNumber())) {
-                            if (!tidUtil.addBind(LoginUserHelper.getUserName(), appUser.getPassword(), userCard.getCardNumber())) {
-                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                                return ResultUtil.error();
-                            }
-                        } else {
-                            return ResultUtil.error();
-                        }
+                    if (!tidUtil.queryTid(userCard.getCardNumber())) {
+                        tidUtil.addTid(userCard.getCardNumber());
                     }
+                    tidUtil.addBind(LoginUserHelper.getUserName(), appUser.getPassword(), userCard.getCardNumber());
                 } else if (!"200".equals(code)) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResultUtil.error();

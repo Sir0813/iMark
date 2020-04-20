@@ -286,7 +286,6 @@ public class CertFicateServiceImpl implements CertFicateService {
         map.put("state", "null".equals(state) ? "" : state);
         map.put("userId", LoginUserHelper.getUserId());
         map.put("certName", certName);
-        // 待自己确认
         if (state != null && StateMsg.CONFIRM_TO_ME.equals(state)) {
             if (ids == null) {
                 return null;

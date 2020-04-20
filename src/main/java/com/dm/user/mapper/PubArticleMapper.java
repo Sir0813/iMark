@@ -10,6 +10,7 @@ public interface PubArticleMapper {
 
     PubArticle selectByPrimaryKey(Integer id);
 
-    List<PubArticle> articleList();
+    List<PubArticle> articleTop();
 
+    List<PubArticle> articleList();
 }

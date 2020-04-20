@@ -1,6 +1,5 @@
 package com.dm.user.util;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dm.app.tid.sdk.model.form.BindForm;
 import com.dm.app.tid.sdk.model.form.RegisterForm;
 import com.dm.app.tid.sdk.model.form.SimpleForm;
@@ -30,17 +29,13 @@ public class TidUtil {
     /**
      * 查询是否绑定
      *
-     * @param userName
+     * @param userCard
      * @return
      * @throws Exception
      */
-    public boolean get(String userName) throws Exception {
-        String s = tidService.get(appCode + userName);
-        JSONObject jsonObject = JSONObject.parseObject(s);
-        String data = jsonObject.get("data").toString();
-        JSONObject jsonObject1 = JSONObject.parseObject(data);
-        Object parent = jsonObject1.get("parent");
-        if ("".equals(parent)) {
+    public boolean queryTid(String userCard) throws Exception {
+        Result result = tidService.queryTID(userCard);
+        if ("200".equals(result.getCode())) {
             return true;
         } else {
             return false;
@@ -91,7 +86,7 @@ public class TidUtil {
             logger.error(result.getCode());
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
-            return false;
+            throw new Exception();
         }
     }
 
@@ -151,7 +146,7 @@ public class TidUtil {
      * @return
      * @throws Exception
      */
-    public boolean addBind(String userName, String userPassword, String userCard) throws Exception {
+    public void addBind(String userName, String userPassword, String userCard) throws Exception {
         BindForm bindForm = new BindForm();
         bindForm.setUserNo(appCode + userName);
         bindForm.setPassword(userPassword);
@@ -160,13 +155,13 @@ public class TidUtil {
         Result result = tidService.addBind(bindForm);
         if ("200".equals(result.getCode())) {
             logger.info(userName + "临时身份绑定身份证号身份成功");
-            return true;
+            return;
         } else {
             logger.error(userName + "临时身份绑定身份证号身份失败");
             logger.error(result.getCode());
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
-            return false;
+            throw new Exception();
         }
     }
 
