@@ -19,8 +19,6 @@ public interface ItemApplyFilesMapper {
 
     List<ItemApplyFiles> selectByApplyIdAndRequeredId(Map<String, Object> m);
 
-    void deleteByIds(String[] split);
-
     void deleteByApplyIdAndRequeredId(Map<String, Object> map);
 
     void deleteByApplyIdAndFileType(Map<String, Object> map);

@@ -45,10 +45,17 @@ public class CertFicateController extends BaseController {
         return ResultUtil.success(cert);
     }
 
-    @ApiOperation(value = "我的存证", response = ResultUtil.class)
+    /*@ApiOperation(value = "我的存证", response = ResultUtil.class)
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result listCerts(Page<CertFicate> page, String state, String certName) throws Exception {
         PageInfo<CertFicate> certFicateList = certFicateService.listCerts(page, state, certName);
+        return ResultUtil.success(certFicateList);
+    }*/
+
+    @ApiOperation(value = "我的存证", response = ResultUtil.class)
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public Result myList(Page<CertFicate> page, String state, String certName) throws Exception {
+        PageInfo<CertFicate> certFicateList = certFicateService.myCertList(page, state, certName);
         return ResultUtil.success(certFicateList);
     }
 

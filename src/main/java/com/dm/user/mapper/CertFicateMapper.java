@@ -27,14 +27,6 @@ public interface CertFicateMapper {
      * @param record
      * @return
      */
-    int insert(CertFicate record);
-
-    /**
-     * 新增
-     *
-     * @param record
-     * @return
-     */
     int insertSelective(CertFicate record);
 
     /**
@@ -54,14 +46,6 @@ public interface CertFicateMapper {
     int updateByPrimaryKeySelective(CertFicate record);
 
     /**
-     * 修改
-     *
-     * @param record
-     * @return
-     */
-    int updateByPrimaryKey(CertFicate record);
-
-    /**
      * 获取集合
      *
      * @param map
@@ -72,7 +56,7 @@ public interface CertFicateMapper {
     /**
      * 根据ID批量查询
      *
-     * @param ids
+     * @param map
      * @return
      */
     List<CertFicate> selectByIDs(Map<String, Object> map);
@@ -113,4 +97,11 @@ public interface CertFicateMapper {
      * @return
      */
     List<CertFicate> selectByCertIDs(String[] certIds);
+
+    /**
+     * 我的存证
+     *
+     * @param map
+     */
+    List<CertFicate> myCertList(Map<String, Object> map);
 }

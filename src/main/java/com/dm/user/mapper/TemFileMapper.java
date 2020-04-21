@@ -24,14 +24,6 @@ public interface TemFileMapper {
      * @param record
      * @return
      */
-    int insert(TemFile record);
-
-    /**
-     * 新增
-     *
-     * @param record
-     * @return
-     */
     int insertSelective(TemFile record);
 
     /**

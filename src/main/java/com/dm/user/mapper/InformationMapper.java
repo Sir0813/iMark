@@ -26,14 +26,6 @@ public interface InformationMapper {
      * @param record
      * @return
      */
-    int insert(Information record);
-
-    /**
-     * 新增
-     *
-     * @param record
-     * @return
-     */
     int insertSelective(Information record);
 
     /**
@@ -51,14 +43,6 @@ public interface InformationMapper {
      * @return
      */
     int updateByPrimaryKeySelective(Information record);
-
-    /**
-     * 修改
-     *
-     * @param record
-     * @return
-     */
-    int updateByPrimaryKey(Information record);
 
     /**
      * 根据手机号查询

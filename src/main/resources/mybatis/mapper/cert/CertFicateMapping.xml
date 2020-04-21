@@ -72,6 +72,72 @@
             #{certid}
         </foreach>
     </select>
+    <select id="myCertList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        biz_certficate
+        WHERE 1=1
+        <if test="havaConfirm!='confirmToMe'">
+            AND cert_owner = #{userId}
+        </if>
+        AND cert_is_delete = #{certIsDelete}
+        <if test="certName!=null and certName!=''">
+            and cert_name like CONCAT('%',#{certName},'%')
+        </if>
+        <if test="state!=null and state!=''">
+            <if test="state==2">
+                and cert_status = #{state} and cert_isconf = #{isConfirm}
+            </if>
+            <if test="state==4">
+                and cert_isconf = #{confirmState} and cert_status = #{state}
+                AND cert_id in (
+                select cert_id from biz_cert_confirm where cert_id in (SELECT
+                cert_id
+                FROM
+                biz_certficate
+                WHERE cert_owner = #{userId}
+                AND cert_is_delete = #{certIsDelete}
+                AND cert_isconf = #{confirmState}
+                AND cert_status = #{state})
+                and confirm_state = #{confirmState} and (user_id != #{userId} or user_id is null)
+                )
+            </if>
+            <if test="state==5">
+                and (cert_status = #{state} or cert_status = #{isRevoke})
+            </if>
+            <if test="state==0">
+                and cert_status = #{state}
+            </if>
+        </if>
+        <if test="havaConfirm=='all'">
+            OR cert_id IN (
+            SELECT
+            cert_id
+            FROM
+            biz_cert_confirm
+            WHERE
+            confirm_state = #{confirmState}
+            AND user_id = #{userId}
+            GROUP BY
+            cert_id
+            )
+        </if>
+        <if test="havaConfirm=='confirmToMe'">
+            AND cert_id IN (
+            SELECT
+            cert_id
+            FROM
+            biz_cert_confirm
+            WHERE
+            confirm_state = #{confirmState}
+            AND user_id = #{userId}
+            GROUP BY
+            cert_id
+            )
+        </if>
+        ORDER BY cert_post_date DESC
+    </select>
     <select id="list" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>

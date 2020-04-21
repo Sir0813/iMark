@@ -29,14 +29,6 @@ public interface UserMapper {
     int insert(AppUser record);
 
     /**
-     * 新增
-     *
-     * @param record
-     * @return
-     */
-    int insertSelective(AppUser record);
-
-    /**
      * 根据主键查询
      *
      * @param userid
@@ -51,14 +43,6 @@ public interface UserMapper {
      * @return
      */
     int updateByPrimaryKeySelective(AppUser record);
-
-    /**
-     * 修改
-     *
-     * @param record
-     * @return
-     */
-    int updateByPrimaryKey(AppUser record);
 
     /**
      * 注册

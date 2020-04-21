@@ -22,12 +22,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -37,6 +38,8 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CertFicateServiceImpl implements CertFicateService {
+
+    private static Logger logger = LoggerFactory.getLogger(CertFicateServiceImpl.class);
 
     @Autowired
     private CertFicateMapper certFicateMapper;
@@ -97,20 +100,20 @@ public class CertFicateServiceImpl implements CertFicateService {
             map.put("文件签名", certFicate.getSignature());
             map.put("存证位置", certFicate.getCertAddress());
             Map<String, Object> fileMap = new LinkedHashMap<>(16);
-            boolean fileNotSave = StateMsg.CERT_FILE_IS_DELETE.equals(certFicate.getCertFileIsSave());
+            //boolean fileNotSave = StateMsg.CERT_FILE_IS_DELETE.equals(certFicate.getCertFileIsSave());
             certFiles.forEach(cf -> {
-                String fileName = cf.getFileUrl().substring(cf.getFileUrl().lastIndexOf("/") + 1);
-                cf.setCertId(certFicate.getCertId());
-                fileMap.put(fileName, cf.getFileHash());
                 try {
+                    String fileName = cf.getFileUrl().substring(cf.getFileUrl().lastIndexOf("/") + 1);
+                    cf.setCertId(certFicate.getCertId());
+                    fileMap.put(fileName, cf.getFileHash());
                     certFilesService.updateByPrimaryKeySelective(cf);
-                    if (fileNotSave) {
+                    /*if (fileNotSave) {
                         File file = new File(cf.getFilePath());
                         file.delete();
                         certFilesService.deleteByCertId(certFicate.getCertId());
-                    }
+                    }*/
                 } catch (Exception e) {
-                    e.getStackTrace();
+                    e.printStackTrace();
                 }
             });
             String fileJson = JSON.toJSONString(fileMap);
@@ -122,7 +125,10 @@ public class CertFicateServiceImpl implements CertFicateService {
                 certFicate.setCertChainno(tr.getTransactionID());
                 certFicate.setCertBlockNumber(String.valueOf(tr.getBlockNumber()));
             } else {
-                throw new Exception(result.getMsg());
+                logger.error(result.getCode());
+                logger.error(result.getMsg());
+                logger.error(result.getData().toString());
+                throw new Exception();
             }
             certFicate.setCertDate(new Date());
             certFicate.setCertStatus(certFicate.getCertIsconf() == 1 ? CertStateEnum.OTHERS_CONFIRM.getCode() : CertStateEnum.CERT_SUCCESS.getCode());
@@ -229,7 +235,12 @@ public class CertFicateServiceImpl implements CertFicateService {
         CertFicate certFicate = certFicateMapper.selectByPrimaryKey(Integer.parseInt(certFicateId));
         List<CertConfirm> list = certConfirmService.selectByCertId(Integer.parseInt(certFicateId));
         certFicate.setCertConfirmList(list);
-        if (list.size() > 0) {
+        if (certFicate.getCertOwner().equals(LoginUserHelper.getUserId())) {
+            certFicate.setCertIsconf(2);
+        } else {
+            certFicate.setCertIsconf(1);
+        }
+        /*if (list.size() > 0) {
             list.forEach(cc -> {
                 if (null != cc.getUserId()) {
                     if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
@@ -251,129 +262,15 @@ public class CertFicateServiceImpl implements CertFicateService {
                     }
                 }
             });
-        }
-        if ("1".equals(certFicate.getCertFileIsSave())) {
-            if (StringUtils.isNotBlank(certFicate.getCertFilesid())) {
-                String[] filesId = certFicate.getCertFilesid().split(",");
-                List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
-                certFicate.setCertFilesList(certFiles);
-            }
-        }
+        }*/
+        /*if ("1".equals(certFicate.getCertFileIsSave())) {
+            if (StringUtils.isNotBlank(certFicate.getCertFilesid())) {*/
+        String[] filesId = certFicate.getCertFilesid().split(",");
+        List<CertFiles> certFiles = certFilesService.findByFilesIds(filesId);
+        certFicate.setCertFilesList(certFiles);
+        /*    }
+        }*/
         return certFicate;
-    }
-
-    @Override
-    public PageInfo<CertFicate> listCerts(Page<CertFicate> page, String state, String certName) throws Exception {
-        List<CertFicate> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        Integer[] ids = null;
-        List<CertConfirm> confirmList = null;
-        if (StringUtils.isBlank(state)) {
-            confirmList = certConfirmService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
-        } else if (StateMsg.CONFIRM_TO_ME.equals(state)) {
-            /* 待自己确认 */
-            confirmList = certConfirmService.selectByuserIdAndState(LoginUserHelper.getUserId(), "1");
-        }
-        if (confirmList != null && confirmList.size() > 0) {
-            ids = new Integer[confirmList.size()];
-            for (int i = 0; i < confirmList.size(); i++) {
-                ids[i] = confirmList.get(i).getCertId();
-            }
-        }
-        if (StringUtils.isBlank(certName)) {
-            map.put("certid", ids);
-        }
-        map.put("state", "null".equals(state) ? "" : state);
-        map.put("userId", LoginUserHelper.getUserId());
-        map.put("certName", certName);
-        if (state != null && StateMsg.CONFIRM_TO_ME.equals(state)) {
-            if (ids == null) {
-                return null;
-            }
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            map.put("notDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
-            map.put("otherConfirm", CertStateEnum.OTHERS_CONFIRM.getCode());
-            list = certFicateMapper.selectByIDs(map);
-        } else {
-            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
-            map.put("fileNotDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
-            map.put("isRevoke", CertStateEnum.IS_REVOKE.getCode());
-            list = certFicateMapper.list(map);
-            certConfirmState(list, state);
-        }
-        if (list.size() == 0) {
-            return null;
-        }
-        PageInfo<CertFicate> pageInfo = new PageInfo<>(list);
-        if (page.getPageNum() > pageInfo.getPages()) {
-            return null;
-        }
-        return pageInfo;
-    }
-
-    private void certConfirmState(List<CertFicate> list, String state) throws Exception {
-        if (list.size() > 0) {
-            Iterator<CertFicate> iterator = list.iterator();
-            while (iterator.hasNext()) {
-                CertFicate l = iterator.next();
-                if (l.getCertStatus().equals(CertStateEnum.OTHERS_CONFIRM.getCode())) {
-                    //待他人确认和待自己确认
-                    List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
-                    if (certConfirms.size() > 0) {
-                        certConfirms.forEach(cc -> {
-                            if (null != cc.getUserId()) {
-                                // 用户确认人添加自己去除重复
-                                if (StringUtils.isNotBlank(state)) {
-                                    if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) &&
-                                            cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
-                                            cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
-                                        iterator.remove();
-                                        return;
-                                    }
-                                }
-                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
-                                    l.setCertIsconf(1);//1待自己确认 仅前端判断用
-                                    return;
-                                }
-                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
-                                    l.setCertIsconf(2);//1待他人确认 仅前端判断用
-                                    return;
-                                }
-                            } else {
-                                if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
-                                    l.setCertIsconf(1);
-                                    return;
-                                }
-                                if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
-                                    l.setCertIsconf(2);
-                                    return;
-                                }
-                            }
-                        });
-                    }
-                } else if (l.getCertStatus().equals(Integer.valueOf(StateMsg.CONFIRM_TO_ME))) {
-                    // 撤销的存证 确认人方不显示该存证
-                    List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
-                    if (certConfirms.size() > 0) {
-                        for (CertConfirm cc : certConfirms) {
-                            if (null != cc.getUserId()) {
-                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
-                                        cc.getConfirmState() != ConfirmEnum.ORIGINATOR.getCode() &&
-                                        cc.getConfirmState() != ConfirmEnum.REVOKE_CONFIRM.getCode()) {
-                                    iterator.remove();
-                                    break;
-                                }
-                            } else {
-                                if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() != ConfirmEnum.ORIGINATOR.getCode()) {
-                                    iterator.remove();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -384,8 +281,6 @@ public class CertFicateServiceImpl implements CertFicateService {
 
     @Override
     public void draftDel(CertFicate certFicate) throws Exception {
-        //certFicate.setCertDelDate(new Date());
-        //certFicate.setCertIsDelete(StateMsg.CERT_IS_DELETE);
         certFicateMapper.deleteByPrimaryKey(certFicate.getCertId());
     }
 
@@ -489,4 +384,155 @@ public class CertFicateServiceImpl implements CertFicateService {
     public CertFicate selectByPrimaryKey(Integer certId) throws Exception {
         return certFicateMapper.selectByPrimaryKey(certId);
     }
+
+    @Override
+    public PageInfo<CertFicate> myCertList(Page<CertFicate> page, String state, String certName) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("state", state);
+        map.put("certName", certName);
+        map.put("userId", LoginUserHelper.getUserId());
+        map.put("certIsDelete", StateMsg.CERT_FILE_NOT_DELETE);
+        map.put("isRevoke", CertStateEnum.IS_REVOKE.getCode());
+        map.put("isConfirm", ConfirmEnum.IS_CONFIRM.getCode());
+        map.put("certSucess", CertStateEnum.CERT_SUCCESS.getCode());
+        map.put("confirmState", ConfirmEnum.NO_CONFIRM.getCode());
+        List<CertConfirm> certConfirms = certConfirmService.selectByuserIdAndState(LoginUserHelper.getUserId(), String.valueOf(ConfirmEnum.NO_CONFIRM.getCode()));
+        if (certConfirms.size() > 0) {
+            if (StringUtils.isBlank(state)) {
+                map.put("havaConfirm", "all");
+            } else if (StateMsg.CONFIRM_TO_ME.equals(state)) {
+                map.put("havaConfirm", "confirmToMe");
+            }
+        }
+        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        List<CertFicate> certFicates = certFicateMapper.myCertList(map);
+        certFicates.forEach(certFicate -> {
+            if (certFicate.getCertStatus().equals(CertStateEnum.OTHERS_CONFIRM.getCode())) {
+                if (certFicate.getCertOwner().equals(LoginUserHelper.getUserId())) {
+                    certFicate.setCertIsconf(2);
+                } else {
+                    certFicate.setCertIsconf(1);
+                }
+            }
+        });
+        PageInfo<CertFicate> pageInfo = new PageInfo<>(certFicates);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
+        } else {
+            return pageInfo;
+        }
+    }
+
+        /*@Override
+    public PageInfo<CertFicate> listCerts(Page<CertFicate> page, String state, String certName) throws Exception {
+        List<CertFicate> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
+        Integer[] ids = null;
+        List<CertConfirm> confirmList = null;
+        if (StringUtils.isBlank(state)) {
+            confirmList = certConfirmService.selectByUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+        } else if (StateMsg.CONFIRM_TO_ME.equals(state)) {
+            confirmList = certConfirmService.selectByuserIdAndState(LoginUserHelper.getUserId(), "1");
+        }
+        if (confirmList != null && confirmList.size() > 0) {
+            ids = new Integer[confirmList.size()];
+            for (int i = 0; i < confirmList.size(); i++) {
+                ids[i] = confirmList.get(i).getCertId();
+            }
+        }
+        if (StringUtils.isBlank(certName)) {
+            map.put("certid", ids);
+        }
+        map.put("state", "null".equals(state) ? "" : state);
+        map.put("userId", LoginUserHelper.getUserId());
+        map.put("certName", certName);
+        if (state != null && StateMsg.CONFIRM_TO_ME.equals(state)) {
+            if (ids == null) {
+                return null;
+            }
+            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+            map.put("notDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
+            map.put("otherConfirm", CertStateEnum.OTHERS_CONFIRM.getCode());
+            list = certFicateMapper.selectByIDs(map);
+        } else {
+            PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+            map.put("fileNotDelete", Integer.valueOf(StateMsg.CERT_FILE_NOT_DELETE));
+            map.put("isRevoke", CertStateEnum.IS_REVOKE.getCode());
+            list = certFicateMapper.list(map);
+            certConfirmState(list, state);
+        }
+        if (list.size() == 0) {
+            return null;
+        }
+        PageInfo<CertFicate> pageInfo = new PageInfo<>(list);
+        if (page.getPageNum() > pageInfo.getPages()) {
+            return null;
+        }
+        return pageInfo;
+    }*/
+
+    /*private void certConfirmState(List<CertFicate> list, String state) throws Exception {
+        if (list.size() > 0) {
+            Iterator<CertFicate> iterator = list.iterator();
+            while (iterator.hasNext()) {
+                CertFicate l = iterator.next();
+                if (l.getCertStatus().equals(CertStateEnum.OTHERS_CONFIRM.getCode())) {
+                    //待他人确认和待自己确认
+                    List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
+                    if (certConfirms.size() > 0) {
+                        certConfirms.forEach(cc -> {
+                            if (null != cc.getUserId()) {
+                                // 用户确认人添加自己去除重复
+                                if (StringUtils.isNotBlank(state)) {
+                                    if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) &&
+                                            cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
+                                            cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
+                                        iterator.remove();
+                                        return;
+                                    }
+                                }
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
+                                    l.setCertIsconf(1);//1待自己确认 仅前端判断用
+                                    return;
+                                }
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
+                                    l.setCertIsconf(2);//1待他人确认 仅前端判断用
+                                    return;
+                                }
+                            } else {
+                                if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
+                                    l.setCertIsconf(1);
+                                    return;
+                                }
+                                if (!cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() == ConfirmEnum.NO_CONFIRM.getCode()) {
+                                    l.setCertIsconf(2);
+                                    return;
+                                }
+                            }
+                        });
+                    }
+                } else if (l.getCertStatus().equals(Integer.valueOf(StateMsg.CONFIRM_TO_ME))) {
+                    // 撤销的存证 确认人方不显示该存证
+                    List<CertConfirm> certConfirms = certConfirmService.selectByCertId(l.getCertId());
+                    if (certConfirms.size() > 0) {
+                        for (CertConfirm cc : certConfirms) {
+                            if (null != cc.getUserId()) {
+                                if (cc.getUserId().equals(Integer.parseInt(LoginUserHelper.getUserId())) &&
+                                        cc.getConfirmState() != ConfirmEnum.ORIGINATOR.getCode() &&
+                                        cc.getConfirmState() != ConfirmEnum.REVOKE_CONFIRM.getCode()) {
+                                    iterator.remove();
+                                    break;
+                                }
+                            } else {
+                                if (cc.getConfirmPhone().equals(LoginUserHelper.getUserName()) && cc.getConfirmState() != ConfirmEnum.ORIGINATOR.getCode()) {
+                                    iterator.remove();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 }

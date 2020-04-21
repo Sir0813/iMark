@@ -34,7 +34,7 @@ public interface CertFicateService {
      * @return
      * @throws Exception
      */
-    PageInfo<CertFicate> listCerts(Page<CertFicate> page, String state, String certName) throws Exception;
+    // PageInfo<CertFicate> listCerts(Page<CertFicate> page, String state, String certName) throws Exception;
 
     /**
      * 存证详情
@@ -130,4 +130,14 @@ public interface CertFicateService {
      * @throws Exception
      */
     CertFicate selectByPrimaryKey(Integer certId) throws Exception;
+
+    /**
+     * 我的存证
+     *
+     * @param page
+     * @param state
+     * @param certName
+     * @return
+     */
+    PageInfo<CertFicate> myCertList(Page<CertFicate> page, String state, String certName) throws Exception;
 }
