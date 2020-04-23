@@ -295,8 +295,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         pageNum = null == pageNum ? 1 : pageNum;
         PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         if (itemId != 0) {
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
-            map.put("itemCode", orgItems.getItemCode());
+            map.put("itemId", itemId);
         }
         List<ItemApply> itemApplyList = itemApplyMapper.pendReview(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);

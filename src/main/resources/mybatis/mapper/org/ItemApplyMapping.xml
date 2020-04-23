@@ -269,8 +269,8 @@
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
         AND usercard.real_state = 2)
         where 1=1
-        <if test="itemCode != null and itemCode != '' ">
-            and itemapply.item_Code = #{itemCode}
+        <if test="itemId != null and itemId != '' ">
+            and itemapply.itemid = #{itemId}
         </if>
         <if test="status!=null and status.length!=0">
             and itemapply.`status` in
