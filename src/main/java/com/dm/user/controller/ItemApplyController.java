@@ -6,7 +6,6 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.ItemApply;
 import com.dm.user.entity.ItemApplyFiles;
 import com.dm.user.service.ItemApplyService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -78,8 +77,8 @@ public class ItemApplyController extends BaseController {
      */
     @ApiOperation(value = "待接单列表", response = ResultUtil.class)
     @RequestMapping(value = "/pending/list", method = RequestMethod.GET)
-    public Result pendList(Page<ItemApply> page, int itemId) throws Exception {
-        return itemApplyService.pendList(page, itemId);
+    public Result pendList(Integer pageNum, int itemId) throws Exception {
+        return itemApplyService.pendList(pageNum, itemId);
     }
 
     @ApiOperation(value = "接单", response = ResultUtil.class)
@@ -101,8 +100,8 @@ public class ItemApplyController extends BaseController {
 
     @ApiOperation(value = "资料处理中 已处理", response = ResultUtil.class)
     @RequestMapping(value = "/pending/review", method = RequestMethod.GET)
-    public Result pendReview(Page<ItemApply> page, int itemId, int type) throws Exception {
-        return itemApplyService.pendReview(page, itemId, type);
+    public Result pendReview(Integer pageNum, int itemId, int type) throws Exception {
+        return itemApplyService.pendReview(pageNum, itemId, type);
     }
 
     @ApiOperation(value = "用户材料退回", response = ResultUtil.class)
@@ -136,15 +135,15 @@ public class ItemApplyController extends BaseController {
 
     @ApiOperation(value = "审批待处理", response = ResultUtil.class)
     @RequestMapping(value = "/wait/list", method = RequestMethod.GET)
-    public Result list(Page<ItemApply> page, int itemId) throws Exception {
-        PageInfo<ItemApply> itemApplyList = itemApplyService.waitList(page, itemId);
+    public Result list(Integer pageNum, int itemId) throws Exception {
+        PageInfo<ItemApply> itemApplyList = itemApplyService.waitList(pageNum, itemId);
         return ResultUtil.success(itemApplyList);
     }
 
     @ApiOperation(value = "审批已处理", response = ResultUtil.class)
     @RequestMapping(value = "/deal/list", method = RequestMethod.GET)
-    public Result dealList(Page<ItemApply> page, int itemId) throws Exception {
-        PageInfo<ItemApply> itemApplyList = itemApplyService.dealList(page, itemId);
+    public Result dealList(Integer pageNum, int itemId) throws Exception {
+        PageInfo<ItemApply> itemApplyList = itemApplyService.dealList(pageNum, itemId);
         return ResultUtil.success(itemApplyList);
     }
 

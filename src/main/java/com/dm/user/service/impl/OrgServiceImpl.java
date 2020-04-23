@@ -4,7 +4,6 @@ import com.dm.user.entity.Org;
 import com.dm.user.mapper.OrgMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.OrgService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,12 @@ public class OrgServiceImpl implements OrgService {
     private OrgMapper orgMapper;
 
     @Override
-    public PageInfo<Org> orgList(Page<Org> page) throws Exception {
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+    public PageInfo<Org> orgList(Integer pageNum) throws Exception {
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<Org> orgList = orgMapper.orgList();
         PageInfo<Org> pageInfo = new PageInfo<>(orgList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;

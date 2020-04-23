@@ -9,7 +9,6 @@ import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
 import com.dm.user.util.FileUtil;
 import com.dm.user.util.PushUtil;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
@@ -133,9 +132,10 @@ public class OutCertServiceImpl implements OutCertService {
     }
 
     @Override
-    public PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception {
+    public PageInfo<OutCert> list(Integer pageNum, String state) throws Exception {
         List<OutCert> list = new ArrayList<>();
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         String userId = LoginUserHelper.getUserId();
         String mySend = "mysend";
         String toMe = "tome";
@@ -157,7 +157,7 @@ public class OutCertServiceImpl implements OutCertService {
             return null;
         }
         PageInfo<OutCert> pageInfo = new PageInfo<>(list);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;

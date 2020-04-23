@@ -17,7 +17,6 @@ import com.dm.user.msg.ConfirmEnum;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
 import com.dm.user.util.*;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
@@ -386,7 +385,7 @@ public class CertFicateServiceImpl implements CertFicateService {
     }
 
     @Override
-    public PageInfo<CertFicate> myCertList(Page<CertFicate> page, String state, String certName) throws Exception {
+    public PageInfo<CertFicate> myCertList(Integer pageNum, String state, String certName) throws Exception {
         Map<String, Object> map = new HashMap<>(16);
         map.put("state", state);
         map.put("certName", certName);
@@ -404,7 +403,8 @@ public class CertFicateServiceImpl implements CertFicateService {
                 map.put("havaConfirm", "confirmToMe");
             }
         }
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<CertFicate> certFicates = certFicateMapper.myCertList(map);
         certFicates.forEach(certFicate -> {
             if (certFicate.getCertStatus().equals(CertStateEnum.OTHERS_CONFIRM.getCode())) {
@@ -416,7 +416,7 @@ public class CertFicateServiceImpl implements CertFicateService {
             }
         });
         PageInfo<CertFicate> pageInfo = new PageInfo<>(certFicates);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         } else {
             return pageInfo;

@@ -1,9 +1,8 @@
 package com.dm.user.service;
 
-import com.dm.user.entity.CertFicate;
+import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.PubArticle;
 import com.dm.user.entity.PubArticleDetail;
-import com.github.pagehelper.Page;
 
 import java.util.List;
 
@@ -26,8 +25,8 @@ public interface PubArticleService {
     /**
      * 普法专栏列表
      *
-     * @param page
+     * @param pageNum
      * @return
      */
-    List<PubArticle> articleList(Page<CertFicate> page) throws Exception;
+    Result articleList(Integer pageNum) throws Exception;
 }

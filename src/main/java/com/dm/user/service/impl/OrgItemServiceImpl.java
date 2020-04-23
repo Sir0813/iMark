@@ -8,7 +8,6 @@ import com.dm.user.mapper.OrgItemsMapper;
 import com.dm.user.msg.OrgItemEnum;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -46,14 +45,15 @@ public class OrgItemServiceImpl implements OrgItemService {
     }
 
     @Override
-    public PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception {
+    public PageInfo<OrgItems> itemList(Integer pageNum, int orgId, String itemName) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("orgId", orgId);
         map.put("itemName", itemName);
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<OrgItems> orgItemsList = orgItemsMapper.itemList(map);
         PageInfo<OrgItems> pageInfo = new PageInfo<>(orgItemsList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;

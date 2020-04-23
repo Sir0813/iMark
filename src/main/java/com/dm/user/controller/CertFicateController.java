@@ -6,7 +6,6 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.TemCertFile;
 import com.dm.user.service.CertFicateService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -54,8 +53,8 @@ public class CertFicateController extends BaseController {
 
     @ApiOperation(value = "我的存证", response = ResultUtil.class)
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result myList(Page<CertFicate> page, String state, String certName) throws Exception {
-        PageInfo<CertFicate> certFicateList = certFicateService.myCertList(page, state, certName);
+    public Result myList(Integer PageNum, String state, String certName) throws Exception {
+        PageInfo<CertFicate> certFicateList = certFicateService.myCertList(PageNum, state, certName);
         return ResultUtil.success(certFicateList);
     }
 

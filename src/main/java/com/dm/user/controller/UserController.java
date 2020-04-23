@@ -11,7 +11,6 @@ import com.dm.user.service.PushMsgService;
 import com.dm.user.service.UserCardService;
 import com.dm.user.service.UserService;
 import com.dm.user.util.FileUtil;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -152,8 +151,8 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "用户消息记录", response = ResultUtil.class)
     @RequestMapping(value = "/user/history/info", method = RequestMethod.GET)
-    public Result historyInfo(Page<PushMsg> page) throws Exception {
-        PageInfo<PushMsg> pageInfo = pushMsgService.historyInfo(page);
+    public Result historyInfo(Integer pageNum) throws Exception {
+        PageInfo<PushMsg> pageInfo = pushMsgService.historyInfo(pageNum);
         return ResultUtil.success(pageInfo);
     }
 

@@ -1,7 +1,6 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.PushMsg;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -40,11 +39,11 @@ public interface PushMsgService {
     /**
      * 历史消息
      *
-     * @param page
+     * @param pageNum
      * @return
      * @throws Exception
      */
-    PageInfo<PushMsg> historyInfo(Page<PushMsg> page) throws Exception;
+    PageInfo<PushMsg> historyInfo(Integer pageNum) throws Exception;
 
     /**
      * 已读状态修改

@@ -3,7 +3,6 @@ package com.dm.user.service;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.TemCertFile;
 import com.dm.user.entity.TemFile;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.springframework.core.io.ByteArrayResource;
 
@@ -134,12 +133,12 @@ public interface CertFicateService {
     /**
      * 我的存证
      *
-     * @param page
+     * @param pageNum
      * @param state
      * @param certName
      * @return
      */
-    PageInfo<CertFicate> myCertList(Page<CertFicate> page, String state, String certName) throws Exception;
+    PageInfo<CertFicate> myCertList(Integer pageNum, String state, String certName) throws Exception;
 
     /**
      * 获取存证证书

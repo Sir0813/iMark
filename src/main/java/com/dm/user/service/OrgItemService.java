@@ -2,7 +2,6 @@ package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.OrgItems;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -13,11 +12,11 @@ public interface OrgItemService {
     /**
      * 公正业务项目列表
      *
-     * @param page
+     * @param pageNum
      * @return
      * @throws Exception
      */
-    PageInfo<OrgItems> itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception;
+    PageInfo<OrgItems> itemList(Integer pageNum, int orgId, String itemName) throws Exception;
 
     /**
      * 申请公正内容填充展示

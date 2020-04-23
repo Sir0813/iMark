@@ -5,7 +5,6 @@ import com.dm.user.entity.PushMsg;
 import com.dm.user.mapper.PushMsgMapper;
 import com.dm.user.msg.StateMsg;
 import com.dm.user.service.PushMsgService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +40,12 @@ public class PushMsgServiceImpl implements PushMsgService {
     }
 
     @Override
-    public PageInfo<PushMsg> historyInfo(Page<PushMsg> page) throws Exception {
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+    public PageInfo<PushMsg> historyInfo(Integer pageNum) throws Exception {
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<PushMsg> list = pushMsgMapper.historyInfo(LoginUserHelper.getUserId());
-        if (list.size() == 0) {
-            return null;
-        }
         PageInfo<PushMsg> pageInfo = new PageInfo<>(list);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;

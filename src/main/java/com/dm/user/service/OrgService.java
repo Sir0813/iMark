@@ -1,7 +1,6 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.Org;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -13,10 +12,10 @@ public interface OrgService {
     /**
      * 公证处列表
      *
-     * @param page
+     * @param pageNum
      * @throws Exception
      */
-    PageInfo<Org> orgList(Page<Org> page) throws Exception;
+    PageInfo<Org> orgList(Integer pageNum) throws Exception;
 
     /**
      * 公正须知

@@ -8,7 +8,6 @@ import com.dm.user.entity.*;
 import com.dm.user.mapper.ItemApplyMapper;
 import com.dm.user.msg.*;
 import com.dm.user.service.*;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -253,17 +252,18 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     }
 
     @Override
-    public Result pendList(Page<ItemApply> page, int itemId) throws Exception {
+    public Result pendList(Integer pageNum, int itemId) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("status", ItemApplyEnum.REVIEW.getCode());
         List<ItemApply> itemApplyList = new ArrayList<>();
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         if (itemId != 0) {
             map.put("itemId", itemId);
         }
         itemApplyList = itemApplyMapper.pendList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return ResultUtil.success();
         }
         return ResultUtil.success(pageInfo);
@@ -282,7 +282,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     }
 
     @Override
-    public Result pendReview(Page<ItemApply> page, int itemId, int type) throws Exception {
+    public Result pendReview(Integer pageNum, int itemId, int type) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (1 == type) {
@@ -292,14 +292,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             /* 已处理 **/
             map.put("status", new int[]{ItemApplyEnum.REVIEW_YES.getCode(), ItemApplyEnum.REVIEW_NO.getCode(), ItemApplyEnum.REVIEW_SUCCESS.getCode()});
         }
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         if (itemId != 0) {
             OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
             map.put("itemCode", orgItems.getItemCode());
         }
         List<ItemApply> itemApplyList = itemApplyMapper.pendReview(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return ResultUtil.success();
         }
         return ResultUtil.success(pageInfo);
@@ -374,7 +375,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     }
 
     @Override
-    public PageInfo<ItemApply> waitList(Page<ItemApply> page, int itemId) throws Exception {
+    public PageInfo<ItemApply> waitList(Integer pageNum, int itemId) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
@@ -383,18 +384,20 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("realState", UserCardEnum.REAL_SUCCESS.getCode());
         map.put("payStatus", ItemApplyEnum.PAY_ALL.getCode());
         map.put("status", ItemApplyEnum.REVIEW_YES.getCode());
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<ItemApply> itemApplyList = itemApplyMapper.selectWaitList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;
     }
 
     @Override
-    public PageInfo<ItemApply> dealList(Page<ItemApply> page, int itemId) throws Exception {
-        PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
+    public PageInfo<ItemApply> dealList(Integer pageNum, int itemId) throws Exception {
+        pageNum = null == pageNum ? 1 : pageNum;
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
@@ -402,7 +405,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         }
         List<ItemApply> itemApplyList = itemApplyMapper.dealList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
-        if (page.getPageNum() > pageInfo.getPages()) {
+        if (pageNum > pageInfo.getPages()) {
             return null;
         }
         return pageInfo;

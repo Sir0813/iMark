@@ -1,7 +1,6 @@
 package com.dm.user.service;
 
 import com.dm.user.entity.OutCert;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -30,12 +29,12 @@ public interface OutCertService {
     /**
      * 出证列表
      *
-     * @param page
+     * @param pageNum
      * @param state
      * @return
      * @throws Exception
      */
-    PageInfo list(Page<OutCert> page, String state) throws Exception;
+    PageInfo list(Integer pageNum, String state) throws Exception;
 
     /**
      * 出证详情

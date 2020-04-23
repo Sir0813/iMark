@@ -3,7 +3,6 @@ package com.dm.user.service;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.ItemApply;
 import com.dm.user.entity.ItemApplyFiles;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 import java.util.Map;
@@ -49,7 +48,7 @@ public interface ItemApplyService {
      * @return
      * @throws Exception
      */
-    Result pendList(Page<ItemApply> page, int itemId) throws Exception;
+    Result pendList(Integer pageNum, int itemId) throws Exception;
 
     /**
      * 接单
@@ -63,12 +62,12 @@ public interface ItemApplyService {
     /**
      * 已接单待审核
      *
-     * @param page
+     * @param pageNum
      * @param itemId
      * @return
      * @throws Exception
      */
-    Result pendReview(Page<ItemApply> page, int itemId, int type) throws Exception;
+    Result pendReview(Integer pageNum, int itemId, int type) throws Exception;
 
     /**
      * 材料退回
@@ -100,21 +99,21 @@ public interface ItemApplyService {
     /**
      * 审批待处理列表
      *
-     * @param page
+     * @param pageNum
      * @return
      * @throws Exception
      */
-    PageInfo<ItemApply> waitList(Page<ItemApply> page, int itemId) throws Exception;
+    PageInfo<ItemApply> waitList(Integer pageNum, int itemId) throws Exception;
 
     /**
      * 已处理列表
      *
-     * @param page
+     * @param pageNum
      * @param itemId
      * @return
      * @throws Exception
      */
-    PageInfo<ItemApply> dealList(Page<ItemApply> page, int itemId) throws Exception;
+    PageInfo<ItemApply> dealList(Integer pageNum, int itemId) throws Exception;
 
     /**
      * 审批通过

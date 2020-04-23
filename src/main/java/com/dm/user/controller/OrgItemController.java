@@ -5,7 +5,6 @@ import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.OrgItems;
 import com.dm.user.service.OrgItemService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,8 +30,8 @@ public class OrgItemController extends BaseController {
 
     @ApiOperation(value = "公证业务列表", response = ResultUtil.class)
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result itemList(Page<OrgItems> page, int orgId, String itemName) throws Exception {
-        PageInfo<OrgItems> orgItemsList = orgItemService.itemList(page, orgId, itemName);
+    public Result itemList(Integer pageNum, int orgId, String itemName) throws Exception {
+        PageInfo<OrgItems> orgItemsList = orgItemService.itemList(pageNum, orgId, itemName);
         return ResultUtil.success(orgItemsList);
     }
 
