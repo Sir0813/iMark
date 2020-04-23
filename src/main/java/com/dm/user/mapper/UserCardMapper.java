@@ -66,4 +66,12 @@ public interface UserCardMapper {
      * @param userCard
      */
     void updateByPrimaryKey(UserCard userCard);
+
+    /**
+     * 查询实名
+     *
+     * @param map
+     * @return
+     */
+    UserCard selectByUserIdAndStatus(Map<String, Object> map);
 }

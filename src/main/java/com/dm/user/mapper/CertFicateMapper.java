@@ -104,4 +104,12 @@ public interface CertFicateMapper {
      * @param map
      */
     List<CertFicate> myCertList(Map<String, Object> map);
+
+    /**
+     * 存证code获取存证
+     *
+     * @param certCode
+     * @return
+     */
+    CertFicate selectByCertCode(String certCode);
 }

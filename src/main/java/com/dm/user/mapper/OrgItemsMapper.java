@@ -34,4 +34,12 @@ public interface OrgItemsMapper {
      * @param map
      */
     List<OrgItems> selectByOrgIdAndStatus(Map<String, Object> map);
+
+    /**
+     * 根据itemCode查询最新公正
+     *
+     * @param map
+     * @return
+     */
+    OrgItems selectByItemCode(Map<String, Object> map);
 }

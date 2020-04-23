@@ -67,4 +67,11 @@
         group by oitem.item_code
         order by oitem.created_date asc
     </select>
+    <select id="selectByItemCode" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_org_items
+        where item_code = #{itemCode}
+        and status = #{status}
+    </select>
 </mapper>

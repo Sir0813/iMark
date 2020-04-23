@@ -41,4 +41,13 @@ public interface UserCardService {
      * @throws Exception
      */
     void updateRealState() throws Exception;
+
+    /**
+     * 查询实名
+     *
+     * @param userid
+     * @return
+     * @throws Exception
+     */
+    UserCard selectByUserIdAndStatus(Integer userid) throws Exception;
 }

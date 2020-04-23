@@ -238,8 +238,8 @@
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
         AND usercard.real_state = 2)
         where 1 = 1
-        <if test="itemCode != null and itemCode != '' ">
-            and itemapply.item_code = #{itemCode}
+        <if test="itemId != null and itemId != '' ">
+            and itemapply.itemid = #{itemId}
         </if>
         and itemapply.`status` = #{status}
         and itemapply.handle_userid = 0
@@ -300,7 +300,7 @@
         orgitem.logo_url AS logoUrl
         FROM
         biz_item_apply AS itemapply
-        LEFT JOIN biz_org_items AS orgitem ON itemapply.item_code = orgitem.item_code
+        LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN sys_user_card usercard ON (
         itemapply.userid = usercard.userid
         AND (
@@ -326,8 +326,8 @@
         audit_userid LIKE CONCAT('%',#{userId},'%')
         )
         )
-        <if test="itemCode != null">
-            AND itemapply.item_code = #{itemCode}
+        <if test="itemId != null">
+            AND itemapply.itemid = #{itemId}
         </if>
         group by itemapply.applyid
         order by submitDate desc
@@ -353,7 +353,7 @@
         `wf_inst_audit_track` AS track
         LEFT JOIN
         biz_item_apply AS itemapply ON track.instid = itemapply.wf_instance_id
-        INNER JOIN biz_org_items AS orgitem ON itemapply.item_code = orgitem.item_code
+        INNER JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
         AND usercard.real_state = 2)
         WHERE
@@ -365,8 +365,8 @@
         WHERE
         userid = #{userId}
         )
-        <if test="itemCode != null">
-            AND itemapply.item_code = #{itemCode}
+        <if test="itemId != null">
+            AND itemapply.itemid = #{itemId}
         </if>
         group by itemapply.applyid
         order by createdDate desc
@@ -439,7 +439,7 @@
         FROM
         biz_item_apply itemapply
         LEFT JOIN biz_org_items item
-        ON itemapply.item_code = item.item_code
+        ON itemapply.itemid = item.itemid
         WHERE
         itemapply.userid = #{userId}
         GROUP BY itemapply.applyid
@@ -457,7 +457,7 @@
             item.logo_url AS logoUrl
         FROM
             biz_item_apply itemapply
-        LEFT JOIN biz_org_items item ON itemapply.item_code = item.item_code
+        LEFT JOIN biz_org_items item ON itemapply.itemid = item.itemid
         WHERE
             itemapply.`status` = #{status}
             AND itemapply.handle_userid = 0

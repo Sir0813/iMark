@@ -372,4 +372,10 @@
         </set>
         where cert_id = #{certId}
     </update>
+    <select id="selectByCertCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_certficate
+        where cert_code = #{certCode}
+    </select>
 </mapper>

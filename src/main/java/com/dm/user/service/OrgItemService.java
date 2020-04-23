@@ -51,4 +51,13 @@ public interface OrgItemService {
      * @throws Exception
      */
     List<OrgItems> selectByOrgIdAndStatus(Map<String, Object> map) throws Exception;
+
+    /**
+     * 根据itemCode查询最新上线公正
+     *
+     * @param itemCode
+     * @return
+     * @throws Exception
+     */
+    OrgItems selectByItemCode(String itemCode) throws Exception;
 }

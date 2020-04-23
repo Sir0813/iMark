@@ -69,6 +69,8 @@ public class CertImgUtil {
                 int length1 = certAddress.length();
                 address2 = certAddress.substring(22, length1);
             }
+        } else {
+            certAddress = "暂无";
         }
         g.drawString("存证位置：" + address, 120, 430);
         g.drawString(address2, 120, 450);

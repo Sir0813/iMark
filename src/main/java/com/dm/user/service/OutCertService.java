@@ -35,7 +35,7 @@ public interface OutCertService {
      * @return
      * @throws Exception
      */
-    PageInfo<OutCert> list(Page<OutCert> page, String state) throws Exception;
+    PageInfo list(Page<OutCert> page, String state) throws Exception;
 
     /**
      * 出证详情

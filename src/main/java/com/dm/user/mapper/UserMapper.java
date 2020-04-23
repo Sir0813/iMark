@@ -21,14 +21,6 @@ public interface UserMapper {
     int deleteByPrimaryKey(Integer userid);
 
     /**
-     * 新增
-     *
-     * @param record
-     * @return
-     */
-    int insert(AppUser record);
-
-    /**
      * 根据主键查询
      *
      * @param userid

@@ -140,4 +140,12 @@ public interface CertFicateService {
      * @return
      */
     PageInfo<CertFicate> myCertList(Page<CertFicate> page, String state, String certName) throws Exception;
+
+    /**
+     * 获取存证证书
+     *
+     * @param certCode
+     * @return
+     */
+    ByteArrayResource getPubCertImg(String certCode) throws Exception;
 }

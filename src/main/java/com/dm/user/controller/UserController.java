@@ -53,38 +53,6 @@ public class UserController extends BaseController {
     @Autowired
     private PushMsgService pushMsgService;
 
-    @ApiOperation(value = "发送验证码", response = ResultUtil.class)
-    @RequestMapping(value = "/api/sendVeriCode/{phone}/{type}", method = RequestMethod.GET)
-    public Result sendVeriCode(@PathVariable String phone, @PathVariable String type) throws Exception {
-        return userService.sendVeriCode(phone, type);
-    }
-
-    @ApiOperation(value = "用户注册", response = ResultUtil.class)
-    @RequestMapping(value = "/api/register", method = RequestMethod.POST)
-    public Result register(@Valid @RequestBody AppUser user) throws Exception {
-        return userService.userRegister(user);
-    }
-
-    @ApiOperation(value = "找回密码 下一步", response = ResultUtil.class)
-    @RequestMapping(value = "/api/nextOperate", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
-            @ApiImplicitParam(name = "veriCode", value = "验证码", dataType = "String")
-    })
-    public Result nextOperate(@RequestBody Map<String, Object> map) throws Exception {
-        return userService.nextOperate(map);
-    }
-
-    @ApiOperation(value = "找回密码", response = ResultUtil.class)
-    @RequestMapping(value = "/api/retrievePwd", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", dataType = "String")
-    })
-    public Result retrievePwd(@RequestBody Map<String, Object> map) throws Exception {
-        return userService.retrievePwd(map);
-    }
-
     @ApiOperation(value = "(极光推送)用户登录给设备设置别名", response = ResultUtil.class)
     @RequestMapping(value = "/user/getRegistrationId", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -180,16 +148,6 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/user/real/info", method = RequestMethod.GET)
     public Result realInfo() throws Exception {
         return userCardService.realInfo();
-    }
-
-    @ApiOperation(value = "短信验证码登录", response = ResultUtil.class)
-    @RequestMapping(value = "/api/dynamic/login", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "账号", dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "动态验证码", dataType = "String")
-    })
-    public Result dynamicLogin(@RequestBody Map<String, Object> map) throws Exception {
-        return userService.dynamicLogin(map);
     }
 
     @ApiOperation(value = "用户消息记录", response = ResultUtil.class)

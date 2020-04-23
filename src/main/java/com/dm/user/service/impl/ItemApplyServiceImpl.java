@@ -139,7 +139,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
         OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
         List<ItemRequered> list = itemRequeredService.selectByItemId(itemApply.getItemid());
-        UserCard userCard = userCardService.selectByUserId(itemApply.getUserid().toString(), "2");
+        UserCard userCard = userCardService.selectByUserIdAndStatus(itemApply.getUserid());
         AppUser user = userService.selectByPrimaryKey(itemApply.getUserid());
         /* 用户提交的文件清单 **/
         for (int i = 0; i < list.size(); i++) {
@@ -219,6 +219,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("fileUrl", certFiles1.getFileUrl());
         }
         List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        map.put("itemValue", itemApply.getItemValue());
         map.put("bizItemVideoList", bizItemVideoList);
         /* 审批历史公正意见书 (未盖章) **/
         map.put("opinionFile", certFiles);
@@ -258,8 +259,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<ItemApply> itemApplyList = new ArrayList<>();
         PageHelper.startPage(page.getPageNum(), StateMsg.PAGE_SIZE);
         if (itemId != 0) {
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
-            map.put("itemCode", orgItems.getItemCode());
+            map.put("itemId", itemId);
         }
         itemApplyList = itemApplyMapper.pendList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
@@ -378,8 +378,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
-            map.put("itemCode", orgItems.getItemCode());
+            map.put("itemId", itemId);
         }
         map.put("realState", UserCardEnum.REAL_SUCCESS.getCode());
         map.put("payStatus", ItemApplyEnum.PAY_ALL.getCode());
@@ -399,8 +398,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         if (itemId != 0) {
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemId);
-            map.put("itemCode", orgItems.getItemCode());
+            map.put("itemId", itemId);
         }
         List<ItemApply> itemApplyList = itemApplyMapper.dealList(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);

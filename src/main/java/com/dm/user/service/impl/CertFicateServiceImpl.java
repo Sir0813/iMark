@@ -423,7 +423,32 @@ public class CertFicateServiceImpl implements CertFicateService {
         }
     }
 
-        /*@Override
+    @Override
+    public ByteArrayResource getPubCertImg(String certCode) throws Exception {
+        CertFicate certFicate = certFicateMapper.selectByCertCode(certCode);
+        if (null == certFicate) {
+            return null;
+        }
+        AppUser appUser = userService.selectByPrimaryKey(Integer.parseInt(certFicate.getCertOwner()));
+        certFicate.setCertOwner(appUser.getUsername());
+        String os = System.getProperty("os.name").toLowerCase();
+        String qrCodePath = "";
+        String templatePath = "";
+        String fileSuffix = ".png";
+        String fileName = UUID.randomUUID().toString() + fileSuffix;
+        if (!os.startsWith(StateMsg.OS_NAME)) {
+            qrCodePath = "/opt/czt-upload/" + fileName;
+            templatePath = "/opt/czt-upload/certTemplate/ct.png";
+        } else {
+            qrCodePath = "D:\\upload\\" + fileName;
+            templatePath = "D:\\ct.png";
+        }
+        QRCodeGenerator.generateQRCodeImage(certFicate.getCertCode(), qrCodePath);
+        ByteArrayResource mark = CertImgUtil.createStringMark(certFicate, templatePath, qrCodePath);
+        return mark;
+    }
+
+    /*@Override
     public PageInfo<CertFicate> listCerts(Page<CertFicate> page, String state, String certName) throws Exception {
         List<CertFicate> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>(16);

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -98,5 +99,15 @@ public class UserCardServiceImpl implements UserCardService {
             }
         }
         userCardMapper.updateByPrimaryKey(userCard);
+    }
+
+    @Override
+    public UserCard selectByUserIdAndStatus(Integer userid) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("userId", userid);
+        map.put("realSuccess", UserCardEnum.REAL_SUCCESS.getCode());
+        map.put("isReal", UserCardEnum.IS_REAL_SUCCESS.getCode());
+        UserCard userCard = userCardMapper.selectByUserIdAndStatus(map);
+        return userCard;
     }
 }

@@ -136,4 +136,11 @@
         </set>
         where cardid = #{cardid}
     </update>
+    <select id="selectByUserIdAndStatus" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from sys_user_card
+        where userid = #{userId}
+        and (real_state = #{realSuccess} or real_state = #{isReal})
+    </select>
 </mapper>

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,5 +104,13 @@ public class OrgItemServiceImpl implements OrgItemService {
     @Override
     public List<OrgItems> selectByOrgIdAndStatus(Map<String, Object> map) throws Exception {
         return orgItemsMapper.selectByOrgIdAndStatus(map);
+    }
+
+    @Override
+    public OrgItems selectByItemCode(String itemCode) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("itemCode", itemCode);
+        map.put("status", OrgItemEnum.SHELVES.getCode());
+        return orgItemsMapper.selectByItemCode(map);
     }
 }
