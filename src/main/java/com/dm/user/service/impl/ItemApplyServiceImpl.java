@@ -157,25 +157,6 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 }
                 List<CertFiles> cfList = certFilesService.findByFilesIds2(ids);
                 itemRequered.setCertFilesList(cfList);
-                /* 公正上传文件时添加上文件说明 */
-                /*String logoUrl = itemRequered.getLogoUrl();
-                JSONArray json = JSONArray.fromObject(logoUrl);
-                if (cfList.size() > 0) {
-                    for (int j = 0; j < cfList.size(); j++) {
-                        if (json.size() > 0) {
-                            CertFiles certFiles = cfList.get(j);
-                            for (int k = 0; k < json.size(); k++) {
-                                if (cfList.size() == json.size()) {
-                                    JSONObject job = json.getJSONObject(j);
-                                    certFiles.setDetail(job.get("describe").toString());
-                                    break;
-                                } else {
-                                    certFiles.setDetail(json.getJSONObject(k).get("describe").toString());
-                                }
-                            }
-                        }
-                    }
-                }*/
             }
         }
         WfInstance wfInstance = new WfInstance();
@@ -234,6 +215,17 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("valuation", orgItems.getValuation());
         map.put("payStatus", itemApply.getPayStatus());
         map.put("payEndPrice", itemApply.getPayEndPrice());
+        return map;
+    }
+
+    private Map<Integer, Object> getAllNode() {
+        Map<Integer, Object> map = new LinkedHashMap<>(16);
+        map.put(ItemApplyEnum.DRAFT.getCode(), ItemApplyEnum.DRAFT.getDesc());
+        map.put(ItemApplyEnum.WAIT_PAY.getCode(), ItemApplyEnum.WAIT_PAY.getDesc());
+        map.put(ItemApplyEnum.REVIEW.getCode(), ItemApplyEnum.REVIEW.getDesc());
+        map.put(ItemApplyEnum.REVIEW_YES.getCode(), ItemApplyEnum.REVIEW_YES.getDesc());
+        map.put(ItemApplyEnum.SUBMISSION.getCode(), ItemApplyEnum.SUBMISSION.getDesc());
+        map.put(ItemApplyEnum.REVIEW_SUCCESS.getCode(), ItemApplyEnum.REVIEW_SUCCESS.getDesc());
         return map;
     }
 

@@ -6,6 +6,7 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.ItemApply;
 import com.dm.user.entity.ItemApplyFiles;
 import com.dm.user.service.ItemApplyService;
+import com.dm.user.service.PubDictoryService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,6 +28,9 @@ public class ItemApplyController extends BaseController {
 
     @Autowired
     private ItemApplyService itemApplyService;
+
+    @Autowired
+    private PubDictoryService pubDictoryService;
 
     @ApiOperation(value = "申请公正", response = ResultUtil.class)
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
@@ -165,5 +169,15 @@ public class ItemApplyController extends BaseController {
         return index;
     }
 
+    @ApiOperation(value = "国家", response = ResultUtil.class)
+    @RequestMapping(value = "/country", method = RequestMethod.GET)
+    public Result country() throws Exception {
+        return pubDictoryService.selectCountry();
+    }
 
+    @ApiOperation(value = "国家下语言", response = ResultUtil.class)
+    @RequestMapping(value = "/language", method = RequestMethod.GET)
+    public Result language(Integer id) throws Exception {
+        return pubDictoryService.selectCountryLanguage(id);
+    }
 }

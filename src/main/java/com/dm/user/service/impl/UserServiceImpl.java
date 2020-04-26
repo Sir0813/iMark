@@ -5,7 +5,6 @@ import com.dm.frame.jboot.locale.I18nUtil;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.security.LoginUserDetailsService;
-import com.dm.frame.jboot.security.MD5PasswordEncoder;
 import com.dm.frame.jboot.security.token.JwtTokenProvider;
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.frame.jboot.user.model.LoginUserDetails;
@@ -340,13 +339,11 @@ public class UserServiceImpl implements UserService {
         if (!result.getCode().equals(I18nUtil.getMessage("success.code"))) {
             return result;
         }
-        MD5PasswordEncoder md5PasswordEncoder = new MD5PasswordEncoder();
-        String encodePwd = md5PasswordEncoder.encode(map.get("password").toString());
         Collection<GrantedAuthority> authorities = this.loginUserDetailsService.loadAuthority(map.get("username").toString());
         LoginUserDetails loginUserDetails = new LoginUserDetails();
         loginUserDetails.setUsername(user.getUsername());
         loginUserDetails.setUserid(user.getUserid().toString());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(loginUserDetails, encodePwd, authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(loginUserDetails, user.getPassword() + user.getSalt(), authorities);
         String token = this.jwtTokenProvider.createToken(authentication);
         information.setInfoState("1");
         informationService.updateByPrimaryKeySelective(information);

@@ -435,7 +435,8 @@
         itemapply.created_date AS createdDate,
         itemapply.`status` AS `status`,
         item.item_name AS itemName,
-        item.logo_url AS logoUrl
+        item.logo_url AS logoUrl,
+        item.itemid AS itemid
         FROM
         biz_item_apply itemapply
         LEFT JOIN biz_org_items item
@@ -454,7 +455,8 @@
             itemapply.submit_date AS submitDate,
             itemapply.`status` AS `status`,
             item.item_name AS itemName,
-            item.logo_url AS logoUrl
+            item.logo_url AS logoUrl,
+            item.itemid AS itemid
         FROM
             biz_item_apply itemapply
         LEFT JOIN biz_org_items item ON itemapply.itemid = item.itemid

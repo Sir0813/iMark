@@ -6,6 +6,7 @@ import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.AppUser;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.service.UserService;
+import com.dm.user.util.QRCodeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -76,5 +77,12 @@ public class PublicController extends BaseController {
         ByteArrayResource bar = certFicateService.getPubCertImg(certCode);
         return bar;
     }
+
+    @ApiOperation(value = "二维码登录", response = Result.class)
+    @RequestMapping(value = "/l/{QRCode}", method = RequestMethod.GET)
+    public Result qrCodeLogin(@PathVariable String QRCode) throws Exception {
+        return QRCodeUtil.getUserName(QRCode);
+    }
+
 
 }

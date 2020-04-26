@@ -7,9 +7,11 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.springframework.core.io.ByteArrayResource;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -44,6 +46,24 @@ public class QRCodeGenerator {
 
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
+    }
+
+    public static ByteArrayResource createQRCodeImage(String text) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        Map hints = new HashMap(16);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        // 设置二维码四周白色区域的大小
+        hints.put(EncodeHintType.MARGIN, 0);
+        // 设置二维码的容错性
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 120, 120, hints);
+        deleteWhite(bitMatrix);
+        BufferedImage bi = MatrixToImageWriter.toBufferedImage(bitMatrix);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpg", baos);
+        byte[] bytes = baos.toByteArray();
+        ByteArrayResource bar = new ByteArrayResource(bytes);
+        return bar;
     }
 
     /**
