@@ -68,6 +68,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Autowired
     private PubArticleService pubArticleService;
 
+    @Autowired
+    private ItemApplyLogService itemApplyLogService;
+
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         boolean insert = null == itemApply.getApplyid();
@@ -94,6 +97,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             itemApply.setSubmitDate(new Date());
             itemApply.setItemCode(orgItems.getItemCode());
             itemApplyMapper.insertSelective(itemApply);
+            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.DRAFT.getCode());
         }
         List<ApplyFile> applyFileList = itemApply.getApplyFileList();
         for (int i = 0; i < applyFileList.size(); i++) {
@@ -215,7 +219,13 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("valuation", orgItems.getValuation());
         map.put("payStatus", itemApply.getPayStatus());
         map.put("payEndPrice", itemApply.getPayEndPrice());
+        map.put("allNode", getAllNode());
+        map.put("historyNode", historyNode(applyid));
         return map;
+    }
+
+    private List<ItemApplyLog> historyNode(int applyid) throws Exception {
+        return itemApplyLogService.historyNode(applyid);
     }
 
     private Map<Integer, Object> getAllNode() {
@@ -270,6 +280,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ia.setHandleCreatedDate(new Date());
         ia.setHandleUserid(Integer.parseInt(LoginUserHelper.getUserId()));
         itemApplyMapper.updateByPrimaryKeySelective(ia);
+        itemApplyLogService.insertLog(LoginUserHelper.getUserId(), ia.getApplyid(), new Date(), ItemApplyEnum.REVIEW.getCode());
         return ResultUtil.success();
     }
 
@@ -308,6 +319,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             wfInstance.setUpdateDate(new Date());
             wfInstanceService.updateById(wfInstance);
             itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.REVIEW_NO.getCode());
         } else if (2 == Integer.valueOf(map.get("type").toString())) {
             map.put("userId", LoginUserHelper.getUserId());
             wfInstAuditTrackService.insertData(map);
@@ -339,9 +351,18 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         if (itemApplyFiles.getFileTypes() == 0) {
             itemApplyFiles.setFileTypes(ItemFileTypeEnum.OPINION_FILE.getCode());
             itemApply.setStatus(ItemApplyEnum.REVIEW_YES.getCode());
+            ItemApplyLog itemApplyLog = itemApplyLogService.selectByApplyIdAndStatus(itemApply.getApplyid(), ItemApplyEnum.REVIEW_YES.getCode());
+            if (null == itemApplyLog) {
+                itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.REVIEW_YES.getCode());
+            } else {
+                itemApplyLog.setCreatedDate(new Date());
+                itemApplyLogService.updateById(itemApplyLog);
+            }
         } else if (itemApplyFiles.getFileTypes() == 1) {
             itemApplyFiles.setFileTypes(ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
             itemApply.setStatus(ItemApplyEnum.REVIEW_SUCCESS.getCode());
+            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.SUBMISSION.getCode());
+            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.REVIEW_SUCCESS.getCode());
         }
         itemApplyFiles.setCreatedDate(new Date());
         itemApplyFiles.setIsDel(ItemFileTypeEnum.FILE_EXISTENCE.getCode());
@@ -466,6 +487,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         wfInstanceService.insert(wfInstance);
         itemApply1.setWfInstanceId(wfInstance.getId().toString());
         itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+        itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply1.getApplyid(), new Date(), ItemApplyEnum.WAIT_PAY.getCode());
         return ResultUtil.success();
     }
 
