@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.ItemApplyLogMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.ItemApplyLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="applyid" jdbcType="INTEGER" property="applyid"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, applyid, created_date, created_by, status
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_item_apply_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.ItemApplyLog" keyProperty="id"
+            useGeneratedKeys="true">
+        insert into biz_item_apply_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyid != null">
+                applyid,
+            </if>
+            <if test="createdDate != null">
+                created_date,
+            </if>
+            <if test="createdBy != null">
+                created_by,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyid != null">
+                #{applyid,jdbcType=INTEGER},
+            </if>
+            <if test="createdDate != null">
+                #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdBy != null">
+                #{createdBy,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="historyNode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_item_apply_log
+        where applyid = #{applyid}
+    </select>
+    <select id="selectByApplyIdAndStatus" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_item_apply_log
+        where applyid = #{applyId}
+        and status = #{code}
+    </select>
+    <update id="updateById" parameterType="com.dm.user.entity.ItemApplyLog">
+        update biz_item_apply_log
+        set created_date = #{createdDate}
+        where id = #{id}
+    </update>
+</mapper>

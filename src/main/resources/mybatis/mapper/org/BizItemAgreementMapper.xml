@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.BizItemAgreementMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.BizItemAgreement">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="agreement_name" jdbcType="VARCHAR" property="agreementName"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dm.user.entity.BizItemAgreementWithBLOBs">
+        <result column="agreement" jdbcType="LONGVARCHAR" property="agreement"/>
+        <result column="service_desc" jdbcType="LONGVARCHAR" property="serviceDesc"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, org_id, title, agreement_name
+  </sql>
+    <sql id="Blob_Column_List">
+    agreement, service_desc
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from biz_item_agreement
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByOrgId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from biz_item_agreement
+        where org_id = #{orgId,jdbcType=INTEGER}
+    </select>
+</mapper>

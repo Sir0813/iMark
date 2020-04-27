@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.PubDictoryMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.PubDictory">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="module_id" jdbcType="VARCHAR" property="moduleId"/>
+        <result column="group_code" jdbcType="VARCHAR" property="groupCode"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="describe" jdbcType="VARCHAR" property="describe"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="created_by" jdbcType="INTEGER" property="createdBy"/>
+        <result column="updated_date" jdbcType="TIMESTAMP" property="updatedDate"/>
+        <result column="updated_by" jdbcType="INTEGER" property="updatedBy"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, module_id, group_code, code, value, describe, status, created_date, created_by, 
+    updated_date, updated_by
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from pub_dictory
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectCountry" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        pub_dictory mc
+        WHERE mc.group_code = #{country}
+        ORDER BY
+        CONVERT (mc.`value` USING gbk) COLLATE gbk_chinese_ci ASC;
+    </select>
+    <select id="selectCountryLanguage" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        pub_dictory
+        WHERE
+        id IN (
+        SELECT
+        drelate.child_id
+        FROM
+        pub_dictory dictory
+        INNER JOIN pub_dictory_relate drelate ON dictory.id = drelate.dictory_id
+        WHERE
+        dictory.id = #{id}
+        )
+    </select>
+</mapper>
