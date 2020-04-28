@@ -7,9 +7,10 @@
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
         <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
         <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="node_name" jdbcType="VARCHAR" property="nodeName"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, applyid, created_date, created_by, status
+    id, applyid, created_date, created_by, status, node_name
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -33,6 +34,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="nodeName != null">
+                node_name,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="applyid != null">
@@ -46,6 +50,9 @@
             </if>
             <if test="status != null">
                 #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="nodeName != null">
+                #{nodeName,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>

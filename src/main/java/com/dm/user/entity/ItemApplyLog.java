@@ -16,6 +16,8 @@ public class ItemApplyLog {
 
     private String status;
 
+    private String nodeName;
+
     public Integer getId() {
         return id;
     }
@@ -54,5 +56,13 @@ public class ItemApplyLog {
 
     public void setStatus(String status) {
         this.status = status == null ? null : status.trim();
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 }

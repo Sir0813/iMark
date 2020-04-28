@@ -4,7 +4,7 @@ public enum ItemApplyEnum {
     DRAFT(1, "准备资料"),
     REVIEW(2, "材料审核中"),
     REVIEW_YES(3, "材料审核完成"),
-    REVIEW_NO(4, "公正失败"),
+    REVIEW_NO(4, "公证失败"),
     REVIEW_SUCCESS(5, "公正完成"),
     WAIT_PAY(6, "待支付"),
     SUBMISSION(7, "制作公证书"),

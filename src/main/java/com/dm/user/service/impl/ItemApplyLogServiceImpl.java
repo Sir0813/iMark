@@ -20,12 +20,13 @@ public class ItemApplyLogServiceImpl implements ItemApplyLogService {
     private ItemApplyLogMapper itemApplyLogMapper;
 
     @Override
-    public void insertLog(String createdBy, Integer applyId, Date date, Integer status) throws Exception {
+    public void insertLog(String createdBy, Integer applyId, Date date, Integer status, String nodeName) throws Exception {
         ItemApplyLog itemApplyLog = new ItemApplyLog();
         itemApplyLog.setApplyid(applyId);
         itemApplyLog.setCreatedDate(date);
         itemApplyLog.setStatus(String.valueOf(status));
         itemApplyLog.setCreatedBy(createdBy);
+        itemApplyLog.setNodeName(nodeName);
         itemApplyLogMapper.insertSelective(itemApplyLog);
     }
 

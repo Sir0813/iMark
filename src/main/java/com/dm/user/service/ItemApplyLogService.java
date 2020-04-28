@@ -15,7 +15,7 @@ public interface ItemApplyLogService {
      * @param date
      * @param status
      */
-    void insertLog(String createdBy, Integer applyId, Date date, Integer status) throws Exception;
+    void insertLog(String createdBy, Integer applyId, Date date, Integer status, String nodeName) throws Exception;
 
     /**
      * 历史记录

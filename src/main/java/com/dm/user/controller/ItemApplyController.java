@@ -176,8 +176,8 @@ public class ItemApplyController extends BaseController {
     }
 
     @ApiOperation(value = "国家下语言", response = ResultUtil.class)
-    @RequestMapping(value = "/language", method = RequestMethod.GET)
-    public Result language(Integer id) throws Exception {
+    @RequestMapping(value = "/language/{id}", method = RequestMethod.GET)
+    public Result language(@PathVariable Integer id) throws Exception {
         return pubDictoryService.selectCountryLanguage(id);
     }
 }

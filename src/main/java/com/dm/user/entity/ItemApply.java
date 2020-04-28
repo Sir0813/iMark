@@ -62,6 +62,11 @@ public class ItemApply {
      */
     private String logoUrl;
 
+    /**
+     * 公正可变配置项业务字段
+     */
+    private ApplyExpand applyExpand;
+
     public String getItemName() {
         return itemName;
     }
@@ -228,5 +233,13 @@ public class ItemApply {
 
     public void setItemCode(String itemCode) {
         this.itemCode = itemCode;
+    }
+
+    public ApplyExpand getApplyExpand() {
+        return applyExpand;
+    }
+
+    public void setApplyExpand(ApplyExpand applyExpand) {
+        this.applyExpand = applyExpand;
     }
 }

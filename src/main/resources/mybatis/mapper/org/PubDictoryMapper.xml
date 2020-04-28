@@ -15,7 +15,7 @@
         <result column="updated_by" jdbcType="INTEGER" property="updatedBy"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, module_id, group_code, code, value, describe, status, created_date, created_by, 
+    `id`, module_id, group_code, `code`, `value`, `describe`, `status`, created_date, created_by,
     updated_date, updated_by
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -31,7 +31,7 @@
         pub_dictory mc
         WHERE mc.group_code = #{country}
         ORDER BY
-        CONVERT (mc.`value` USING gbk) COLLATE gbk_chinese_ci ASC;
+        CONVERT (mc.`value` USING gbk) COLLATE gbk_chinese_ci ASC
     </select>
     <select id="selectCountryLanguage" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
