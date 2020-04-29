@@ -5,13 +5,7 @@ public class ApplyExpand {
 
     private Integer applyId;
 
-    private Integer countryId;
-
-    private Integer languageId;
-
     private Integer fileNum;
-
-    private Integer addressId;
 
     private String countryName;
 
@@ -35,36 +29,12 @@ public class ApplyExpand {
         this.applyId = applyId;
     }
 
-    public Integer getCountryId() {
-        return countryId;
-    }
-
-    public void setCountryId(Integer countryId) {
-        this.countryId = countryId;
-    }
-
-    public Integer getLanguageId() {
-        return languageId;
-    }
-
-    public void setLanguageId(Integer languageId) {
-        this.languageId = languageId;
-    }
-
     public Integer getFileNum() {
         return fileNum;
     }
 
     public void setFileNum(Integer fileNum) {
         this.fileNum = fileNum;
-    }
-
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
     }
 
     public String getCountryName() {

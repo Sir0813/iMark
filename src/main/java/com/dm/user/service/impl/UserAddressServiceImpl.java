@@ -25,11 +25,11 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public void insert(UserAddress userAddress) throws Exception {
+        if (userAddress.getIsDefault() == 1) {
+            userAddressMapper.updateIsDefault(LoginUserHelper.getUserId());
+        }
         if (null != userAddress.getId()) {
             userAddress.setUpdateDate(new Date());
-            if (userAddress.getIsDefault() == 1) {
-                userAddressMapper.updateIsDefault(LoginUserHelper.getUserId());
-            }
             userAddressMapper.updateByPrimaryKeySelective(userAddress);
         } else {
             userAddress.setCreatedDate(new Date());

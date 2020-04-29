@@ -85,10 +85,20 @@
             <version>1.25</version>
         </dependency>
         <!-- tid sdk -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.dm.app.tid</groupId>
             <artifactId>tid-sdk-java</artifactId>
             <version>0.0.9</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.dm.app.tid</groupId>
+            <artifactId>tid-sdk-java</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dm.app.did</groupId>
+            <artifactId>did-sdk-java</artifactId>
+            <version>0.0.2</version>
         </dependency>
         <!-- 存证sdk 存证 0.0.3 -->
         <dependency>

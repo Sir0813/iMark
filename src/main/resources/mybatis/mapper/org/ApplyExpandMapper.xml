@@ -4,16 +4,13 @@
     <resultMap id="BaseResultMap" type="com.dm.user.entity.ApplyExpand">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="apply_id" jdbcType="INTEGER" property="applyId"/>
-        <result column="country_id" jdbcType="INTEGER" property="countryId"/>
-        <result column="language_id" jdbcType="INTEGER" property="languageId"/>
         <result column="file_num" jdbcType="INTEGER" property="fileNum"/>
-        <result column="address_id" jdbcType="INTEGER" property="addressId"/>
         <result column="country_name" jdbcType="VARCHAR" property="countryName"/>
         <result column="language_value" jdbcType="VARCHAR" property="languageValue"/>
         <result column="address_value" jdbcType="VARCHAR" property="addressValue"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, apply_id, country_id, language_id, file_num, address_id, country_name, language_value, address_value
+    id, apply_id, file_num, country_name, language_value, address_value
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -32,17 +29,8 @@
             <if test="applyId != null">
                 apply_id,
             </if>
-            <if test="countryId != null">
-                country_id,
-            </if>
-            <if test="languageId != null">
-                language_id,
-            </if>
             <if test="fileNum != null">
                 file_num,
-            </if>
-            <if test="addressId != null">
-                address_id,
             </if>
             <if test="countryName != null">
                 country_Name,
@@ -58,17 +46,8 @@
             <if test="applyId != null">
                 #{applyId,jdbcType=INTEGER},
             </if>
-            <if test="countryId != null">
-                #{countryId,jdbcType=INTEGER},
-            </if>
-            <if test="languageId != null">
-                #{languageId,jdbcType=INTEGER},
-            </if>
             <if test="fileNum != null">
                 #{fileNum,jdbcType=INTEGER},
-            </if>
-            <if test="addressId != null">
-                #{addressId,jdbcType=INTEGER},
             </if>
             <if test="countryName != null">
                 #{countryName,jdbcType=VARCHAR},
@@ -87,17 +66,8 @@
             <if test="applyId != null">
                 apply_id = #{applyId,jdbcType=INTEGER},
             </if>
-            <if test="countryId != null">
-                country_id = #{countryId,jdbcType=INTEGER},
-            </if>
-            <if test="languageId != null">
-                language_id = #{languageId,jdbcType=INTEGER},
-            </if>
             <if test="fileNum != null">
                 file_num = #{fileNum,jdbcType=INTEGER},
-            </if>
-            <if test="addressId != null">
-                address_id = #{addressId,jdbcType=INTEGER},
             </if>
             <if test="countryName != null">
                 country_name = #{countryName},

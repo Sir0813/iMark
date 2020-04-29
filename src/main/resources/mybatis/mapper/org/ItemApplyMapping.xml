@@ -214,7 +214,7 @@
         WHERE
             userid = #{userid,jdbcType=INTEGER}
         ORDER BY
-	    submitDate DESC , createdDate DESC
+	    createdDate DESC
     </select>
     <select id="pendList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -245,7 +245,7 @@
         and itemapply.handle_userid = 0
         and itemapply.handle_created_date is null
         group by itemapply.applyid
-        order by createdDate desc
+        order by submitDate desc
     </select>
     <select id="pendReview" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -369,7 +369,7 @@
             AND itemapply.itemid = #{itemId}
         </if>
         group by itemapply.applyid
-        order by createdDate desc
+        order by submitDate desc
     </select>
     <update id="updateState" parameterType="java.util.Map">
         UPDATE biz_item_apply
