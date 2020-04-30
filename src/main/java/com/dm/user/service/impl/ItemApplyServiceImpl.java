@@ -102,12 +102,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             itemApply.setItemCode(orgItems.getItemCode());
             itemApplyMapper.insertSelective(itemApply);
             itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply.getApplyid(), new Date(), ItemApplyEnum.DRAFT.getCode(), ItemApplyEnum.DRAFT.getDesc());
-            /*ApplyExpand applyExpand = itemApply.getApplyExpand();
+            ApplyExpand applyExpand = itemApply.getApplyExpand();
             applyExpand.setApplyId(itemApply.getApplyid());
-            applyExpandService.insert(applyExpand);*/
-        } /*else {
+            applyExpandService.insert(applyExpand);
+        } else {
             applyExpandService.update(itemApply.getApplyExpand());
-        }*/
+        }
         List<ApplyFile> applyFileList = itemApply.getApplyFileList();
         for (int i = 0; i < applyFileList.size(); i++) {
             String requeredid = applyFileList.get(i).getRequeredid();
@@ -207,12 +207,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("fileUrl", certFiles1.getFileUrl());
         }
         List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
-        //ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
+        ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
         userMap.put("userName", null == userCard ? "" : userCard.getRealName());
         userMap.put("userPhone", user.getUsername());
         userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
         userMap.put("userId", user.getUserid());
-        //map.put("applyExpand", applyExpand);
+        map.put("applyExpand", applyExpand);
         map.put("orgName", org.getOrgname());
         map.put("itemValue", itemApply.getItemValue());
         map.put("bizItemVideoList", bizItemVideoList);

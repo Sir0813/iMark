@@ -4,6 +4,7 @@ import com.dm.user.entity.UserAddress;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserAddressMapper {
@@ -22,4 +23,7 @@ public interface UserAddressMapper {
     List<UserAddress> list(String userId);
 
     void updateIsDefault(String userId);
+
+    UserAddress selectByUserIdAndStatus(Map<String, Object> map);
+
 }

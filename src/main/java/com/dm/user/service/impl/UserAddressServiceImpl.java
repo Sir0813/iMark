@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -42,4 +44,13 @@ public class UserAddressServiceImpl implements UserAddressService {
     public void delete(Integer id) throws Exception {
         userAddressMapper.deleteByPrimaryKey(id);
     }
+
+    @Override
+    public UserAddress selectByUserIdAndStatus(String userId, String status) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("userId", userId);
+        map.put("status", status);
+        return userAddressMapper.selectByUserIdAndStatus(map);
+    }
+
 }

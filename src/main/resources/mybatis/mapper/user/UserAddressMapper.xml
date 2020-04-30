@@ -143,5 +143,13 @@
         set is_default = 0
         where user_id = #{userId}
     </update>
-
+    <select id="selectByUserIdAndStatus" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_user_address
+        where user_id = #{userId}
+        and is_default = #{status}
+        order by created_date desc
+        limit 1
+    </select>
 </mapper>

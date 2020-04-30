@@ -54,7 +54,7 @@
         <if test="itemName!=null and itemName!=''">
             and oitem.item_name like CONCAT('%',#{itemName},'%')
         </if>
-        group by oitem.item_code
+        group by oitem.itemid
         order by oitem.created_date asc
     </select>
     <select id="selectByOrgIdAndStatus" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -64,7 +64,7 @@
         from biz_org_items oitem
         where oitem.orgid = #{orgId}
         and oitem.status = #{status}
-        group by oitem.item_code
+        group by oitem.itemid
         order by oitem.created_date asc
     </select>
     <select id="selectByItemCode" parameterType="java.util.Map" resultMap="BaseResultMap">

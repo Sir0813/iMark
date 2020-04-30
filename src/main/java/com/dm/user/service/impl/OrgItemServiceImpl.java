@@ -10,7 +10,6 @@ import com.dm.user.msg.StateMsg;
 import com.dm.user.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +38,9 @@ public class OrgItemServiceImpl implements OrgItemService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserAddressService userAddressService;
+
     @Override
     public OrgItems selectByPrimaryKey(Integer itemid) throws Exception {
         return orgItemsMapper.selectByPrimaryKey(itemid);
@@ -63,19 +65,29 @@ public class OrgItemServiceImpl implements OrgItemService {
     public Map<String, Object> content(int itemId) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>(16);
         Map<String, Object> userMap = new LinkedHashMap<>(16);
-        OrgItems orgItems = orgItemsMapper.selectByPrimaryKey(itemId);
-        List<ItemRequered> list = itemRequeredService.selectByItemId(itemId);
         UserCard userCard = userCardService.selectByUserId(LoginUserHelper.getUserId(), "2");
-        AppUser appUser = userService.selectByPrimaryKey(Integer.valueOf(LoginUserHelper.getUserId()));
         if (null == userCard) {
             throw new Exception(StateMsg.NOTREAL);
         }
+        OrgItems orgItems = orgItemsMapper.selectByPrimaryKey(itemId);
+        List<ItemRequered> list = itemRequeredService.selectByItemId(itemId);
         if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
             /* 固定价格计费 返回本次公正所需费用 **/
             map.put("price", orgItems.getPrice());
         } else {
             /* 按标的 或公正人员自定义先缴纳最低价格 **/
             map.put("price", orgItems.getLowestPrice());
+        }
+        UserAddress userAddress = userAddressService.selectByUserIdAndStatus(LoginUserHelper.getUserId(), "1");
+        if (null == userAddress) {
+            UserAddress userAddress1 = userAddressService.selectByUserIdAndStatus(LoginUserHelper.getUserId(), "0");
+            if (null != userAddress1) {
+                map.put("address", userAddress1.getReceiverAddress() + userAddress1.getReceiverDetailAddress());
+            } else {
+                map.put("address", null);
+            }
+        } else {
+            map.put("address", userAddress.getReceiverAddress() + userAddress.getReceiverDetailAddress());
         }
         userMap.put("userName", userCard.getRealName());
         userMap.put("userPhone", LoginUserHelper.getUserName());
@@ -84,7 +96,6 @@ public class OrgItemServiceImpl implements OrgItemService {
         map.put("itemDesc", orgItems.getItemDesc());
         map.put("itemRequered", list);
         map.put("userInfo", userMap);
-        map.put("address", StringUtils.isBlank(appUser.getAddress()) ? "" : appUser.getAddress());
         return map;
     }
 

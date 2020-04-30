@@ -27,4 +27,14 @@ public interface UserAddressService {
      * @param id
      */
     void delete(Integer id) throws Exception;
+
+    /**
+     * 默认地址查询
+     *
+     * @param userId
+     * @param status
+     * @return
+     */
+    UserAddress selectByUserIdAndStatus(String userId, String status);
+
 }
