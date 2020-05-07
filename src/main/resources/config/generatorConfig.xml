@@ -14,7 +14,7 @@
         </commentGenerator>
 
         <!--数据库链接地址账号密码-->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.220:3306/sy"
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.220:3306/sy"
                         userId="cdisa" password="Cdisa@123">
         </jdbcConnection>
 
@@ -47,8 +47,8 @@
         <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample   
                 是否生成 example类   -->
         <!-- 更改tableName和domainObjectName就可以 -->
-        <table schema="sy" tableName="biz_org_users"
-               domainObjectName="OrgUser" enableCountByExample="false"
+        <table schema="sy" tableName="biz_apply_expand"
+               domainObjectName="ApplyExpand" enableCountByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false">
         </table>

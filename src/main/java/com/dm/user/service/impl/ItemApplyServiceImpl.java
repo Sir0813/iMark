@@ -75,6 +75,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Autowired
     private ApplyExpandService applyExpandService;
 
+    @Autowired
+    private UserAddressService userAddressService;
+
     @Override
     public Result insert(ItemApply itemApply) throws Exception {
         boolean insert = null == itemApply.getApplyid();
@@ -208,6 +211,17 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         }
         List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
         ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
+        UserAddress userAddress = userAddressService.selectByUserIdAndStatus(LoginUserHelper.getUserId(), "1");
+        if (null == userAddress) {
+            UserAddress userAddress1 = userAddressService.selectByUserIdAndStatus(LoginUserHelper.getUserId(), "0");
+            if (null != userAddress1) {
+                map.put("address", userAddress1.getReceiverAddress() + userAddress1.getReceiverDetailAddress());
+            } else {
+                map.put("address", null);
+            }
+        } else {
+            map.put("address", userAddress.getReceiverAddress() + userAddress.getReceiverDetailAddress());
+        }
         userMap.put("userName", null == userCard ? "" : userCard.getRealName());
         userMap.put("userPhone", user.getUsername());
         userMap.put("userCard", null == userCard ? "" : userCard.getCardNumber());
