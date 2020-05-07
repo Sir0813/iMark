@@ -1,0 +1,27 @@
+#当前Channel配置1
+#configtxlator: http://192.168.1.202:7059
+invokeWaitTime: 12000
+proposalWaitTime: 12000
+channelName: cid
+deployWaitTime: 12000
+channelPath: ''
+clientOrgName: org1
+orgs:
+  org1:
+    mspId: Org1MSP
+    domainName: org1.example.com
+    type: peer
+
+    peers:
+      peer0:
+        anchor: true
+        domainName: peer0.org1.example.com
+        location: grpcs://peer0.org1.example.com:7051
+        roles: ledgerQuery,chaincodeQuery,endorsingPeer,eventSource,serviceDiscovery  #endorsingPeer/chaincodeQuery/ledgerQuery/eventSource/serviceDiscovery/all/no_event_source
+    contextUser:
+      affiliation: ''
+      name: Admin
+    admin:
+      name: Admin
+    peerAdmin:
+      name: Admin

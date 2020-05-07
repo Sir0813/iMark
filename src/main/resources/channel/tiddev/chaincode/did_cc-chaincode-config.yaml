@@ -1,0 +1,11 @@
+chaincodePath: github.com/did_cc/
+invokeWaitTime: 22000
+proposalWaitTime: 22000
+endorseCount: 1
+chaincodeLang: GO_LANG
+chaincodeDir: chaincode/gocc/did_cc/
+endorsePolicyPath: chaincode/policy/did_cc/chaincodeendorsementpolicy.yaml
+chaincodeVersion: '1.1'
+deployWaitTime: 22000
+endorsePeers: []
+chaincodeName: did_cc

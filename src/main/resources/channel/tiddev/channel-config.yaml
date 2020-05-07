@@ -1,0 +1,90 @@
+configtxlator: http://192.168.1.171:7059
+invokeWaitTime: 22000
+proposalWaitTime: 22000
+channelName: tiddev
+deployWaitTime: 22000
+orgs:
+  'No':
+    mspId: NoMSP
+    contextUser:
+      affiliation: ''
+      name: Admin
+    peerAdmin:
+      affiliation: ''
+      name: Admin
+    domainName: dev.no.com
+    name: 'No'
+    peers:
+      peer3:
+        anchor: false
+        domainName: peer3.dev.no.com
+        roles: ledgerQuery,eventSource
+        name: peer3
+        location: grpcs://peer3.dev.no.com:7051
+      peer2:
+        anchor: true
+        domainName: peer2.dev.no.com
+        roles: ledgerQuery,serviceDiscovery,chaincodeQuery,endorsingPeer,eventSource
+        name: peer2
+        location: grpcs://peer2.dev.no.com:7051
+    admin:
+      affiliation: ''
+      name: Admin
+    orderers: {}
+    type: peer
+    ca:
+      name: ca-org2
+      location: https://192.168.1.174:7054
+  Dms:
+    mspId: DmsMSP
+    contextUser:
+      affiliation: ''
+      name: Admin
+    peerAdmin:
+      affiliation: ''
+      name: Admin
+    domainName: dev.dms.com
+    name: Dms
+    peers:
+      peer1:
+        anchor: false
+        domainName: peer1.dev.dms.com
+        roles: ledgerQuery,eventSource
+        name: peer1
+        location: grpcs://peer1.dev.dms.com:7051
+      peer0:
+        anchor: true
+        domainName: peer0.dev.dms.com
+        roles: ledgerQuery,serviceDiscovery,chaincodeQuery,endorsingPeer,eventSource
+        name: peer0
+        location: grpcs://peer0.dev.dms.com:7051
+    admin:
+      affiliation: ''
+      name: Admin
+    orderers: {}
+    type: peer
+    ca:
+      name: ca-org1
+      location: https://192.168.1.172:7054
+  Orderer:
+    mspId: OrdererMSP
+    contextUser:
+      affiliation: ''
+      name: Admin
+    peerAdmin:
+      affiliation: ''
+      name: Admin
+    domainName: dev.tid.com
+    name: Orderer
+    peers: {}
+    admin:
+      affiliation: ''
+      name: Admin
+    orderers:
+      orderer:
+        domainName: orderer.dev.tid.com
+        name: orderer
+        location: grpcs://orderer.dev.tid.com:7050
+    type: orderer
+channelPath: ''
+clientOrgName: Dms

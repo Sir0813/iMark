@@ -1,0 +1,22 @@
+#
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+# A Shotgun policy xx
+identities:  # list roles to be used in the policy
+    user1: {"role": {"name": "member", "mspId": "Org1MSP"}} #Org1MSP 中的 member
+    user2: {"role": {"name": "member", "mspId": "Org2MSP"}} #Org2MSP 中的 member
+    admin1: {"role": {"name": "admin", "mspId": "Org1MSP"}} #Org1MSP 中的 admin
+    admin2: {"role": {"name": "admin", "mspId": "Org2MSP"}} #Org2MSP 中的 admin
+
+policy: # the policy  .. could have been flat but show grouping.
+    1-of: # n-of 指定需要组内多少个进行签名， 1-of 等价于 OR, max-of 等价于AND
+      # 嵌套,相当于  OR(OR('Org1MSP.member','Org1MSP.admin'),OR('Org2MSP.member','Org2MSP.admin'))
+      - 1-of:
+        - signed-by: "user1" # user1 即上面角色中的 user1
+        - signed-by: "admin1"
+      - 1-of:
+        - signed-by: "user2"
+        - signed-by: "admin2"
