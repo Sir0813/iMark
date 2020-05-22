@@ -32,4 +32,13 @@ public interface OrgService {
      * @return
      */
     Org selectById(Integer orgid) throws Exception;
+
+    /**
+     * 订单查询公正
+     *
+     * @param applyid
+     * @return
+     * @throws Exception
+     */
+    Org selectByApplyId(int applyid) throws Exception;
 }

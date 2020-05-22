@@ -42,6 +42,8 @@ public class ItemApply {
 
     private String itemCode;
 
+    private String rejectReason;
+
     /**
      * 公正文件业务字段
      */
@@ -66,6 +68,12 @@ public class ItemApply {
      * 公正可变配置项业务字段
      */
     private ApplyExpand applyExpand;
+
+    /**
+     * 公正审批时间业务字段
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date auditDate;
 
     public String getItemName() {
         return itemName;
@@ -241,5 +249,21 @@ public class ItemApply {
 
     public void setApplyExpand(ApplyExpand applyExpand) {
         this.applyExpand = applyExpand;
+    }
+
+    public Date getAuditDate() {
+        return auditDate;
+    }
+
+    public void setAuditDate(Date auditDate) {
+        this.auditDate = auditDate;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

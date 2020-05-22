@@ -3,7 +3,9 @@ package com.dm.user.entity;
 public class WfItemNode {
     private Integer id;
 
-    private String itemid;
+    private Integer userId;
+
+    private Integer applyId;
 
     private Integer order;
 
@@ -17,20 +19,20 @@ public class WfItemNode {
 
     private String createdBy;
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getItemid() {
-        return itemid;
-    }
-
-    public void setItemid(String itemid) {
-        this.itemid = itemid == null ? null : itemid.trim();
     }
 
     public Integer getOrder() {
@@ -79,5 +81,13 @@ public class WfItemNode {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy == null ? null : createdBy.trim();
+    }
+
+    public Integer getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(Integer applyId) {
+        this.applyId = applyId;
     }
 }

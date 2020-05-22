@@ -2,6 +2,8 @@ package com.dm.user.service;
 
 import com.dm.user.entity.OrgUser;
 
+import java.util.List;
+
 public interface OrgUserService {
 
     /**
@@ -11,4 +13,11 @@ public interface OrgUserService {
      * @return
      */
     OrgUser selectByUserId(int userId);
+
+    /**
+     * 查询所有管理员
+     *
+     * @return
+     */
+    List<OrgUser> selectAdminList();
 }

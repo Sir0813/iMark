@@ -11,7 +11,7 @@ public class ApplyExpand {
 
     private String languageValue;
 
-    private String addressValue;
+    private Integer addressId;
 
     public Integer getId() {
         return id;
@@ -53,11 +53,11 @@ public class ApplyExpand {
         this.languageValue = languageValue;
     }
 
-    public String getAddressValue() {
-        return addressValue;
+    public Integer getAddressId() {
+        return addressId;
     }
 
-    public void setAddressValue(String addressValue) {
-        this.addressValue = addressValue;
+    public void setAddressId(Integer addressId) {
+        this.addressId = addressId;
     }
 }

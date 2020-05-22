@@ -53,4 +53,8 @@ public class UserAddressServiceImpl implements UserAddressService {
         return userAddressMapper.selectByUserIdAndStatus(map);
     }
 
+    @Override
+    public UserAddress selectById(Integer addressId) throws Exception {
+        return userAddressMapper.selectByPrimaryKey(addressId);
+    }
 }

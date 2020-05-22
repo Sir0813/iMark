@@ -35,6 +35,13 @@ public interface UserAddressService {
      * @param status
      * @return
      */
-    UserAddress selectByUserIdAndStatus(String userId, String status);
+    UserAddress selectByUserIdAndStatus(String userId, String status) throws Exception;
 
+    /**
+     * 邮寄地址
+     *
+     * @param addressId
+     * @return
+     */
+    UserAddress selectById(Integer addressId) throws Exception;
 }

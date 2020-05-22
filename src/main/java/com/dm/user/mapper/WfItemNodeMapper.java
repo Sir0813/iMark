@@ -1,9 +1,10 @@
 package com.dm.user.mapper;
 
+import com.dm.user.entity.ProcessConfig;
 import com.dm.user.entity.WfItemNode;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.Map;
+import java.util.List;
 
 @Mapper
 public interface WfItemNodeMapper {
@@ -17,26 +18,10 @@ public interface WfItemNodeMapper {
     WfItemNode selectByPrimaryKey(Integer id);
 
     /**
-     * 根据项目ID查询第一个节点
+     * 流程模板
      *
-     * @param itemid
+     * @param userId
      * @return
      */
-    WfItemNode selectByItemId(String itemid);
-
-    /**
-     * 根据项目ID查询最后一个节点
-     *
-     * @param toString
-     * @return
-     */
-    WfItemNode selectByItemIdDesc(String toString);
-
-    /**
-     * 节点和itemid查询
-     *
-     * @param map
-     * @return
-     */
-    WfItemNode selectByOrder(Map<String, Object> map);
+    List<ProcessConfig> selectByUserId(String userId);
 }

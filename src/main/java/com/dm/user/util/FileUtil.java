@@ -138,7 +138,7 @@ public class FileUtil {
             String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
             UUID randomUuid = UUID.randomUUID();
             String fileUrl = headFilePrefix + File.separator + randomUuid + suffix;
-            boolean uploadBoolean = FileUtil.uploadFile(headFilePath + File.separator, randomUuid + suffix, multipartFile);
+            boolean uploadBoolean = uploadFile(headFilePath + File.separator, randomUuid + suffix, multipartFile);
             if (!uploadBoolean) {
                 throw new Exception();
             }
@@ -168,7 +168,7 @@ public class FileUtil {
         return ResultUtil.error();
     }
 
-    private static boolean uploadFile(String filePath, String fileName, MultipartFile multipartFile) {
+    public boolean uploadFile(String filePath, String fileName, MultipartFile multipartFile) {
         try {
             File file = new File(filePath + fileName);
             if (!file.getParentFile().exists()) {
@@ -329,7 +329,7 @@ public class FileUtil {
             if ("outcert".equals(type)) {
                 filePath = outCertFilePath + File.separator + fileNewName;
                 fileUrl = outCertFilePrefix + File.separator + fileNewName;
-                uploadBoolean = FileUtil.uploadFile(outCertFilePath + File.separator, fileNewName, multipartFile[i]);
+                uploadBoolean = uploadFile(outCertFilePath + File.separator, fileNewName, multipartFile[i]);
             }
             if (!uploadBoolean) {
                 throw new Exception("文件上传失败!");
@@ -517,5 +517,31 @@ public class FileUtil {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    public Result uploadSignature(HttpServletRequest request, HttpServletResponse response, MultipartFile multipartFile) throws Exception {
+        request.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("text/html;charset=utf-8");
+        String fileName = multipartFile.getOriginalFilename();
+        String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
+        UUID randomUuid = UUID.randomUUID();
+        String fileUrl = headFilePrefix + File.separator + randomUuid + suffix;
+        boolean uploadBoolean = uploadFile(headFilePath + File.separator, randomUuid + suffix, multipartFile);
+        if (!uploadBoolean) {
+            return ResultUtil.error();
+        }
+        CertFiles certFiles = new CertFiles();
+        certFiles.setFileName(fileName);
+        certFiles.setFileUrl(fileUrl);
+        certFiles.setFilePath(headFilePath + File.separator + randomUuid + suffix);
+        certFiles.setFileSize((double) multipartFile.getSize());
+        certFiles.setFileType(suffix);
+        certFiles.setFileSeq("0");
+        certFilesService.insertSelective(certFiles);
+        AppUser user = userMapper.findByName(LoginUserHelper.getUserName());
+        user.setSignaturePhoto(fileUrl);
+        userMapper.updateByPrimaryKeySelective(user);
+        return ResultUtil.success();
     }
 }

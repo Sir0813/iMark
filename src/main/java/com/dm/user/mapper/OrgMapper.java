@@ -26,4 +26,12 @@ public interface OrgMapper {
      * @return
      */
     List<Org> orgList();
+
+    /**
+     * 查询
+     *
+     * @param applyid
+     * @return
+     */
+    Org selectByApplyId(int applyid);
 }

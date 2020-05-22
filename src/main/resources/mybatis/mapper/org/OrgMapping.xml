@@ -47,4 +47,13 @@
         where status = 0
         order by registe_date desc
     </select>
+    <select id="selectByApplyId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT DISTINCT
+            bizorg.address
+        FROM
+            biz_org AS bizorg
+        LEFT JOIN biz_org_items AS orgitem ON bizorg.itemid = orgitem.orgid
+        LEFT JOIN biz_item_apply AS apply ON apply.itemid = orgitem.itemid
+        WHERE apply.applyid = #{applyid}
+    </select>
 </mapper>

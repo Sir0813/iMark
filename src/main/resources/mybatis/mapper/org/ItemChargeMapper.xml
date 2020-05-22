@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.ItemChargeMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.ItemCharge">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="desc" jdbcType="VARCHAR" property="desc"/>
+        <result column="org_id" jdbcType="INTEGER" property="orgId"/>
+        <result column="created_id" jdbcType="INTEGER" property="createdId"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, `name`, `desc`, org_id, created_id, created_date, is_del
+    </sql>
+    <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from biz_item_charge
+        where `name` = #{name}
+        and org_id = 11
+        and is_del = 0
+        order by created_date desc
+        limit 1
+    </select>
+</mapper>

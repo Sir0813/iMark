@@ -4,7 +4,7 @@ import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.ItemApply;
-import com.dm.user.entity.ItemApplyFiles;
+import com.dm.user.entity.Reject;
 import com.dm.user.service.ItemApplyService;
 import com.dm.user.service.PubDictoryService;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +32,13 @@ public class ItemApplyController extends BaseController {
     @Autowired
     private PubDictoryService pubDictoryService;
 
+    @ApiOperation(value = "公正首页接口", response = ResultUtil.class)
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public Result index() throws Exception {
+        Result index = itemApplyService.index();
+        return index;
+    }
+
     @ApiOperation(value = "申请公正", response = ResultUtil.class)
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     public Result insert(@RequestBody ItemApply itemApply) throws Exception {
@@ -44,22 +51,22 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.updateToDraft(itemApply);
     }
 
-    @ApiOperation(value = "支付金额 提交申请", response = ResultUtil.class)
+    @ApiOperation(value = "确认提交订单(首款)", response = ResultUtil.class)
     @RequestMapping(value = "/submitApply", method = RequestMethod.POST)
     public Result submitApply(@RequestBody ItemApply itemApply) throws Exception {
         return itemApplyService.submitApply(itemApply);
     }
 
-    @ApiOperation(value = "支付尾款", response = ResultUtil.class)
+    /*@ApiOperation(value = "支付尾款", response = ResultUtil.class)
     @RequestMapping(value = "/payBalance", method = RequestMethod.POST)
     public Result payBalance(@RequestBody ItemApply itemApply) throws Exception {
         return itemApplyService.payBalance(itemApply);
-    }
+    }*/
 
-    @ApiOperation(value = "公正申请列表", response = ResultUtil.class)
-    @RequestMapping(value = "/list/{pageNum}", method = RequestMethod.GET)
-    public Result list(@PathVariable int pageNum) throws Exception {
-        PageInfo<ItemApply> itemApplyList = itemApplyService.list(pageNum);
+    @ApiOperation(value = "我的公正列表", response = ResultUtil.class)
+    @RequestMapping(value = {"/list/{pageNum}/{type}", "/list/{pageNum}/{type}/{word}"}, method = RequestMethod.GET)
+    public Result list(@PathVariable int pageNum, @PathVariable int type, @PathVariable(required = false) String word) throws Exception {
+        PageInfo<ItemApply> itemApplyList = itemApplyService.list(pageNum, type, word);
         return ResultUtil.success(itemApplyList);
     }
 
@@ -76,13 +83,56 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.delete(applyid);
     }
 
+    @ApiOperation(value = "受理进度", response = ResultUtil.class)
+    @RequestMapping(value = "/accept/progress/{applyid}", method = RequestMethod.GET)
+    public Result acceptProgress(@PathVariable int applyid) throws Exception {
+        return itemApplyService.acceptProgress(applyid);
+    }
+
     /**
      * 公正人员接口
      */
-    @ApiOperation(value = "待接单列表", response = ResultUtil.class)
-    @RequestMapping(value = "/pending/list", method = RequestMethod.GET)
-    public Result pendList(Integer pageNum, int itemId) throws Exception {
-        return itemApplyService.pendList(pageNum, itemId);
+
+    @ApiOperation(value = "我的任务首页", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/index", method = RequestMethod.GET)
+    public Result myTaskIndex() throws Exception {
+        return itemApplyService.myTaskIndex();
+    }
+
+    @ApiOperation(value = "我的任务列表", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/list", method = RequestMethod.GET)
+    public Result myTaskList(@RequestParam int pageNum, @RequestParam int type, @RequestParam(required = false) Integer itemId, @RequestParam(required = false) String word) throws Exception {
+        return itemApplyService.myTaskList(pageNum, type, itemId, word);
+    }
+
+    @ApiOperation(value = "公正复核待审批-已审批列表", response = ResultUtil.class)
+    @RequestMapping(value = "/review/list", method = RequestMethod.GET)
+    public Result reviewList(@RequestParam Integer pageNum, @RequestParam String word, @RequestParam int type, @RequestParam int itemId) throws Exception {
+        return itemApplyService.reviewList(pageNum, word, type, itemId);
+    }
+
+    @ApiOperation(value = "公正管理端详情", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/detail/{applyid}", method = RequestMethod.GET)
+    public Result mytaskDetail(@PathVariable int applyid) throws Exception {
+        return itemApplyService.mytaskDetail(applyid);
+    }
+
+    @ApiOperation(value = "预审通过", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/passed/{applyid}", method = RequestMethod.GET)
+    public Result mytaskPassed(@PathVariable int applyid) throws Exception {
+        return itemApplyService.mytaskPassed(applyid);
+    }
+
+    @ApiOperation(value = "预审驳回退费详情信息", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/reject/detail/{applyid}", method = RequestMethod.GET)
+    public Result rejectDetail(@PathVariable int applyid) throws Exception {
+        return itemApplyService.rejectDetail(applyid);
+    }
+
+    @ApiOperation(value = "预审驳回", response = ResultUtil.class)
+    @RequestMapping(value = "/mytask/reject/reason", method = RequestMethod.POST)
+    public Result mytaskRejectReason(@RequestBody Reject reject) throws Exception {
+        return itemApplyService.mytaskRejectReason(reject);
     }
 
     @ApiOperation(value = "接单", response = ResultUtil.class)
@@ -91,82 +141,36 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.takeOrder(itemApply);
     }
 
-    @ApiOperation(value = "公正发送通知", response = ResultUtil.class)
-    @RequestMapping(value = "/submit/customPrice", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
-            @ApiImplicitParam(name = "price", value = "退回原因", dataType = "String"),
-            @ApiImplicitParam(name = "type", value = "退回类型 1 自定义价格通知 2 标的价格通知", dataType = "int")
-    })
-    public Result submitCustomPrice(@RequestBody Map<String, Object> map) throws Exception {
-        return itemApplyService.submitCustomPrice(map);
-    }
-
-    @ApiOperation(value = "资料处理中 已处理", response = ResultUtil.class)
-    @RequestMapping(value = "/pending/review", method = RequestMethod.GET)
-    public Result pendReview(Integer pageNum, int itemId, int type) throws Exception {
-        return itemApplyService.pendReview(pageNum, itemId, type);
-    }
-
-    @ApiOperation(value = "用户材料退回", response = ResultUtil.class)
-    @RequestMapping(value = "/reject/reason", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
-            @ApiImplicitParam(name = "rejectReason", value = "退回原因", dataType = "String"),
-            @ApiImplicitParam(name = "type", value = "退回类型 1 材料退回 2 审批流程退回", dataType = "int")
-    })
-    public Result rejectReason(@RequestBody Map<String, Object> map) throws Exception {
-        return itemApplyService.rejectReason(map);
-    }
-
-    @ApiOperation(value = "用户材料审核通过", response = ResultUtil.class)
-    @RequestMapping(value = "/pass", method = RequestMethod.POST)
-    public Result pass(@RequestBody ItemApplyFiles itemApplyFiles) throws Exception {
-        return itemApplyService.pass(itemApplyFiles);
-    }
-
-    @ApiOperation(value = "文件添加修改批注", response = ResultUtil.class)
-    @RequestMapping(value = "/notes", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "describe", value = "批注内容", dataType = "String"),
-            @ApiImplicitParam(name = "id", value = "ID", dataType = "int"),
+            @ApiImplicitParam(name = "id", value = "文件ID", dataType = "int"),
             @ApiImplicitParam(name = "aid", value = "用户aid", dataType = "String"),
-            @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String")
+            @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String"),
+            @ApiImplicitParam(name = "id", value = "文件ID", dataType = "int"),
+            @ApiImplicitParam(name = "fileStatus", value = "信息是否有误 0 有误 1 无误", dataType = "int"),
     })
+    @ApiOperation(value = "文件添加修改批注", response = ResultUtil.class)
+    @RequestMapping(value = "/notes", method = RequestMethod.POST)
     public Result notes(@RequestBody Map<String, Object> map) throws Exception {
         return itemApplyService.notes(map);
     }
 
-    @ApiOperation(value = "审批待处理", response = ResultUtil.class)
-    @RequestMapping(value = "/wait/list", method = RequestMethod.GET)
-    public Result list(Integer pageNum, int itemId) throws Exception {
-        PageInfo<ItemApply> itemApplyList = itemApplyService.waitList(pageNum, itemId);
-        return ResultUtil.success(itemApplyList);
+    @ApiOperation(value = "文件批注记录", response = ResultUtil.class)
+    @RequestMapping(value = "/notes/list/{id}", method = RequestMethod.GET)
+    public Result notesList(@PathVariable int id) throws Exception {
+        return itemApplyService.notesList(id);
     }
 
-    @ApiOperation(value = "审批已处理", response = ResultUtil.class)
-    @RequestMapping(value = "/deal/list", method = RequestMethod.GET)
-    public Result dealList(Integer pageNum, int itemId) throws Exception {
-        PageInfo<ItemApply> itemApplyList = itemApplyService.dealList(pageNum, itemId);
-        return ResultUtil.success(itemApplyList);
+    @ApiOperation(value = "审批流程模板", response = ResultUtil.class)
+    @RequestMapping(value = "/process/template", method = RequestMethod.GET)
+    public Result processTemplate() throws Exception {
+        return itemApplyService.processTemplate();
     }
 
-    @ApiOperation(value = "审批通过", response = ResultUtil.class)
-    @RequestMapping(value = "/approved", method = RequestMethod.POST)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
-            @ApiImplicitParam(name = "opinion", value = "审批意见", dataType = "String")
-    })
-    public Result approved(@RequestBody Map<String, Object> map) throws Exception {
-        itemApplyService.approved(map);
-        return ResultUtil.success();
-    }
-
-    @ApiOperation(value = "公正首页接口", response = ResultUtil.class)
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public Result index() throws Exception {
-        Result index = itemApplyService.index();
-        return index;
+    @ApiOperation(value = "新增审批人-选择列表", response = ResultUtil.class)
+    @RequestMapping(value = "/process/list", method = RequestMethod.GET)
+    public Result processList() throws Exception {
+        return itemApplyService.processList();
     }
 
     @ApiOperation(value = "国家", response = ResultUtil.class)
@@ -180,4 +184,24 @@ public class ItemApplyController extends BaseController {
     public Result language(@PathVariable Integer id) throws Exception {
         return pubDictoryService.selectCountryLanguage(id);
     }
+
+
+    /*@ApiOperation(value = "用户材料审核通过", response = ResultUtil.class)
+    @RequestMapping(value = "/pass", method = RequestMethod.POST)
+    public Result pass(@RequestBody ItemApplyFiles itemApplyFiles) throws Exception {
+        return itemApplyService.pass(itemApplyFiles);
+    }
+
+    @ApiOperation(value = "审批通过", response = ResultUtil.class)
+    @RequestMapping(value = "/approved", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "applyid", value = "ID", dataType = "int"),
+            @ApiImplicitParam(name = "opinion", value = "审批意见", dataType = "String")
+    })
+    public Result approved(@RequestBody Map<String, Object> map) throws Exception {
+        itemApplyService.approved(map);
+        return ResultUtil.success();
+    }*/
+
+
 }

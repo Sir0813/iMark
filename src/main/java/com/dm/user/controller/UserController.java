@@ -83,9 +83,14 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "上传头像", response = ResultUtil.class)
     @RequestMapping(value = "/user/uploadHeadPhoto", method = RequestMethod.POST)
-    public Result uploadHeadPhoto(HttpServletRequest request, HttpServletResponse response,
-                                  @RequestParam(value = "file") MultipartFile multipartFile) {
+    public Result uploadHeadPhoto(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "file") MultipartFile multipartFile) {
         return fileUtil.uploadHeadPhoto(request, response, multipartFile);
+    }
+
+    @ApiOperation(value = "生成文字签名", response = ResultUtil.class)
+    @RequestMapping(value = "/user/uploadSignature", method = RequestMethod.POST)
+    public Result uploadSignature(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "file") MultipartFile multipartFile) throws Exception {
+        return fileUtil.uploadSignature(request, response, multipartFile);
     }
 
     @ApiOperation(value = "重置密码", response = ResultUtil.class)

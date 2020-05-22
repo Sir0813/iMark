@@ -4,13 +4,14 @@
     <resultMap id="BaseResultMap" type="com.dm.user.entity.OrgUser">
         <id column="userid" jdbcType="INTEGER" property="userid"/>
         <result column="orgid" jdbcType="INTEGER" property="orgid"/>
-        <result column="role" jdbcType="INTEGER" property="role"/>
+        <result column="role" jdbcType="VARCHAR" property="role"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
     </resultMap>
     <sql id="Base_Column_List">
-    userid, orgid, role, status, created_date, is_del
+    userid, orgid, role, status, created_date, is_del, remarks
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -19,5 +20,22 @@
         where userid = #{userid}
         and status = 0
         and is_del = 0
+    </select>
+    <select id="selectAdminList" resultMap="BaseResultMap">
+        SELECT
+            IFNULL(
+                orguser.remarks,
+                usercard.real_name
+            ) AS remarks,
+            orguser.userid AS userid,
+            ucuser.username AS userPhone
+        FROM
+            `biz_org_users` AS orguser
+        LEFT JOIN uc_user AS ucuser ON ucuser.userid = orguser.userid
+        LEFT JOIN sys_user_card AS usercard ON usercard.userid = orguser.userid
+        WHERE
+            orguser.role = 0
+        AND orguser.`status` = 0
+        AND orguser.is_del = 0
     </select>
 </mapper>

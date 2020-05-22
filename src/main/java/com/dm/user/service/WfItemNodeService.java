@@ -1,27 +1,11 @@
 package com.dm.user.service;
 
+import com.dm.user.entity.ProcessConfig;
 import com.dm.user.entity.WfItemNode;
 
-import java.util.Map;
+import java.util.List;
 
 public interface WfItemNodeService {
-
-    /**
-     * 根据itemid查询流程第一个节点
-     *
-     * @param itemid
-     * @return
-     */
-    WfItemNode selectByItemId(Integer itemid) throws Exception;
-
-    /**
-     * 根据itemid查询流程最后一个节点
-     *
-     * @param itemid
-     * @return
-     * @throws Exception
-     */
-    WfItemNode selectByItemIdDesc(Integer itemid) throws Exception;
 
     /**
      * 主键ID查询
@@ -31,10 +15,10 @@ public interface WfItemNodeService {
     WfItemNode selectById(Integer nodeid) throws Exception;
 
     /**
-     * 根据排序查询
+     * 流程模板
      *
-     * @param map
      * @return
+     * @throws Exception
      */
-    WfItemNode selectByOrder(Map<String, Object> map) throws Exception;
+    List<ProcessConfig> selectByUserId() throws Exception;
 }

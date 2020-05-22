@@ -41,4 +41,9 @@ public class OrgServiceImpl implements OrgService {
     public Org selectById(Integer orgid) throws Exception {
         return orgMapper.selectByPrimaryKey(orgid);
     }
+
+    @Override
+    public Org selectByApplyId(int applyid) throws Exception {
+        return orgMapper.selectByApplyId(applyid);
+    }
 }

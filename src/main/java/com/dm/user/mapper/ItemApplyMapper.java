@@ -1,7 +1,6 @@
 package com.dm.user.mapper;
 
-import com.dm.user.entity.ApplyHistory;
-import com.dm.user.entity.ItemApply;
+import com.dm.user.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -47,11 +46,12 @@ public interface ItemApplyMapper {
     int updateByPrimaryKeySelective(ItemApply record);
 
     /**
-     * 申请公正列表
+     * 我的公正(用户页面)
      *
+     * @param map
      * @return
      */
-    List<ItemApply> list(int userid);
+    List<ItemApply> list(Map<String, Object> map);
 
     /**
      * 材料待接单列表
@@ -155,4 +155,75 @@ public interface ItemApplyMapper {
      * @return
      */
     Integer selectMyApplyCount(Map<String, Object> dataMap);
+
+    /**
+     * 申请详情信息
+     *
+     * @param dataMap
+     * @return
+     */
+    ApplyUserInfo selectDetailInfo(Map<String, Object> dataMap);
+
+    /**
+     * 受理进度信息查询
+     *
+     * @param applyid
+     * @return
+     */
+    ApplyUserInfo selectApplyInfo(int applyid);
+
+    /**
+     * 已初审通过
+     *
+     * @param status
+     * @return
+     */
+    Integer isVerifi(int status);
+
+    /**
+     * 公正复核数量
+     *
+     * @param map
+     * @return
+     */
+    Integer inReview(Map<String, Object> map);
+
+    /**
+     * 正在受理
+     *
+     * @param map
+     * @return
+     */
+    List<ItemApply> inProcessingList(Map<String, Object> map);
+
+    /**
+     * 我的任务列表
+     *
+     * @param map
+     * @return
+     */
+    List<ItemApply> selectMyTaskList(Map<String, Object> map);
+
+    /**
+     * 预审驳回
+     *
+     * @param map
+     */
+    void updateRejectReason(Map<String, Object> map);
+
+    /**
+     * 预审驳回退费详情页
+     *
+     * @param applyid
+     * @return
+     */
+    OrderInfo orderInfo(int applyid);
+
+    /**
+     * 收费明细
+     *
+     * @param applyid
+     * @return
+     */
+    List<ChargeDetail> feeInfo(int applyid);
 }

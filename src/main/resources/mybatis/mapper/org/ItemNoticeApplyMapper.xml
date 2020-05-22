@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.ItemNoticeApplyMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.ItemNoticeApply">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="notice_id" jdbcType="INTEGER" property="noticeId"/>
+        <result column="apply_id" jdbcType="INTEGER" property="applyId"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="is_signature" jdbcType="INTEGER" property="isSignature"/>
+        <result column="file_url" jdbcType="VARCHAR" property="fileUrl"/>
+        <result column="fiel_path" jdbcType="VARCHAR" property="fielPath"/>
+        <result column="file_type" jdbcType="VARCHAR" property="fileType"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, notice_id, apply_id, file_name, created_date, is_signature, file_url, fiel_path, 
+    file_type, user_id
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_item_notice_apply
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from biz_item_notice_apply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.dm.user.entity.ItemNoticeApply">
+    insert into biz_item_notice_apply (id, notice_id, apply_id, 
+      file_name, created_date, is_signature, 
+      file_url, fiel_path, file_type
+      )
+    values (#{id,jdbcType=INTEGER}, #{noticeId,jdbcType=INTEGER}, #{applyId,jdbcType=INTEGER}, 
+      #{fileName,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{isSignature,jdbcType=INTEGER}, 
+      #{fileUrl,jdbcType=VARCHAR}, #{fielPath,jdbcType=VARCHAR}, #{fileType,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.ItemNoticeApply" keyProperty="id"
+            useGeneratedKeys="true">
+        insert into biz_item_notice_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noticeId != null">
+                notice_id,
+            </if>
+            <if test="applyId != null">
+                apply_id,
+            </if>
+            <if test="fileName != null">
+                file_name,
+            </if>
+            <if test="createdDate != null">
+                created_date,
+            </if>
+            <if test="isSignature != null">
+                is_signature,
+            </if>
+            <if test="fileUrl != null">
+                file_url,
+            </if>
+            <if test="fielPath != null">
+                fiel_path,
+            </if>
+            <if test="fileType != null">
+                file_type,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noticeId != null">
+                #{noticeId,jdbcType=INTEGER},
+            </if>
+            <if test="applyId != null">
+                #{applyId,jdbcType=INTEGER},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="createdDate != null">
+                #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isSignature != null">
+                #{isSignature,jdbcType=INTEGER},
+            </if>
+            <if test="fileUrl != null">
+                #{fileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="fielPath != null">
+                #{fielPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                #{fileType,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.ItemNoticeApply">
+        update biz_item_notice_apply
+        <set>
+            <if test="noticeId != null">
+                notice_id = #{noticeId,jdbcType=INTEGER},
+            </if>
+            <if test="applyId != null">
+                apply_id = #{applyId,jdbcType=INTEGER},
+            </if>
+            <if test="fileName != null">
+                file_name = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="createdDate != null">
+                created_date = #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isSignature != null">
+                is_signature = #{isSignature,jdbcType=INTEGER},
+            </if>
+            <if test="fileUrl != null">
+                file_url = #{fileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="fielPath != null">
+                fiel_path = #{fielPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                file_type = #{fileType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.ItemNoticeApply">
+    update biz_item_notice_apply
+    set notice_id = #{noticeId,jdbcType=INTEGER},
+      apply_id = #{applyId,jdbcType=INTEGER},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      is_signature = #{isSignature,jdbcType=INTEGER},
+      file_url = #{fileUrl,jdbcType=VARCHAR},
+      fiel_path = #{fielPath,jdbcType=VARCHAR},
+      file_type = #{fileType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

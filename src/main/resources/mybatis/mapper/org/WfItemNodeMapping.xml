@@ -3,7 +3,8 @@
 <mapper namespace="com.dm.user.mapper.WfItemNodeMapper">
     <resultMap id="BaseResultMap" type="com.dm.user.entity.WfItemNode">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="itemid" jdbcType="VARCHAR" property="itemid"/>
+        <result column="apply_id" jdbcType="INTEGER" property="applyId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="order" jdbcType="INTEGER" property="order"/>
         <result column="nodename" jdbcType="VARCHAR" property="nodename"/>
         <result column="describe" jdbcType="VARCHAR" property="describe"/>
@@ -12,7 +13,7 @@
         <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, itemid, `order`, nodename, `describe`, audit_userid, created_date, created_by
+    id, apply_id, user_id, `order`, nodename, `describe`, audit_userid, created_date, created_by
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -20,27 +21,21 @@
         from wf_item_node_define
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectByItemId" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from wf_item_node_define
-        where itemid = #{itemid,jdbcType=VARCHAR}
-        order by `order` asc
-        limit 1
-    </select>
-    <select id="selectByItemIdDesc" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from wf_item_node_define
-        where itemid = #{itemid,jdbcType=VARCHAR}
-        order by `order` desc
-        limit 1
-    </select>
-    <select id="selectByOrder" parameterType="java.util.Map" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from wf_item_node_define
-        where itemid = #{itemId}
-        and `order` = #{order}
+    <select id="selectByUserId" parameterType="java.lang.String" resultType="com.dm.user.entity.ProcessConfig">
+        SELECT
+            node.id AS id,
+            node.`order` AS `order`,
+            node.nodename AS nodeName,
+            usercard.real_name AS realName,
+            ucuser.username AS userPhone
+        FROM
+            `wf_item_node_define` AS node
+        LEFT JOIN sys_user_card AS usercard ON node.audit_userid = usercard.userid
+        LEFT JOIN uc_user AS ucuser ON ucuser.userid = node.audit_userid
+        WHERE
+            node.user_id = #{userId}
+        AND node.apply_id = 0
+        ORDER BY
+            node.`order` ASC
     </select>
 </mapper>

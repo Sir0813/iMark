@@ -90,4 +90,9 @@ public final class StateMsg {
      * 抢单
      */
     public static final String TAKE_ORDER_ERROR_MSG = "该订单已被他人接取";
+
+    /**
+     * 公正附件费
+     */
+    public static final double FILE_FEE = 20;
 }

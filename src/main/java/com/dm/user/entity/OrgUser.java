@@ -7,13 +7,36 @@ public class OrgUser {
 
     private Integer orgid;
 
-    private Integer role;
+    private String role;
 
     private Integer status;
 
     private Date createdDate;
 
     private Integer isDel;
+
+    private String remarks;
+
+    /**
+     * 业务字段
+     */
+    private String userPhone;
+
+    public String getUserPhone() {
+        return userPhone;
+    }
+
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public Integer getUserid() {
         return userid;
@@ -29,14 +52,6 @@ public class OrgUser {
 
     public void setOrgid(Integer orgid) {
         this.orgid = orgid;
-    }
-
-    public Integer getRole() {
-        return role;
-    }
-
-    public void setRole(Integer role) {
-        this.role = role;
     }
 
     public Integer getStatus() {
@@ -61,5 +76,13 @@ public class OrgUser {
 
     public void setIsDel(Integer isDel) {
         this.isDel = isDel;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

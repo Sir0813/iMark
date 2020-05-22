@@ -64,6 +64,16 @@ public class AppUser {
 
     private String address;
 
+    private String signaturePhoto;
+
+    public String getSignaturePhoto() {
+        return signaturePhoto;
+    }
+
+    public void setSignaturePhoto(String signaturePhoto) {
+        this.signaturePhoto = signaturePhoto;
+    }
+
     public Integer getUserid() {
         return userid;
     }

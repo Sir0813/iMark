@@ -7,10 +7,10 @@
         <result column="file_num" jdbcType="INTEGER" property="fileNum"/>
         <result column="country_name" jdbcType="VARCHAR" property="countryName"/>
         <result column="language_value" jdbcType="VARCHAR" property="languageValue"/>
-        <result column="address_value" jdbcType="VARCHAR" property="addressValue"/>
+        <result column="address_id" jdbcType="INTEGER" property="addressId"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, apply_id, file_num, country_name, language_value, address_value
+    id, apply_id, file_num, country_name, language_value, address_id
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -38,8 +38,8 @@
             <if test="languageValue != null">
                 language_value,
             </if>
-            <if test="addressValue != null">
-                address_value,
+            <if test="addressId != null">
+                address_id,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -55,8 +55,8 @@
             <if test="languageValue != null">
                 #{languageValue,jdbcType=VARCHAR},
             </if>
-            <if test="addressValue != null">
-                #{addressValue,jdbcType=VARCHAR},
+            <if test="addressId != null">
+                #{addressId,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -75,8 +75,8 @@
             <if test="languageValue != null">
                 language_value = #{languageValue},
             </if>
-            <if test="addressValue != null">
-                address_value = #{addressValue},
+            <if test="addressId != null">
+                address_id = #{addressId},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}

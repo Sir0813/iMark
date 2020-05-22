@@ -36,6 +36,9 @@ public class OrgItemServiceImpl implements OrgItemService {
     private OrgUserService orgUserService;
 
     @Autowired
+    private OrgService orgService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -82,16 +85,17 @@ public class OrgItemServiceImpl implements OrgItemService {
         if (null == userAddress) {
             UserAddress userAddress1 = userAddressService.selectByUserIdAndStatus(LoginUserHelper.getUserId(), "0");
             if (null != userAddress1) {
-                map.put("address", userAddress1.getReceiverAddress() + userAddress1.getReceiverDetailAddress());
+                map.put("address", userAddress1);
             } else {
                 map.put("address", null);
             }
         } else {
-            map.put("address", userAddress.getReceiverAddress() + userAddress.getReceiverDetailAddress());
+            map.put("address", userAddress);
         }
         userMap.put("userName", userCard.getRealName());
         userMap.put("userPhone", LoginUserHelper.getUserName());
         userMap.put("userCard", userCard.getCardNumber());
+        map.put("orgAddress", orgService.selectById(orgItems.getOrgid()).getAddress());
         map.put("valuation", orgItems.getValuation());
         map.put("itemDesc", orgItems.getItemDesc());
         map.put("itemRequered", list);

@@ -19,10 +19,11 @@
         <result column="pay_status" jdbcType="INTEGER" property="payStatus"/>
         <result column="pay_end_price" jdbcType="DECIMAL" property="payEndPrice"/>
         <result column="item_code" jdbcType="VARCHAR" property="itemCode"/>
+        <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason"/>
     </resultMap>
     <sql id="Base_Column_List">
     applyid, apply_no, itemid, userid, `status`, `describe`, certid, created_date, submit_date,
-    item_value, price, wf_instance_id, handle_created_date, handle_userid, pay_status, pay_end_price, item_code
+    item_value, price, wf_instance_id, handle_created_date, handle_userid, pay_status, pay_end_price, item_code, reject_reason
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -192,29 +193,38 @@
         </set>
         where applyid = #{applyid,jdbcType=INTEGER}
     </update>
-    <select id="list" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ItemApply">
+    <select id="list" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
-	    itemapply.applyid AS applyid,
-	    itemapply.apply_no AS applyNo,
-    	itemapply.certid AS certid,
-    	itemapply.created_date AS createdDate,
-    	itemapply.submit_date AS submitDate,
-    	itemapply.`describe` AS `describe`,
-	    itemapply.itemid AS itemid,
-	    itemapply.item_value AS itemValue,
-	    itemapply.price AS price,
+        charge.price AS `price`,
+        itemapply.applyid AS applyid,
+        itemapply.apply_no AS applyNo,
+        itemapply.created_date AS createdDate,
+        itemapply.submit_date AS submitDate,
+        itemapply.`describe` AS `describe`,
+        itemapply.itemid AS itemid,
+        itemapply.item_value AS itemValue,
         itemapply.`status` AS `status`,
         itemapply.userid AS userid,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
         orgitem.logo_url AS logoUrl
         FROM
-            biz_item_apply AS itemapply
+        biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
+        LEFT JOIN biz_charge_detail AS charge ON (charge.apply_id = itemapply.applyid
+        AND charge.charge_id = (select id from biz_item_charge where `name` = '公证预付款' and org_id = 11 and is_del = 0)
+        )
         WHERE
-            userid = #{userid,jdbcType=INTEGER}
+        itemapply.userid = #{userId}
+        <if test="state!=null and state!=''">
+            AND itemapply.`status` = #{state}
+        </if>
+        <if test="word!=null and word!=''">
+            AND orgitem.item_name like CONCAT('%',#{word},'%')
+        </if>
+        GROUP BY itemapply.applyid
         ORDER BY
-	    createdDate DESC
+        createdDate DESC
     </select>
     <select id="pendList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -281,95 +291,61 @@
         and itemapply.handle_userid = #{userId}
         order by submitDate desc
     </select>
-    <select id="selectWaitList" parameterType="java.lang.String" resultType="com.dm.user.entity.ItemApply">
+    <select id="selectWaitList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
         itemapply.applyid AS applyid,
         itemapply.apply_no AS applyNo,
-        itemapply.certid AS certid,
-        itemapply.created_date AS createdDate,
         itemapply.submit_date AS submitDate,
-        itemapply.`describe` AS `describe`,
-        itemapply.itemid AS itemid,
-        itemapply.item_value AS itemValue,
-        itemapply.price AS price,
         itemapply.`status` AS `status`,
-        itemapply.userid AS userid,
-        itemapply.wf_instance_id AS wfInstanceId,
-        orgitem.item_name AS itemName,
-        usercard.real_name AS realName,
-        orgitem.logo_url AS logoUrl
+        item.item_name AS itemName,
+        item.logo_url AS logoUrl,
+        usercard.real_name AS realName
         FROM
         biz_item_apply AS itemapply
-        LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
-        LEFT JOIN sys_user_card usercard ON (
-        itemapply.userid = usercard.userid
-        AND (
-        usercard.real_state = 2
-        OR usercard.real_state = 3
-        )
-        )
+        LEFT JOIN biz_org_items AS item ON itemapply.itemid = item.itemid
+        LEFT JOIN sys_user_card AS usercard ON itemapply.userid = usercard.userid
+        LEFT JOIN wf_item_node_define AS nodedefine ON nodedefine.apply_id = itemapply.applyid
         WHERE
-        itemapply.pay_status = #{payStatus}
+        nodedefine.audit_userid = #{userId}
         AND itemapply.`status` = #{status}
-        AND itemapply.wf_instance_id IN (
-        SELECT
-        id
-        FROM
-        wf_instance
-        WHERE
-        nodeid IN (
-        SELECT
-        id
-        FROM
-        wf_item_node_define
-        WHERE
-        audit_userid LIKE CONCAT('%',#{userId},'%')
-        )
-        )
-        <if test="itemId != null">
+        <if test="word!=null">
+            AND (itemapply.apply_no like CONCAT('%',#{word},'%') or item.item_name like CONCAT('%',#{word},'%'))
+        </if>
+        <if test="itemId!=null">
             AND itemapply.itemid = #{itemId}
         </if>
-        group by itemapply.applyid
-        order by submitDate desc
+        GROUP BY
+        itemapply.applyid
+        ORDER BY
+        itemapply.submit_date DESC
     </select>
     <select id="dealList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
         itemapply.applyid AS applyid,
         itemapply.apply_no AS applyNo,
-        itemapply.certid AS certid,
-        itemapply.created_date AS createdDate,
         itemapply.submit_date AS submitDate,
-        itemapply.`describe` AS `describe`,
-        itemapply.itemid AS itemid,
-        itemapply.item_value AS itemValue,
-        itemapply.price AS price,
         itemapply.`status` AS `status`,
-        itemapply.userid AS userid,
-        itemapply.wf_instance_id AS wfInstanceId,
-        orgitem.item_name AS itemName,
+        item.item_name AS itemName,
+        item.logo_url AS logoUrl,
         usercard.real_name AS realName,
-        orgitem.logo_url AS logoUrl
+        track.audit_date AS auditDate
         FROM
-        `wf_inst_audit_track` AS track
-        LEFT JOIN
-        biz_item_apply AS itemapply ON track.instid = itemapply.wf_instance_id
-        INNER JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
-        LEFT JOIN sys_user_card usercard ON (itemapply.userid = usercard.userid
-        AND usercard.real_state = 2)
+        wf_inst_audit_track AS track
+        LEFT JOIN biz_item_apply AS itemapply ON track.instid = itemapply.wf_instance_id
+        LEFT JOIN biz_org_items AS item ON itemapply.itemid = item.itemid
+        LEFT JOIN sys_user_card AS usercard ON itemapply.userid = usercard.userid
         WHERE
-        itemapply.wf_instance_id IN (
-        SELECT
-        instid
-        FROM
-        `wf_inst_audit_track`
-        WHERE
-        userid = #{userId}
-        )
-        <if test="itemId != null">
+        track.userid = #{userId}
+        <if test="word!=null">
+            AND (itemapply.apply_no like CONCAT('%',#{word},'%') or item.item_name like CONCAT('%',#{word},'%'))
+        </if>
+        <if test="itemId!=null">
             AND itemapply.itemid = #{itemId}
         </if>
-        group by itemapply.applyid
-        order by submitDate desc
+        GROUP BY
+        itemapply.applyid
+        ORDER BY
+        track.audit_date DESC
     </select>
     <update id="updateState" parameterType="java.util.Map">
         UPDATE biz_item_apply
@@ -407,12 +383,7 @@
         count(1)
         FROM
         biz_item_apply AS itemapply
-        WHERE
-        1 = 1
-        AND itemapply.`status` IN
-        <foreach collection="inProcessing" open="(" separator="," close=")" item="s">
-            #{s}
-        </foreach>
+        WHERE itemapply.`status` = #{status}
         AND itemapply.handle_userid = #{userId}
     </select>
     <select id="isProcessing" parameterType="java.util.Map" resultType="java.lang.Integer">
@@ -420,11 +391,9 @@
         count(1)
         FROM
         biz_item_apply AS itemapply
-        WHERE
-        1 = 1
-        AND itemapply.`status` IN
-        <foreach collection="isProcessing" open="(" separator="," close=")" item="s">
-            #{s}
+        WHERE itemapply.`status` IN
+        <foreach collection="isEnd" open="(" separator="," close=")" item="end">
+            #{end}
         </foreach>
         AND itemapply.handle_userid = #{userId}
     </select>
@@ -498,5 +467,162 @@
         count(1)
         from biz_item_apply
         where userid = #{userId}
+    </select>
+    <select id="selectDetailInfo" parameterType="java.util.Map" resultType="com.dm.user.entity.ApplyUserInfo">
+        SELECT
+        usercard.real_name AS realName,
+        ucuser.username AS userPhone,
+        usercard.card_number AS cardNumber,
+        apply.apply_no AS applyNo,
+        apply.submit_date AS submitDate,
+        items.item_name AS itemName,
+        apply.item_value AS itemValue,
+        apply.`status` AS `status`,
+        apply.`describe` AS `describe`,
+        items.valuation AS `valuation`,
+        apply.pay_status AS `payStatus`,
+        apply.applyid AS applyid
+        FROM
+        biz_org AS bizorg
+        LEFT JOIN biz_org_items AS items ON items.orgid = bizorg.itemid
+        LEFT JOIN biz_item_apply AS apply ON apply.itemid = items.itemid
+        LEFT JOIN uc_user AS ucuser ON apply.userid = ucuser.userid
+        LEFT JOIN `sys_user_card` AS usercard ON apply.userid = usercard.userid
+        WHERE
+        apply.applyid = #{applyId}
+        <if test="userId!=null">
+            AND apply.userid = #{userId}
+        </if>
+    </select>
+    <select id="selectApplyInfo" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ApplyUserInfo">
+        SELECT
+            usercard.real_name AS realName,
+            usercard.card_number AS cardNumber,
+            items.item_name AS itemName,
+            ucuser.username AS userPhone,
+            apply.apply_no AS applyNo,
+            apply.submit_date AS submitDate
+        FROM
+            biz_org_items AS items
+        LEFT JOIN biz_item_apply AS apply ON apply.itemid = items.itemid
+        LEFT JOIN uc_user AS ucuser ON apply.userid = ucuser.userid
+        LEFT JOIN `sys_user_card` AS usercard ON apply.userid = usercard.userid
+        WHERE
+            apply.applyid = #{applyid}
+    </select>
+    <select id="isVerifi" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            biz_item_apply AS itemapply
+        WHERE
+            itemapply.`status` = #{status}
+    </select>
+    <select id="inReview" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            biz_item_apply AS itemapply
+        WHERE
+            itemapply.`status` = #{review}
+        AND itemapply.handle_userid = #{userId}
+    </select>
+    <select id="inProcessingList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
+        SELECT
+        itemapply.applyid AS applyid,
+        itemapply.apply_no AS applyNo,
+        itemapply.submit_date AS submitDate,
+        itemapply.`status` AS `status`,
+        item.item_name AS itemName,
+        item.logo_url AS logoUrl,
+        item.itemid AS itemid
+        FROM
+        biz_item_apply AS itemapply
+        LEFT JOIN biz_org_items item ON itemapply.itemid = item.itemid
+        WHERE itemapply.`status` IN
+        <foreach collection="inProcessing" open="(" separator="," close=")" item="inPro">
+            #{inPro}
+        </foreach>
+        AND itemapply.handle_userid = #{userId}
+    </select>
+    <select id="selectMyTaskList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
+        SELECT
+        itemapply.applyid AS applyid,
+        itemapply.apply_no AS applyNo,
+        itemapply.submit_date AS submitDate,
+        itemapply.`status` AS `status`,
+        item.item_name AS itemName,
+        item.logo_url AS logoUrl,
+        item.itemid AS itemid,
+        usercard.real_name AS realName
+        FROM
+        biz_item_apply AS itemapply
+        LEFT JOIN biz_org_items AS item ON itemapply.itemid = item.itemid
+        LEFT JOIN sys_user_card AS usercard ON itemapply.userid = usercard.userid
+        WHERE
+        itemapply.`status` IN
+        <foreach collection="status" open="(" separator="," close=")" item="s">
+            #{s}
+        </foreach>
+        <if test="userId!=null and userId!=''">
+            AND itemapply.handle_userid = #{userId}
+        </if>
+        <if test="itemId!=null">
+            AND itemapply.itemid = #{itemId}
+        </if>
+        <if test="word!=null and word!=''">
+            AND (itemapply.apply_no like CONCAT('%',#{word},'%') or item.item_name like CONCAT('%',#{word},'%'))
+        </if>
+        GROUP BY
+        itemapply.applyid
+        ORDER BY
+        itemapply.submit_date DESC
+    </select>
+    <update id="updateRejectReason" parameterType="java.util.Map">
+        UPDATE biz_item_apply
+        SET `status` = #{status},
+        `reject_reason` = #{rejectReason}
+        WHERE
+            `applyid` = #{applyId}
+    </update>
+    <select id="orderInfo" parameterType="java.lang.Integer" resultType="com.dm.user.entity.OrderInfo">
+        SELECT
+            item.item_name AS itemName,
+            charge.crated_date AS payDate,
+            usercard.real_name AS payName
+        FROM
+            biz_item_apply AS apply
+        LEFT JOIN biz_org_items AS item ON apply.itemid = item.itemid
+        LEFT JOIN sys_user_card AS usercard ON apply.userid = usercard.userid
+        LEFT JOIN biz_charge_detail AS charge ON (
+            charge.apply_id = apply.applyid
+            AND charge.is_pay = 1
+            AND charge.pay_status = 0
+            AND charge.is_del = 0
+        )
+        WHERE
+            apply.applyid = #{applyid}
+        AND charge.charge_id = (
+            SELECT
+                id
+            FROM
+                `biz_item_charge`
+            WHERE
+                `name` = '公证预付款'
+        )
+    </select>
+    <select id="feeInfo" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ChargeDetail">
+        SELECT
+            charge.id as id,
+            itemcharge.`name` as `feeName`,
+            charge.price as `price`,
+            charge.file_num as fileNum
+        FROM
+            biz_charge_detail AS charge
+        LEFT JOIN biz_item_charge AS itemcharge ON itemcharge.id = charge.charge_id
+        WHERE
+            charge.apply_id = 475
+        AND charge.is_pay = 1
+        AND charge.is_del = 0
     </select>
 </mapper>

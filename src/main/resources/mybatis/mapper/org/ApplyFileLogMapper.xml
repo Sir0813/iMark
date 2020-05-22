@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.ApplyFileLogMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.ApplyFileLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="file_id" jdbcType="INTEGER" property="fileId"/>
+        <result column="file_status" jdbcType="INTEGER" property="fileStatus"/>
+        <result column="create_user" jdbcType="INTEGER" property="createUser"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dm.user.entity.ApplyFileLog">
+        <result column="log_string" jdbcType="LONGVARCHAR" property="logString"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, file_id, file_status, create_user, create_time
+  </sql>
+    <sql id="Blob_Column_List">
+    log_string
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from biz_apply_file_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from biz_apply_file_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.dm.user.entity.ApplyFileLog">
+    insert into biz_apply_file_log (id, file_id, file_status, 
+      create_user, create_time, log_string
+      )
+    values (#{id,jdbcType=INTEGER}, #{fileId,jdbcType=INTEGER}, #{fileStatus,jdbcType=INTEGER}, 
+      #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{logString,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.dm.user.entity.ApplyFileLog" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into biz_apply_file_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileId != null">
+                file_id,
+            </if>
+            <if test="fileStatus != null">
+                file_status,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="logString != null">
+                log_string,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileId != null">
+                #{fileId,jdbcType=INTEGER},
+            </if>
+            <if test="fileStatus != null">
+                #{fileStatus,jdbcType=INTEGER},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logString != null">
+                #{logString,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dm.user.entity.ApplyFileLog">
+        update biz_apply_file_log
+        <set>
+            <if test="fileId != null">
+                file_id = #{fileId,jdbcType=INTEGER},
+            </if>
+            <if test="fileStatus != null">
+                file_status = #{fileStatus,jdbcType=INTEGER},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logString != null">
+                log_string = #{logString,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dm.user.entity.ApplyFileLog">
+    update biz_apply_file_log
+    set file_id = #{fileId,jdbcType=INTEGER},
+      file_status = #{fileStatus,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      log_string = #{logString,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.dm.user.entity.ApplyFileLog">
+    update biz_apply_file_log
+    set file_id = #{fileId,jdbcType=INTEGER},
+      file_status = #{fileStatus,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectByFileId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from biz_apply_file_log
+        where file_id = #{id}
+    </select>
+</mapper>
