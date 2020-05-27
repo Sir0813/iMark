@@ -21,6 +21,26 @@ public class BizItemVideo {
 
     private Integer fileId;
 
+    private Integer createdBy;
+
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public Integer getId() {
         return id;
     }

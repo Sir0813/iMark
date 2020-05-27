@@ -1,5 +1,6 @@
 package com.dm.user.mapper;
 
+import com.dm.user.entity.ApplyFee;
 import com.dm.user.entity.ChargeDetail;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -25,4 +26,14 @@ public interface ChargeDetailMapper {
     void insertList(List<ChargeDetail> chargeDetails);
 
     ChargeDetail selectByChargeIdAndApplyId(Map<String, Object> map);
+
+    List<ApplyFee> selectByApplyId(int applyId);
+
+    ApplyFee selectByApplyIdAndFileNum(Integer applyId);
+
+    void updateByIdAndApplyId(Map<String, Object> chargeMap);
+
+    ApplyFee selectByApplyIdAndStatus(int applyid);
+
+    void updatePayStatus(Integer id);
 }

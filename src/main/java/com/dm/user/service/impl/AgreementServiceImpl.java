@@ -18,7 +18,7 @@ public class AgreementServiceImpl implements AgreementService {
 
     @Override
     public Result desc() throws Exception {
-        BizItemAgreementWithBLOBs agreementWithBLOBs = agreementMapper.selectByOrgId(11);
+        BizItemAgreementWithBLOBs agreementWithBLOBs = agreementMapper.selectByOrgId();
         return ResultUtil.success(agreementWithBLOBs);
     }
 }

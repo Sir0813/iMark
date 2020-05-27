@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cui
@@ -59,4 +61,19 @@ public class CertFilesServiceImpl implements CertFilesService {
         return certFilesMapper.selectByUrl(frontPath);
     }
 
+    @Override
+    public List<CertFiles> selectUpdateFiles(int applyid, int fileType) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", applyid);
+        map.put("fileType", fileType);
+        return certFilesMapper.selectUpdateFiles(map);
+    }
+
+    @Override
+    public List<CertFiles> selectAddFiles(int applyid, int fileType) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", applyid);
+        map.put("fileType", fileType);
+        return certFilesMapper.selectAddFiles(map);
+    }
 }

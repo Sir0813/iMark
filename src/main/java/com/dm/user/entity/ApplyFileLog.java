@@ -18,6 +18,16 @@ public class ApplyFileLog {
 
     private String logString;
 
+    private Integer fileIndex;
+
+    public Integer getFileIndex() {
+        return fileIndex;
+    }
+
+    public void setFileIndex(Integer fileIndex) {
+        this.fileIndex = fileIndex;
+    }
+
     public Integer getId() {
         return id;
     }

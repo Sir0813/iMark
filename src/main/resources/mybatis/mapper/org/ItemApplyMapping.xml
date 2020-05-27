@@ -20,10 +20,13 @@
         <result column="pay_end_price" jdbcType="DECIMAL" property="payEndPrice"/>
         <result column="item_code" jdbcType="VARCHAR" property="itemCode"/>
         <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason"/>
+        <result column="pay_end_date" jdbcType="TIMESTAMP" property="payEndDate"/>
+        <result column="add_file_status" jdbcType="INTEGER" property="addFileStatus"/>
     </resultMap>
     <sql id="Base_Column_List">
     applyid, apply_no, itemid, userid, `status`, `describe`, certid, created_date, submit_date,
-    item_value, price, wf_instance_id, handle_created_date, handle_userid, pay_status, pay_end_price, item_code, reject_reason
+    item_value, price, wf_instance_id, handle_created_date, handle_userid, pay_status, pay_end_price,
+    item_code, reject_reason, pay_end_date, add_file_status
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -190,6 +193,9 @@
             <if test="itemCode != null">
                 item_code = #{itemCode,jdbcType=VARCHAR},
             </if>
+            <if test="payEndDate != null">
+                pay_end_date = #{payEndDate,jdbcType=TIMESTAMP},
+            </if>
         </set>
         where applyid = #{applyid,jdbcType=INTEGER}
     </update>
@@ -204,7 +210,9 @@
         itemapply.itemid AS itemid,
         itemapply.item_value AS itemValue,
         itemapply.`status` AS `status`,
+        itemapply.`pay_status` AS `payStatus`,
         itemapply.userid AS userid,
+        itemapply.add_file_status AS addFileStatus,
         itemapply.wf_instance_id AS wfInstanceId,
         orgitem.item_name AS itemName,
         orgitem.logo_url AS logoUrl
@@ -212,7 +220,8 @@
         biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
         LEFT JOIN biz_charge_detail AS charge ON (charge.apply_id = itemapply.applyid
-        AND charge.charge_id = (select id from biz_item_charge where `name` = '公证预付款' and org_id = 11 and is_del = 0)
+        AND charge.charge_id = (select id from biz_item_charge where `name` = '公证预付款' and org_id = (SELECT orgid FROM
+        biz_org_users WHERE userid = #{userId} GROUP BY userid) and is_del = 0)
         )
         WHERE
         itemapply.userid = #{userId}
@@ -474,6 +483,7 @@
         ucuser.username AS userPhone,
         usercard.card_number AS cardNumber,
         apply.apply_no AS applyNo,
+        apply.add_file_status AS addFileStatus,
         apply.submit_date AS submitDate,
         items.item_name AS itemName,
         apply.item_value AS itemValue,
@@ -621,8 +631,27 @@
             biz_charge_detail AS charge
         LEFT JOIN biz_item_charge AS itemcharge ON itemcharge.id = charge.charge_id
         WHERE
-            charge.apply_id = 475
+            charge.apply_id = #{applyid}
         AND charge.is_pay = 1
         AND charge.is_del = 0
     </select>
+    <update id="updateById" parameterType="java.util.Map">
+        update biz_item_apply
+        SET `pay_status` = #{status},
+        `pay_end_price` = #{payEndPrice}
+        WHERE
+            `applyid` = #{applyId}
+    </update>
+    <update id="updateAddFileStatus" parameterType="java.lang.Integer">
+        update biz_item_apply
+        SET `add_file_status` = 1
+        WHERE
+            `applyid` = #{applyId}
+    </update>
+    <update id="updateStatus" parameterType="java.lang.String">
+        update biz_item_apply
+        SET `add_file_status` = 1
+        WHERE
+            `applyid` = (SELECT applyid FROM `biz_item_apply_files` where fileid = #{id})
+    </update>
 </mapper>

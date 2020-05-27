@@ -32,7 +32,7 @@
         select
         <include refid="Base_Column_List"></include>
         from pub_article
-        where org_id = 11
+        where org_id = (select itemid from biz_org)
         and `status` = 1
         order by created_date desc
         limit 3
@@ -41,7 +41,7 @@
         select
         <include refid="Base_Column_List"></include>
         from pub_article
-        where org_id = 11
+        where org_id = (select itemid from biz_org)
         and `status` = 1
         order by created_date desc
     </select>

@@ -2,6 +2,7 @@ package com.dm.user.service.impl;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.BizItemVideo;
 import com.dm.user.mapper.BizItemVideoMapper;
 import com.dm.user.service.BizItemVideoService;
@@ -26,6 +27,7 @@ public class BizItemVideoServiceImpl implements BizItemVideoService {
         } else {
             bizItemVideo.setCreateTime(new Date());
             bizItemVideo.setIsConversation(0);
+            bizItemVideo.setCreatedBy(Integer.parseInt(LoginUserHelper.getUserId()));
             bizItemVideoMapper.insertSelective(bizItemVideo);
         }
         return ResultUtil.success();
@@ -36,4 +38,5 @@ public class BizItemVideoServiceImpl implements BizItemVideoService {
         List<BizItemVideo> bizItemVideoList = bizItemVideoMapper.selectByApplyId(applyid);
         return bizItemVideoList;
     }
+
 }

@@ -1,6 +1,7 @@
 package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
+import com.dm.user.entity.ApplyFeeView;
 import com.dm.user.entity.ItemApply;
 import com.dm.user.entity.Reject;
 import com.github.pagehelper.PageInfo;
@@ -194,4 +195,53 @@ public interface ItemApplyService {
      * @throws Exception
      */
     Result processList() throws Exception;
+
+    /**
+     * 结算尾款 其他收费项
+     *
+     * @return
+     * @throws Exception
+     */
+    Result otherFeeList() throws Exception;
+
+    /**
+     * 结算尾款-保存其他收费项
+     *
+     * @param applyFeeView
+     * @return
+     */
+    Result otherFeeSave(ApplyFeeView applyFeeView) throws Exception;
+
+    /**
+     * 通知用户缴费
+     *
+     * @param itemapply
+     * @return
+     */
+    Result noticePay(ItemApply itemapply) throws Exception;
+
+    /**
+     * 补缴公正余额
+     *
+     * @param applyFeeView
+     * @return
+     * @throws Exception
+     */
+    Result payBalance(ApplyFeeView applyFeeView) throws Exception;
+
+    /**
+     * 补充-修改材料
+     *
+     * @param applyid
+     * @return
+     * @throws Exception
+     */
+    Result addFiles(int applyid) throws Exception;
+
+    /**
+     * 修改补充材料状态
+     *
+     * @param applyId
+     */
+    void updateById(Integer applyId) throws Exception;
 }

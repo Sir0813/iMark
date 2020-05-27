@@ -18,9 +18,18 @@
         <include refid="Base_Column_List"></include>
         from biz_item_charge
         where `name` = #{name}
-        and org_id = 11
+        and org_id = (select itemid from biz_org)
         and is_del = 0
         order by created_date desc
         limit 1
+    </select>
+    <select id="selectByOrgIdAndState" parameterType="java.util.Map" resultType="com.dm.user.entity.ApplyFee">
+        select
+        id as chargeId,
+        `name` as `name`
+        from biz_item_charge
+        where org_id = (select itemid from biz_org)
+        and is_del = #{state}
+        order by created_date desc
     </select>
 </mapper>

@@ -19,5 +19,5 @@ public interface BizItemAgreementMapper {
      *
      * @return
      */
-    BizItemAgreementWithBLOBs selectByOrgId(Integer orgId);
+    BizItemAgreementWithBLOBs selectByOrgId();
 }

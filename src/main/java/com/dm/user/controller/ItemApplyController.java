@@ -3,6 +3,7 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.user.entity.ApplyFeeView;
 import com.dm.user.entity.ItemApply;
 import com.dm.user.entity.Reject;
 import com.dm.user.service.ItemApplyService;
@@ -57,11 +58,11 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.submitApply(itemApply);
     }
 
-    /*@ApiOperation(value = "支付尾款", response = ResultUtil.class)
+    @ApiOperation(value = "支付尾款", response = ResultUtil.class)
     @RequestMapping(value = "/payBalance", method = RequestMethod.POST)
-    public Result payBalance(@RequestBody ItemApply itemApply) throws Exception {
-        return itemApplyService.payBalance(itemApply);
-    }*/
+    public Result payBalance(@RequestBody ApplyFeeView applyFeeView) throws Exception {
+        return itemApplyService.payBalance(applyFeeView);
+    }
 
     @ApiOperation(value = "我的公正列表", response = ResultUtil.class)
     @RequestMapping(value = {"/list/{pageNum}/{type}", "/list/{pageNum}/{type}/{word}"}, method = RequestMethod.GET)
@@ -81,6 +82,12 @@ public class ItemApplyController extends BaseController {
     @RequestMapping(value = "/delete/{applyid}", method = RequestMethod.GET)
     public Result delete(@PathVariable int applyid) throws Exception {
         return itemApplyService.delete(applyid);
+    }
+
+    @ApiOperation(value = "补充-修改材料", response = ResultUtil.class)
+    @RequestMapping(value = "/add/files/{applyid}", method = RequestMethod.GET)
+    public Result addFiles(@PathVariable int applyid) throws Exception {
+        return itemApplyService.addFiles(applyid);
     }
 
     @ApiOperation(value = "受理进度", response = ResultUtil.class)
@@ -129,7 +136,7 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.rejectDetail(applyid);
     }
 
-    @ApiOperation(value = "预审驳回", response = ResultUtil.class)
+    @ApiOperation(value = "预审-已接单驳回", response = ResultUtil.class)
     @RequestMapping(value = "/mytask/reject/reason", method = RequestMethod.POST)
     public Result mytaskRejectReason(@RequestBody Reject reject) throws Exception {
         return itemApplyService.mytaskRejectReason(reject);
@@ -141,6 +148,24 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.takeOrder(itemApply);
     }
 
+    @ApiOperation(value = "结算尾款-维护的收费列表", response = ResultUtil.class)
+    @RequestMapping(value = "/otherfee/list", method = RequestMethod.GET)
+    public Result otherFeeList() throws Exception {
+        return itemApplyService.otherFeeList();
+    }
+
+    @ApiOperation(value = "结算尾款-修改费用保存", response = ResultUtil.class)
+    @RequestMapping(value = "/otherfee/save", method = RequestMethod.POST)
+    public Result otherFeeSave(@RequestBody ApplyFeeView applyFeeView) throws Exception {
+        return itemApplyService.otherFeeSave(applyFeeView);
+    }
+
+    @ApiOperation(value = "结算尾款-通知用户缴费", response = ResultUtil.class)
+    @RequestMapping(value = "/notice/pay", method = RequestMethod.POST)
+    public Result noticePay(@RequestBody ItemApply itemapply) throws Exception {
+        return itemApplyService.noticePay(itemapply);
+    }
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "describe", value = "批注内容", dataType = "String"),
             @ApiImplicitParam(name = "id", value = "文件ID", dataType = "int"),
@@ -148,6 +173,7 @@ public class ItemApplyController extends BaseController {
             @ApiImplicitParam(name = "signature", value = "签名值", dataType = "String"),
             @ApiImplicitParam(name = "id", value = "文件ID", dataType = "int"),
             @ApiImplicitParam(name = "fileStatus", value = "信息是否有误 0 有误 1 无误", dataType = "int"),
+            @ApiImplicitParam(name = "fileIndex", value = "信息有误时插入", dataType = "String")
     })
     @ApiOperation(value = "文件添加修改批注", response = ResultUtil.class)
     @RequestMapping(value = "/notes", method = RequestMethod.POST)

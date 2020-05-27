@@ -77,4 +77,19 @@ public interface CertFilesService {
      * @throws Exception
      */
     CertFiles selectByUrl(String frontPath) throws Exception;
+
+    /**
+     * 修改材料
+     *
+     * @param applyid
+     */
+    List<CertFiles> selectUpdateFiles(int applyid, int fileType) throws Exception;
+
+    /**
+     * 补充材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<CertFiles> selectAddFiles(int applyid, int fileType) throws Exception;
 }

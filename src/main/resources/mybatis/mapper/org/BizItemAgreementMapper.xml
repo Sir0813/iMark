@@ -25,12 +25,12 @@
         from biz_item_agreement
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectByOrgId" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    <select id="selectByOrgId" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
         ,
         <include refid="Blob_Column_List"/>
         from biz_item_agreement
-        where org_id = #{orgId,jdbcType=INTEGER}
+        where org_id = (select itemid from biz_org)
     </select>
 </mapper>

@@ -36,6 +36,32 @@ public class CertFiles {
      */
     private String detail;
 
+    /**
+     * 批注有问题文件业务资源
+     */
+    private Integer fileStatus;
+
+    /**
+     * 批注日志业务字段
+     */
+    private String logString;
+
+    public Integer getFileStatus() {
+        return fileStatus;
+    }
+
+    public void setFileStatus(Integer fileStatus) {
+        this.fileStatus = fileStatus;
+    }
+
+    public String getLogString() {
+        return logString;
+    }
+
+    public void setLogString(String logString) {
+        this.logString = logString;
+    }
+
     public String getFileHash() {
         return fileHash;
     }

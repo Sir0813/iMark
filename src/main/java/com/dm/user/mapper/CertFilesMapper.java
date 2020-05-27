@@ -4,6 +4,7 @@ import com.dm.user.entity.CertFiles;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cui
@@ -73,4 +74,19 @@ public interface CertFilesMapper {
      * @return
      */
     CertFiles selectByUrl(String frontPath);
+
+    /**
+     * 修改材料
+     *
+     * @param map
+     */
+    List<CertFiles> selectUpdateFiles(Map<String, Object> map);
+
+    /**
+     * 添加材料
+     *
+     * @param map
+     * @return
+     */
+    List<CertFiles> selectAddFiles(Map<String, Object> map);
 }

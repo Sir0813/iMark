@@ -1,5 +1,6 @@
 package com.dm.user.service;
 
+import com.dm.user.entity.ApplyFee;
 import com.dm.user.entity.ChargeDetail;
 
 import java.util.List;
@@ -41,4 +42,41 @@ public interface ChargeDetailService {
      * @param id
      */
     ChargeDetail selectById(Integer id);
+
+    /**
+     * 查询预付款
+     *
+     * @return
+     */
+    List<ApplyFee> selectByApplyId(int applyId);
+
+    /**
+     * 副本费
+     *
+     * @param applyid
+     * @return
+     */
+    ApplyFee selectByApplyIdAndFileNum(Integer applyid);
+
+    /**
+     * 首款支付修改状态
+     *
+     * @param chargeMap
+     */
+    void updateByIdAndApplyId(Map<String, Object> chargeMap);
+
+    /**
+     * 查询
+     *
+     * @param applyid
+     * @return
+     */
+    ApplyFee selectByApplyIdAndStatus(int applyid);
+
+    /**
+     * 修改支付状态
+     *
+     * @param id
+     */
+    void updatePayStatus(Integer id);
 }

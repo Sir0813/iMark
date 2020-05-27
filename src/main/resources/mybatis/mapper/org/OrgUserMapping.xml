@@ -21,14 +21,14 @@
         and status = 0
         and is_del = 0
     </select>
-    <select id="selectAdminList" resultMap="BaseResultMap">
+    <select id="selectAdminList" resultType="com.dm.user.entity.ProcessConfig">
         SELECT
             IFNULL(
                 orguser.remarks,
                 usercard.real_name
-            ) AS remarks,
-            orguser.userid AS userid,
-            ucuser.username AS userPhone
+            ) AS realName,
+            orguser.userid AS id,
+            ucuser.username AS userName
         FROM
             `biz_org_users` AS orguser
         LEFT JOIN uc_user AS ucuser ON ucuser.userid = orguser.userid

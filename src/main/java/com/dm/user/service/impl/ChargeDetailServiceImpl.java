@@ -1,5 +1,6 @@
 package com.dm.user.service.impl;
 
+import com.dm.user.entity.ApplyFee;
 import com.dm.user.entity.ChargeDetail;
 import com.dm.user.mapper.ChargeDetailMapper;
 import com.dm.user.service.ChargeDetailService;
@@ -40,5 +41,30 @@ public class ChargeDetailServiceImpl implements ChargeDetailService {
     @Override
     public ChargeDetail selectById(Integer id) {
         return chargeDetailMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<ApplyFee> selectByApplyId(int applyId) {
+        return chargeDetailMapper.selectByApplyId(applyId);
+    }
+
+    @Override
+    public ApplyFee selectByApplyIdAndFileNum(Integer applyId) {
+        return chargeDetailMapper.selectByApplyIdAndFileNum(applyId);
+    }
+
+    @Override
+    public void updateByIdAndApplyId(Map<String, Object> chargeMap) {
+        chargeDetailMapper.updateByIdAndApplyId(chargeMap);
+    }
+
+    @Override
+    public ApplyFee selectByApplyIdAndStatus(int applyid) {
+        return chargeDetailMapper.selectByApplyIdAndStatus(applyid);
+    }
+
+    @Override
+    public void updatePayStatus(Integer id) {
+        chargeDetailMapper.updatePayStatus(id);
     }
 }

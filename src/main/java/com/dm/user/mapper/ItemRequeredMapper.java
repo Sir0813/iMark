@@ -27,4 +27,20 @@ public interface ItemRequeredMapper {
      * @return
      */
     List<ItemRequered> selectByItemId(int itemId);
+
+    /**
+     * 查询所需材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<ItemRequered> selectByRequeredIdAndApplyId(Integer applyid);
+
+    /**
+     * 草稿其他材料
+     *
+     * @param itemid
+     * @return
+     */
+    ItemRequered selectOtherFile(Integer itemid);
 }

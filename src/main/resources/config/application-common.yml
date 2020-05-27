@@ -11,8 +11,8 @@ spring:
     # 静态文件请求匹配方式
     static-path-pattern: /**
       #jackson:
-      #date-format: yyyy-MM-dd HH:mm:ss
-      #serialization: 
+    #date-format: yyyy-MM-dd HH:mm:ss
+    #serialization:
     #WRITE_ENUMS_USING_INDEX: true
     #FAIL_ON_EMPTY_BEANS: false
   messages:
@@ -65,4 +65,4 @@ swagger:
   license: licese  #许可证名称
   licenseUrl: http://localhost   #许可证地址
   basePackage: com.dm # 扫描的基础包
-  token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODgxMjM0NTY3OCIsImV4cCI6MTU2OTU2NzYwNCwidXNlcmlkIjoiNzAiLCJpYXQiOjE1NjkyMDc2MDR9.hZTmo2ToI2na0SHwZ7l54RUg9vChcoiDX-wXA6XXaquvOCBY5qEX2ReGALNtYTkzsyt1d2VhCgvTQgTzavulhA   #登录后获取的token，也就是需要先启动登录后，把token赋值到这，再重新启动，只为测试使用。
+  token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxODgwODA4MDgwOCIsImV4cCI6MTU5MDIzNDI3NiwidXNlcmlkIjoiMTY2IiwiaWF0IjoxNTg5ODc0Mjc2fQ.-WJT5t7kB03DHU9gnM3-e3L-MHtZfXUUnTpbDzZ7OCm8xWIC30Aet-ULshMvCY3BmHmxOaZOebgJNhumsKEgsw   #登录后获取的token，也就是需要先启动登录后，把token赋值到这，再重新启动，只为测试使用。

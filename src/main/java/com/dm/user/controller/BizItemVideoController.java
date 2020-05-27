@@ -8,10 +8,9 @@ import com.dm.user.service.BizItemVideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author cui
@@ -29,6 +28,13 @@ public class BizItemVideoController extends BaseController {
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     public Result appVersion(@RequestBody BizItemVideo bizItemVideo) throws Exception {
         return bizItemVideoService.insertData(bizItemVideo);
+    }
+
+    @ApiOperation(value = "预约公正历史记录", response = ResultUtil.class)
+    @RequestMapping(value = "/list/{applyid}", method = RequestMethod.GET)
+    public Result list(@PathVariable int applyid) throws Exception {
+        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        return ResultUtil.success(bizItemVideoList);
     }
 
 }

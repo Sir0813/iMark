@@ -7,12 +7,13 @@
         <result column="file_status" jdbcType="INTEGER" property="fileStatus"/>
         <result column="create_user" jdbcType="INTEGER" property="createUser"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="file_index" jdbcType="INTEGER" property="fileIndex"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dm.user.entity.ApplyFileLog">
         <result column="log_string" jdbcType="LONGVARCHAR" property="logString"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, file_id, file_status, create_user, create_time
+    id, file_id, file_status, create_user, create_time,file_index
   </sql>
     <sql id="Blob_Column_List">
     log_string
@@ -56,6 +57,9 @@
             <if test="logString != null">
                 log_string,
             </if>
+            <if test="fileIndex != null">
+                file_index,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="fileId != null">
@@ -72,6 +76,9 @@
             </if>
             <if test="logString != null">
                 #{logString,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="fileIndex != null">
+                #{fileIndex,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>

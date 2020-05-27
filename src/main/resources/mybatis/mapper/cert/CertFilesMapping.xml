@@ -158,16 +158,71 @@
         certfile.`file_url` as `fileUrl`,
         applyfile.`describe` as `describe`,
         certfile.`thumb_url` as `thumbUrl`,
-        certfile.`detail` as detail
+        certfile.`detail` as detail,
+        filelog.file_status AS fileStatus,
+        filelog.log_string as logString
         from biz_cert_files as `certfile`
-        inner join biz_item_apply_files as applyfile
+        left join biz_item_apply_files as applyfile
         on certfile.file_id = applyfile.fileid
-        where file_id in
+        LEFT JOIN biz_apply_file_log AS filelog ON (filelog.file_id = certfile.file_id and filelog.file_status = 0)
+        where certfile.file_id in
         <foreach collection="array" item="fileid" open="(" close=")" separator=",">
             #{fileid}
         </foreach>
-        GROUP BY fileId
+        GROUP BY certfile.file_Id
         ORDER BY
-        applyfile.created_date DESC
+        certfile.file_id asc
+    </select>
+    <select id="selectUpdateFiles" parameterType="java.util.Map" resultType="com.dm.user.entity.CertFiles">
+        SELECT
+            certfile.`file_id` AS `fileId`,
+            certfile.`detail` AS detail,
+            filelog.file_status AS fileStatus,
+            filelog.log_string AS logString
+        FROM
+            biz_cert_files AS `certfile`
+        LEFT JOIN biz_item_apply_files AS applyfile ON certfile.file_id = applyfile.fileid
+        LEFT JOIN biz_apply_file_log AS filelog ON filelog.file_id = certfile.file_id
+        WHERE
+            filelog.file_status = 0
+        AND applyfile.applyid = #{applyid}
+        AND applyfile.file_log_id NOT IN (
+            SELECT
+                file_log_id
+            FROM
+                biz_item_apply_files
+            WHERE
+                applyid = #{applyid}
+            AND file_types = #{fileType}
+            AND file_log_id IS NOT NULL
+        )
+        GROUP BY
+            certfile.file_Id
+        ORDER BY
+            certfile.file_id ASC
+    </select>
+    <select id="selectAddFiles" parameterType="java.util.Map" resultType="com.dm.user.entity.CertFiles">
+        SELECT
+            applyfiles.fileid AS fileId,
+            applysup.files_desc AS logString
+        FROM
+            biz_item_apply_supplement AS applysup
+        LEFT JOIN biz_item_apply_files AS applyfiles ON applyfiles.applyid = applysup.apply_id
+        WHERE
+            applysup.apply_id = #{applyid}
+        AND (
+            applysup.id NOT IN (
+                SELECT
+                    supplement_id
+                FROM
+                    biz_item_apply_files
+                WHERE
+                    applyid = #{applyid}
+                AND file_types = #{fileType}
+                AND supplement_id IS NOT NULL
+            )
+        )
+        GROUP BY
+            applysup.id
     </select>
 </mapper>

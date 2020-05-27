@@ -13,4 +13,20 @@ public interface ItemRequeredService {
      * @return
      */
     List<ItemRequered> selectByItemId(int itemId) throws Exception;
+
+    /**
+     * 查询申请材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<ItemRequered> selectByRequeredIdAndApplyId(Integer applyid);
+
+    /**
+     * 草稿其他材料
+     *
+     * @param itemid
+     * @return
+     */
+    ItemRequered selectOtherFile(Integer itemid);
 }

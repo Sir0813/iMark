@@ -102,6 +102,19 @@ public class ApplyUserInfo {
      */
     private Integer applyid;
 
+    /**
+     * 补充修改材料
+     */
+    private Integer addFileStatus;
+
+    public Integer getAddFileStatus() {
+        return addFileStatus;
+    }
+
+    public void setAddFileStatus(Integer addFileStatus) {
+        this.addFileStatus = addFileStatus;
+    }
+
     public String getRealName() {
         return realName;
     }

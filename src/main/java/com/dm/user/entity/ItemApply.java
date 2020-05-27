@@ -36,6 +36,9 @@ public class ItemApply {
 
     private Integer handleUserid;
 
+    /**
+     * 0默认 1部分收款 2 待结清尾款 3 结清费用
+     */
     private Integer payStatus;
 
     private Double payEndPrice;
@@ -43,6 +46,10 @@ public class ItemApply {
     private String itemCode;
 
     private String rejectReason;
+
+    private Date payEndDate;
+
+    private Integer addFileStatus;
 
     /**
      * 公正文件业务字段
@@ -74,6 +81,22 @@ public class ItemApply {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date auditDate;
+
+    public Date getPayEndDate() {
+        return payEndDate;
+    }
+
+    public void setPayEndDate(Date payEndDate) {
+        this.payEndDate = payEndDate;
+    }
+
+    public Integer getAddFileStatus() {
+        return addFileStatus;
+    }
+
+    public void setAddFileStatus(Integer addFileStatus) {
+        this.addFileStatus = addFileStatus;
+    }
 
     public String getItemName() {
         return itemName;

@@ -160,6 +160,7 @@
         update biz_charge_detail
         set is_del = 1
         where apply_id = #{applyid,jdbcType=INTEGER}
+        and is_pay = 0
     </update>
     <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
         insert into biz_charge_detail (apply_id, charge_id,
@@ -200,4 +201,63 @@
         AND is_pay = 1
         AND pay_status = 0
     </select>
+    <select id="selectByApplyId" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ApplyFee">
+        SELECT
+            cd.id AS id,
+            cd.charge_id AS chargeId,
+            cd.price AS price,
+            ic.`name` AS `name`,
+            cd.file_num AS fileNum
+        FROM
+            `biz_charge_detail` AS cd
+        LEFT JOIN biz_item_charge AS ic ON cd.charge_id = ic.id
+        WHERE
+            cd.apply_id = #{applyId}
+        AND cd.pay_status = 0
+        AND cd.is_del = 0
+        AND cd.is_pay = 0
+    </select>
+    <select id="selectByApplyIdAndStatus" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ApplyFee">
+        SELECT
+            cd.charge_id AS chargeId,
+            cd.price AS price,
+            ic.`name` AS `name`,
+            cd.file_num AS fileNum
+        FROM
+            `biz_charge_detail` AS cd
+        LEFT JOIN biz_item_charge AS ic ON cd.charge_id = ic.id
+        WHERE
+            cd.apply_id = #{applyId}
+        AND cd.pay_status = 0
+        AND cd.is_del = 0
+        AND cd.is_pay = 1
+    </select>
+    <select id="selectByApplyIdAndFileNum" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ApplyFee">
+        SELECT
+            cd.price,
+            ic.`name`,
+            cd.file_num AS fileNum
+        FROM
+            `biz_charge_detail` AS cd
+        LEFT JOIN biz_item_charge AS ic ON cd.charge_id = ic.id
+        WHERE
+            cd.apply_id = #{applyId}
+        AND cd.pay_status = 0
+        AND cd.is_del = 0
+        AND cd.is_pay = 0
+        AND cd.file_num > 1
+    </select>
+    <update id="updateByIdAndApplyId" parameterType="java.util.Map">
+        update biz_charge_detail
+        set is_pay = 1,
+        crated_date = #{payDate}
+        where apply_id = #{applyId}
+        and charge_id = #{id}
+        and is_del = 0
+    </update>
+    <update id="updatePayStatus">
+        update biz_charge_detail
+        set is_pay = 1
+        where id = #{id}
+    </update>
 </mapper>

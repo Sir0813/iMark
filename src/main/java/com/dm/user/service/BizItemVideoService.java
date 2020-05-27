@@ -15,5 +15,13 @@ public interface BizItemVideoService {
      */
     Result insertData(BizItemVideo bizItemVideo) throws Exception;
 
+    /**
+     * 公正视频预约记录
+     *
+     * @param applyid
+     * @return
+     * @throws Exception
+     */
     List<BizItemVideo> selectByApplyId(int applyid) throws Exception;
+
 }

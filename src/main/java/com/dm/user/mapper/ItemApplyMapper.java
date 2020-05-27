@@ -226,4 +226,25 @@ public interface ItemApplyMapper {
      * @return
      */
     List<ChargeDetail> feeInfo(int applyid);
+
+    /**
+     * 通知结算尾款
+     *
+     * @param map
+     */
+    void updateById(Map<String, Object> map);
+
+    /**
+     * 修改补充材料状态
+     *
+     * @param applyId
+     */
+    void updateAddFileStatus(Integer applyId);
+
+    /**
+     * 文件ID 修改公正补充材料状态
+     *
+     * @param id
+     */
+    void updateStatus(String id);
 }

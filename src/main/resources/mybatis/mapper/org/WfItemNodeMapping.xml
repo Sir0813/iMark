@@ -25,9 +25,9 @@
         SELECT
             node.id AS id,
             node.`order` AS `order`,
-            node.nodename AS nodeName,
             usercard.real_name AS realName,
-            ucuser.username AS userPhone
+            ucuser.username AS userName,
+            ucuser.head_photo AS headPhoto
         FROM
             `wf_item_node_define` AS node
         LEFT JOIN sys_user_card AS usercard ON node.audit_userid = usercard.userid

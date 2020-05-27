@@ -3,12 +3,10 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
+import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.*;
 import com.dm.user.mapper.ItemApplyMapper;
-import com.dm.user.msg.ItemApplyEnum;
-import com.dm.user.msg.ItemFileTypeEnum;
-import com.dm.user.msg.OrgItemEnum;
-import com.dm.user.msg.StateMsg;
+import com.dm.user.msg.*;
 import com.dm.user.service.*;
 import com.dm.user.util.Arith;
 import com.github.pagehelper.PageHelper;
@@ -102,19 +100,21 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         preCharge.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
         preCharge.setIsDel(0);
         preCharge.setIsPay(0);
-        ItemCharge filePay = itemChargeService.selectByName("副本费");
-        ChargeDetail fileCharge = new ChargeDetail();
-        fileCharge.setPrice(BigDecimal.valueOf(StateMsg.FILE_FEE).multiply(BigDecimal.valueOf(itemApply.getApplyExpand().getFileNum() - 1)).doubleValue());
-        fileCharge.setPayStatus(0);
-        fileCharge.setChargeId(filePay.getId());
-        fileCharge.setApplyId(itemApply.getApplyid());
-        fileCharge.setCratedDate(new Date());
-        fileCharge.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
-        fileCharge.setIsDel(0);
-        fileCharge.setIsPay(0);
-        fileCharge.setFileNum(itemApply.getApplyExpand().getFileNum());
+        if (itemApply.getApplyExpand().getFileNum() > 1) {
+            ItemCharge filePay = itemChargeService.selectByName("副本费");
+            ChargeDetail fileCharge = new ChargeDetail();
+            fileCharge.setPrice(BigDecimal.valueOf(StateMsg.FILE_FEE).multiply(BigDecimal.valueOf(itemApply.getApplyExpand().getFileNum() - 1)).doubleValue());
+            fileCharge.setPayStatus(0);
+            fileCharge.setChargeId(filePay.getId());
+            fileCharge.setApplyId(itemApply.getApplyid());
+            fileCharge.setCratedDate(new Date());
+            fileCharge.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
+            fileCharge.setIsDel(0);
+            fileCharge.setIsPay(0);
+            fileCharge.setFileNum(itemApply.getApplyExpand().getFileNum());
+            itemCharges.add(fileCharge);
+        }
         itemCharges.add(preCharge);
-        itemCharges.add(fileCharge);
         return itemCharges;
     }
 
@@ -138,6 +138,19 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             applyExpandService.update(itemApply.getApplyExpand());
         }
         List<ChargeDetail> chargeDetails = addChargeDetail(itemApply);
+        if (orgItems.getValuation() == OrgItemEnum.CUSTOM_PRICE.getCode()) {
+            /* 公正人员自定义价格 需要输入尾款 */
+            ItemCharge endPay = itemChargeService.selectByName("公证尾款");
+            ChargeDetail endCharge = new ChargeDetail();
+            endCharge.setPayStatus(0);
+            endCharge.setChargeId(endPay.getId());
+            endCharge.setApplyId(itemApply.getApplyid());
+            endCharge.setCratedDate(new Date());
+            endCharge.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
+            endCharge.setIsDel(0);
+            endCharge.setIsPay(0);
+            chargeDetails.add(endCharge);
+        }
         if (itemApply.getItemValue() > 0) {
             /* 按标的总共应收金额 **/
             BigDecimal multiply = Arith.mul(itemApply.getItemValue(), orgItems.getPrice());
@@ -226,10 +239,14 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     public Map<String, Object> detail(int applyid) throws Exception {
         Map<String, Object> applyMap = new LinkedHashMap<>(16);
         ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
-        List<ItemRequered> list = itemRequeredService.selectByItemId(itemApply.getItemid());
+        List<ItemRequered> list = itemRequeredService.selectByRequeredIdAndApplyId(applyid);
+        boolean otherFile = false;
         /* 用户提交的文件清单 **/
         for (int i = 0; i < list.size(); i++) {
             ItemRequered itemRequered = list.get(i);
+            if (itemRequered.getName().equals("其他材料")) {
+                otherFile = true;
+            }
             Map<String, Object> m = new LinkedHashMap<>(16);
             m.put("applyid", applyid);
             m.put("requeredid", itemRequered.getRequeredid());
@@ -245,6 +262,10 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 List<CertFiles> cfList = certFilesService.findByFilesIds2(ids);
                 itemRequered.setCertFilesList(cfList);
             }
+        }
+        if (!otherFile) {
+            ItemRequered itemRequered = itemRequeredService.selectOtherFile(list.get(0).getItemid());
+            list.add(itemRequered);
         }
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("applyId", applyid);
@@ -273,6 +294,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 applyInfo.setPrice(orgItems.getLowestPrice());
             }
         }
+        List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
+        applyMap.put("applyFees", applyFees);
+        applyMap.put("payEndPrice", itemApply.getPayEndPrice());
         applyMap.put("applyInfo", applyInfo);
         applyMap.put("itemRequered", list);
         applyMap.put("applyExpand", applyExpand);
@@ -506,10 +530,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             applyFileLog.setCreateTime(new Date());
             applyFileLog.setCreateUser(Integer.parseInt(LoginUserHelper.getUserId()));
             applyFileLog.setFileId(Integer.parseInt(map.get("id").toString()));
-            applyFileLog.setFileStatus(Integer.parseInt(map.get("fileStatus").toString()));
+            int fileStatus = Integer.parseInt(map.get("fileStatus").toString());
+            applyFileLog.setFileStatus(fileStatus);
             String json = "{\"describe\":\"" + map.get("describe") + "\",\"fileId\":" + map.get("id") + ",\"fileStatus\":" + map.get("fileStatus") + "}";
+            if (fileStatus == 0) {
+                applyFileLog.setFileIndex(Integer.parseInt(map.get("fileIndex").toString()));
+            }
             applyFileLog.setLogString(json);
             applyFileLogService.insertData(applyFileLog);
+            itemApplyMapper.updateStatus(map.get("id").toString());
             return itemApplyFilesService.notes(map);
         } catch (Exception e) {
             throw new Exception(e);
@@ -566,21 +595,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         itemApply1.setSubmitDate(new Date());
         itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
         ItemCharge prePay = itemChargeService.selectByName("公证预付款");
-        ChargeDetail preCharge = new ChargeDetail();
-        preCharge.setPrice(itemApply.getPrice());
-        preCharge.setPayStatus(0);
-        preCharge.setChargeId(prePay.getId());
-        preCharge.setApplyId(itemApply.getApplyid());
-        preCharge.setCratedDate(new Date());
-        preCharge.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
-        preCharge.setIsDel(0);
-        preCharge.setIsPay(1);
-        chargeDetailService.insertData(preCharge);
+        Map<String, Object> chargeMap = new HashMap<>(16);
+        chargeMap.put("applyId", itemApply1.getApplyid());
+        chargeMap.put("id", prePay.getId());
+        String systemTimeStr = DateUtil.getSystemTimeStr();
+        chargeMap.put("payDate", systemTimeStr);
+        chargeDetailService.updateByIdAndApplyId(chargeMap);
         itemApplyLogService.insertLog(LoginUserHelper.getUserId(), itemApply1.getApplyid(), new Date(), ItemApplyEnum.FILE_RECEPTION.getCode(), ItemApplyEnum.FILE_RECEPTION.getDesc());
         Map<String, Object> map = new HashMap<>(16);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String format = sdf.format(preCharge.getCratedDate());
-        map.put("orderSubmitDate", format);
+        map.put("orderSubmitDate", systemTimeStr);
         map.put("applyNo", itemApply1.getApplyNo());
         map.put("itemName", orgItems.getItemName());
         return ResultUtil.success(map);
@@ -624,13 +647,23 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         return ResultUtil.success();
     }*/
 
-    /*@Override
-    public Result payBalance(ItemApply itemApply) throws Exception {
-        *//* 支付尾款 后续集成支付接口 **//*
-        ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
+    @Override
+    public Result payBalance(ApplyFeeView applyFeeView) throws Exception {
+        /* 支付尾款 后续集成支付接口 */
+        ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(applyFeeView.getApplyid());
         itemApply1.setPayEndPrice(0.00);
         itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
-        itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+        itemApply1.setPayEndDate(new Date());
+        List<ApplyFee> applyFees1 = chargeDetailService.selectByApplyId(itemApply1.getApplyid());
+        double sum = applyFees1.stream().mapToDouble(ApplyFee::getPrice).sum();
+        if (String.valueOf(sum).equals(String.valueOf(applyFeeView.getPayEndPrice()))) {
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply1);
+        } else {
+            throw new Exception();
+        }
+        applyFees1.forEach(applyFee -> {
+            chargeDetailService.updatePayStatus(applyFee.getId());
+        });
         PushMsg pushMsg = new PushMsg();
         pushMsg.setCertFicateId(itemApply1.getApplyid().toString());
         pushMsg.setTitle("审核通知");
@@ -642,7 +675,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         pushMsg.setUserId(itemApply1.getHandleUserid());
         pushMsgService.insertSelective(pushMsg);
         return ResultUtil.success();
-    }*/
+    }
 
     @Override
     public Result index() throws Exception {
@@ -731,10 +764,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public Result mytaskDetail(int applyid) throws Exception {
         Map<String, Object> applyMap = new LinkedHashMap<>(16);
-        List<ItemRequered> list = itemRequeredService.selectByItemId(itemApplyMapper.selectByPrimaryKey(applyid).getItemid());
+        ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
+        List<ItemRequered> list = itemRequeredService.selectByRequeredIdAndApplyId(applyid);
+        boolean otherFile = false;
         /* 用户提交的文件清单 **/
         for (int i = 0; i < list.size(); i++) {
             ItemRequered itemRequered = list.get(i);
+            if (itemRequered.getName().equals("其他材料")) {
+                otherFile = true;
+            }
             Map<String, Object> m = new LinkedHashMap<>(16);
             m.put("applyid", applyid);
             m.put("requeredid", itemRequered.getRequeredid());
@@ -751,6 +789,10 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 itemRequered.setCertFilesList(cfList);
             }
         }
+        if (!otherFile) {
+            ItemRequered itemRequered = itemRequeredService.selectOtherFile(list.get(0).getItemid());
+            list.add(itemRequered);
+        }
         Map<String, Object> map = new LinkedHashMap<>(16);
         map.put("applyId", applyid);
         ApplyUserInfo applyInfo = itemApplyMapper.selectDetailInfo(map);
@@ -766,6 +808,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             applyInfo.setIsSend(1);
             applyInfo.setUserAddress(userAddress);
         }
+        /* 公证收款项 */
+        ApplyFee applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
+        List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
+        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        applyMap.put("applyVideo", bizItemVideoList.size() > 0 ? bizItemVideoList.get(0) : null);
+        applyMap.put("isPay", applyFee);
+        applyMap.put("applyFees", applyFees);
+        applyMap.put("payEndPrice", itemApply.getPayEndPrice());
+        applyMap.put("payEndDate", itemApply.getPayEndDate());
         applyMap.put("applyInfo", applyInfo);
         applyMap.put("itemRequered", list);
         return ResultUtil.success(applyMap);
@@ -783,12 +834,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Override
     public Result mytaskRejectReason(Reject reject) throws Exception {
-        /* 集成退费流程 全额退款 */
         try {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("applyId", reject.getApplyid());
+            map.put("rejectReason", reject.getRejectReason());
             if (reject.getType() == 0) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("applyId", reject.getApplyid());
-                map.put("rejectReason", reject.getRejectReason());
+                /* 预审退费 全额退款 */
                 map.put("status", ItemApplyEnum.REJECT_REASON.getCode());
                 itemApplyMapper.updateRejectReason(map);
                 ChargeDetail chargeDetail = chargeDetailService.selectById(reject.getFeeInfo().get(0).getId());
@@ -798,6 +849,19 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 chargeDetail.setCratedDate(new Date());
                 chargeDetailService.insertData(chargeDetail);
                 itemApplyLogService.insertLog(LoginUserHelper.getUserId(), reject.getApplyid(), new Date(), ItemApplyEnum.REJECT_REASON.getCode(), ItemApplyEnum.REJECT_REASON.getDesc());
+            } else if (reject.getType() == 1) {
+                /* 接单后退费 自定义退款 */
+                map.put("status", ItemApplyEnum.APPLY_FAIL.getCode());
+                itemApplyMapper.updateRejectReason(map);
+                for (ChargeDetail chargeDetail : reject.getFeeInfo()) {
+                    ChargeDetail detail = chargeDetailService.selectById(chargeDetail.getId());
+                    chargeDetail.setId(null);
+                    chargeDetail.setPayStatus(1); /* 退费 */
+                    chargeDetail.setIsPay(1);
+                    chargeDetail.setCratedDate(new Date());
+                    chargeDetailService.insertData(chargeDetail);
+                }
+                itemApplyLogService.insertLog(LoginUserHelper.getUserId(), reject.getApplyid(), new Date(), ItemApplyEnum.APPLY_FAIL.getCode(), ItemApplyEnum.APPLY_FAIL.getDesc());
             }
             return ResultUtil.success();
         } catch (Exception e) {
@@ -858,5 +922,69 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     public Result processList() throws Exception {
         List<OrgUser> orgUserList = orgUserService.selectAdminList();
         return ResultUtil.success(orgUserList);
+    }
+
+    @Override
+    public Result otherFeeList() throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("state", 0);
+        return itemChargeService.selectByOrgIdAndState(map);
+    }
+
+    @Override
+    public Result otherFeeSave(ApplyFeeView applyFeeView) throws Exception {
+        chargeDetailService.deleteByApplyId(applyFeeView.getApplyid());
+        List<ChargeDetail> chargeDetailList = new ArrayList<>();
+        applyFeeView.getApplyFees().forEach(applyFee -> {
+            ChargeDetail chargeDetail = new ChargeDetail();
+            chargeDetail.setApplyId(applyFeeView.getApplyid());
+            chargeDetail.setChargeId(applyFee.getChargeId());
+            chargeDetail.setPrice(applyFee.getPrice());
+            chargeDetail.setCreatedId(Integer.parseInt(LoginUserHelper.getUserId()));
+            chargeDetail.setHandleId(Integer.parseInt(LoginUserHelper.getUserId()));
+            chargeDetail.setIsPay(0);
+            chargeDetail.setPayStatus(0);
+            chargeDetail.setFileNum(applyFee.getFileNum());
+            chargeDetail.setCratedDate(new Date());
+            chargeDetail.setIsDel(0);
+            chargeDetailList.add(chargeDetail);
+        });
+        chargeDetailService.insertList(chargeDetailList);
+        return ResultUtil.success();
+    }
+
+    @Override
+    public Result noticePay(ItemApply itemapply) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyId", itemapply.getApplyid());
+        map.put("payEndPrice", itemapply.getPayEndPrice());
+        map.put("status", ItemApplyEnum.PAY_BALANCE.getCode());
+        List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(itemapply.getApplyid());
+        double sum = applyFees.stream().mapToDouble(ApplyFee::getPrice).sum();
+        if (String.valueOf(sum).equals(String.valueOf(itemapply.getPayEndPrice()))) {
+            itemApplyMapper.updateById(map);
+        } else {
+            return ResultUtil.error();
+        }
+        return ResultUtil.success();
+    }
+
+    @Override
+    public void updateById(Integer applyId) throws Exception {
+        itemApplyMapper.updateAddFileStatus(applyId);
+    }
+
+    @Override
+    public Result addFiles(int applyid) throws Exception {
+        try {
+            Map<String, Object> map = new HashMap<>(16);
+            List<CertFiles> updateFiles = certFilesService.selectUpdateFiles(applyid, ItemFileTypeEnum.UPDATE_FILE.getCode());
+            List<CertFiles> addFiles = certFilesService.selectAddFiles(applyid, ItemFileTypeEnum.ADD_FILE.getCode());
+            map.put("updateFiles", updateFiles);
+            map.put("addFiles", addFiles);
+            return ResultUtil.success(map);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }

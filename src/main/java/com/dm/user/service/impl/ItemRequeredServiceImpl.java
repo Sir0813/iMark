@@ -21,4 +21,15 @@ public class ItemRequeredServiceImpl implements ItemRequeredService {
         List<ItemRequered> list = itemRequeredMapper.selectByItemId(itemId);
         return list;
     }
+
+    @Override
+    public List<ItemRequered> selectByRequeredIdAndApplyId(Integer applyid) {
+        List<ItemRequered> list = itemRequeredMapper.selectByRequeredIdAndApplyId(applyid);
+        return list;
+    }
+
+    @Override
+    public ItemRequered selectOtherFile(Integer itemid) {
+        return itemRequeredMapper.selectOtherFile(itemid);
+    }
 }
