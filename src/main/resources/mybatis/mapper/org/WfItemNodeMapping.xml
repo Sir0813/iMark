@@ -24,6 +24,7 @@
     <select id="selectByUserId" parameterType="java.lang.String" resultType="com.dm.user.entity.ProcessConfig">
         SELECT
             node.id AS id,
+            node.audit_userid AS auditUserid,
             node.`order` AS `order`,
             usercard.real_name AS realName,
             ucuser.username AS userName,
@@ -37,5 +38,68 @@
         AND node.apply_id = 0
         ORDER BY
             node.`order` ASC
+    </select>
+    <delete id="deleteByUserId" parameterType="java.util.Map">
+        DELETE
+        FROM
+            wf_item_node_define
+        WHERE
+            user_id = #{userId}
+        AND (apply_id = 0 OR apply_id = #{applyId})
+    </delete>
+    <insert id="insertData" parameterType="com.dm.user.entity.WfItemNode" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `wf_item_node_define` (
+            `user_id`,
+            `apply_id`,
+            `order`,
+            `nodename`,
+            `describe`,
+            `audit_userid`,
+            `created_date`,
+            `created_by`
+        )
+        VALUES
+            (
+                #{userId},
+                #{applyId},
+                #{order},
+                #{nodename},
+                #{describe},
+                #{auditUserid},
+                #{createdDate},
+                #{createdBy}
+            )
+    </insert>
+    <select id="isNotProgress" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ProgressView">
+        SELECT
+            IFNULL(
+                orguser.remarks,
+                usercard.real_name
+            ) AS realName,
+            ucuser.username AS userName
+        FROM
+            wf_item_node_define AS node
+        LEFT JOIN biz_org_users AS orguser ON node.audit_userid = orguser.userid
+        LEFT JOIN sys_user_card AS usercard ON node.audit_userid = usercard.userid
+        LEFT JOIN uc_user AS ucuser ON node.audit_userid = ucuser.userid
+        WHERE
+            node.apply_id = #{applyid}
+        AND node.id > (
+            SELECT
+                wfin.nodeid
+            FROM
+                wf_instance AS wfin
+            WHERE
+                wfin.id = (
+                    SELECT
+                        apply.wf_instance_id
+                    FROM
+                        biz_item_apply AS apply
+                    WHERE
+                        apply.applyid = #{applyid}
+                )
+        )
+        GROUP BY
+            node.id
     </select>
 </mapper>

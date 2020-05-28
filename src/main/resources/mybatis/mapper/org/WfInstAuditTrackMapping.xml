@@ -208,4 +208,27 @@
                 #{fileId}
             )
     </insert>
+    <select id="selectIsProgress" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ProgressView">
+          SELECT
+            IFNULL(
+                orguser.remarks,
+                usercard.real_name
+            ) AS realName,
+            ucuser.userName,
+            track.audit_date AS auditDate,
+            track.reason AS reason,
+            track.`status` AS `status`
+        FROM
+            `wf_inst_audit_track` AS track
+        LEFT JOIN biz_item_apply AS apply ON track.instid = apply.wf_instance_id
+        LEFT JOIN biz_org_users AS orguser ON track.userid = orguser.userid
+        LEFT JOIN sys_user_card AS usercard ON track.userid = usercard.userid
+        LEFT JOIN uc_user AS ucuser ON ucuser.userid = track.userid
+        WHERE
+            apply.applyid = #{applyid}
+        GROUP BY
+            track.`id`
+        ORDER BY
+            track.`id` ASC
+    </select>
 </mapper>

@@ -27,7 +27,7 @@
                 orguser.remarks,
                 usercard.real_name
             ) AS realName,
-            orguser.userid AS id,
+            orguser.userid AS auditUserid,
             ucuser.username AS userName
         FROM
             `biz_org_users` AS orguser

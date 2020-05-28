@@ -7,6 +7,8 @@ public class ProcessConfig {
 
     private Integer id;
 
+    private Integer auditUserid;
+
     private String realName;
 
     private String userName;
@@ -14,6 +16,14 @@ public class ProcessConfig {
     private int order;
 
     private String headPhoto;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getHeadPhoto() {
         return headPhoto;
@@ -31,12 +41,12 @@ public class ProcessConfig {
         this.userName = userName;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getAuditUserid() {
+        return auditUserid;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setAuditUserid(Integer auditUserid) {
+        this.auditUserid = auditUserid;
     }
 
     public String getRealName() {

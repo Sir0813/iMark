@@ -247,4 +247,11 @@ public interface ItemApplyMapper {
      * @param id
      */
     void updateStatus(String id);
+
+    /**
+     * 添加审批实例ID
+     *
+     * @param map
+     */
+    void updateWfInstanceIdById(Map<String, Object> map);
 }

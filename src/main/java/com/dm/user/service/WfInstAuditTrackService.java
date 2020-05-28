@@ -1,5 +1,8 @@
 package com.dm.user.service;
 
+import com.dm.user.entity.ProgressView;
+
+import java.util.List;
 import java.util.Map;
 
 public interface WfInstAuditTrackService {
@@ -18,4 +21,12 @@ public interface WfInstAuditTrackService {
      * @throws Exception
      */
     void insertApproved(Map<String, Object> map) throws Exception;
+
+    /**
+     * 已审批节点
+     *
+     * @param applyid
+     * @return
+     */
+    List<ProgressView> selectIsProgress(Integer applyid) throws Exception;
 }

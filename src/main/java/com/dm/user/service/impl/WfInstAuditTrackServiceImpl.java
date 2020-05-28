@@ -1,11 +1,13 @@
 package com.dm.user.service.impl;
 
+import com.dm.user.entity.ProgressView;
 import com.dm.user.mapper.WfInstAuditTrackMapper;
 import com.dm.user.service.WfInstAuditTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,5 +25,10 @@ public class WfInstAuditTrackServiceImpl implements WfInstAuditTrackService {
     @Override
     public void insertApproved(Map<String, Object> map) throws Exception {
         wfInstAuditTrackMapper.insertApproved(map);
+    }
+
+    @Override
+    public List<ProgressView> selectIsProgress(Integer applyid) throws Exception {
+        return wfInstAuditTrackMapper.selectIsProgress(applyid);
     }
 }
