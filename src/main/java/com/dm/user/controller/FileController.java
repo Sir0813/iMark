@@ -32,6 +32,7 @@ public class FileController {
     @Autowired
     private CertFicateService certFicateService;
 
+
     @ApiOperation(value = "文件上传", response = ResultUtil.class)
     @RequestMapping(value = "/api/upload", method = RequestMethod.POST)
     public Result upload(HttpServletRequest request, HttpServletResponse response,
@@ -72,6 +73,15 @@ public class FileController {
     public Result itemUploadOne(HttpServletRequest request, HttpServletResponse response,
                                 @RequestParam(value = "file") MultipartFile multipartFile) throws Exception {
         return fileUtil.itemUploadOne(request, response, multipartFile);
+    }
+
+    @ApiOperation(value = "公正附件(单张上传)", response = ResultUtil.class)
+    @RequestMapping(value = "/item/attachmentUpload", method = RequestMethod.POST)
+    public Result attachmentUpload(HttpServletRequest request, HttpServletResponse response,
+                                @RequestParam(value = "file") MultipartFile multipartFile) throws Exception {
+
+        Result result = fileUtil.itemUploadOne(request, response, multipartFile);
+        return result;
     }
 
     @ApiOperation(value = "上传公正意见书", response = ResultUtil.class)
