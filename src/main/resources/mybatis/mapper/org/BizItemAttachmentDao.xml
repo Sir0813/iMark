@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.BizItemAttachmentDao">
+
+    <resultMap type="com.dm.user.entity.BizItemAttachment" id="BizItemAttachmentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="applyId" column="apply_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="applyDesc" column="apply_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BizItemAttachmentMap">
+        select
+          id, file_id, apply_id, create_time, apply_desc
+        from org-sy.biz_item_attachment
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BizItemAttachmentMap">
+        select
+          id, file_id, apply_id, create_time, apply_desc
+        from org-sy.biz_item_attachment
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getFlieList" resultType="com.dm.user.entity.BizCertFilesVo">
+            SELECT
+        bcf.file_id  fileId,
+        bcf.file_type fileType,
+        bcf.file_name fileName,
+        bcf.file_size fileSize,
+        bcf.file_path filePath,
+        bcf.file_seq fileSeq,
+        bcf.cert_id certId,
+        bcf.file_url fileUrl,
+        bcf.file_hash fileHash,
+        bcf.thumb_url thumbUrl,
+        bcf.detail detail,
+        bia.apply_id applyId,
+        bia.apply_desc applyDesc,
+        bia.create_time createTime,
+        FROM
+        biz_item_attachment bia
+        INNER JOIN biz_cert_files bcf ON bia.file_id = bcf.file_id
+        WHERE
+        bia.apply_id = #{applyId}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BizItemAttachmentMap">
+        select
+          id, file_id, apply_id, create_time, apply_desc
+        from org-sy.biz_item_attachment
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="fileId != null">
+                and file_id = #{fileId}
+            </if>
+            <if test="applyId != null">
+                and apply_id = #{applyId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="applyDesc != null and applyDesc != ''">
+                and apply_desc = #{applyDesc}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into org-sy.biz_item_attachment(file_id, apply_id, create_time, apply_desc)
+        values (#{fileId}, #{applyId}, #{createTime}, #{applyDesc})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.dm.user.entity.BizItemAttachment">
+        insert into biz_item_attachment
+
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="applyId != null">
+                        apply_id,
+                    </if>
+                    <if test="fileId != null">
+                        file_id,
+                    </if>
+
+                    <if test="applyDesc != null">
+                        apply_desc,
+                    </if>
+                    <if test="createTime != null">
+                        create_time,
+                    </if>
+
+                </trim>
+                <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test="applyId != null">
+                        #{applyId,jdbcType=INTEGER},
+                    </if>
+                    <if test="fileId != null">
+                        #{fileId,jdbcType=INTEGER},
+                    </if>
+
+                    <if test="applyDesc != null">
+                        #{applyDesc,jdbcType=VARCHAR},
+                    </if>
+                    <if test="createTime != null">
+                        #{createTime,jdbcType=TIMESTAMP},
+                    </if>
+
+                </trim>
+
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update org-sy.biz_item_attachment
+        <set>
+            <if test="fileId != null">
+                file_id = #{fileId},
+            </if>
+            <if test="applyId != null">
+                apply_id = #{applyId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="applyDesc != null and applyDesc != ''">
+                apply_desc = #{applyDesc},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from org-sy.biz_item_attachment where id = #{id}
+    </delete>
+
+</mapper>
