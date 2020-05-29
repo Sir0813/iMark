@@ -468,8 +468,6 @@ public class FileUtil {
             request.setCharacterEncoding("utf-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("text/html;charset=utf-8");
-            String row = request.getParameter("row");
-            String item = request.getParameter("item");
             String detail = request.getParameter("detail");
             String fileName = multipartFile.getOriginalFilename();
             String suffix = fileName.substring(fileName.lastIndexOf(".")).toLowerCase().trim();
@@ -509,8 +507,8 @@ public class FileUtil {
             certFiles.setFileSeq("0");
             certFilesService.insertSelective(certFiles);
             Map<String, Object> map = new LinkedHashMap<>(16);
-            map.put("row", Integer.parseInt(row));
-            map.put("item", Integer.parseInt(item));
+            map.put("row", request.getParameter("row"));
+            map.put("item", Integer.parseInt(String.valueOf(request.getParameter("item"))));
             map.put("fileid", certFiles.getFileId());
             map.put("thumbUrl", certFiles.getThumbUrl());
             return ResultUtil.success(map);
