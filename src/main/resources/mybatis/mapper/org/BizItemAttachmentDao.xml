@@ -49,6 +49,7 @@
         INNER JOIN biz_cert_files bcf ON bia.file_id = bcf.file_id
         WHERE
         bia.apply_id = #{applyId}
+        order by bia.create_time
     </select>
 
     <!--通过实体作为筛选条件查询-->

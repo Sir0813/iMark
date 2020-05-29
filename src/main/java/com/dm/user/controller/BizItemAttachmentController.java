@@ -6,11 +6,14 @@ import com.dm.user.entity.BizCertFilesVo;
 import com.dm.user.entity.BizItemAttachment;
 import com.dm.user.service.BizItemAttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class BizItemAttachmentController {
      */
     @PostMapping("/getBizItemAttachment")
     public Result getBizItemAttachmentInfo(Integer applyId){
+
         List<BizCertFilesVo> vo =  bizItemAttachmentService.getBizItemAttachmentInfo(applyId);
         return ResultUtil.success(vo);
     }

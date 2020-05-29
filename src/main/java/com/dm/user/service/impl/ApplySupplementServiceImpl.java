@@ -46,26 +46,23 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
     public Result userApplySupplement(ApplySupplementVo applySupplementVo) throws Exception {
         List<Map<String, Object>> editList = applySupplementVo.getEidtList();
         List<Map<String, Object>> supplementList = applySupplementVo.getSupplementList();
-
-
+        Integer applyId = applySupplementVo.getApplyId();
+        BizItemApply bia = new BizItemApply();
+        bia.setApplyid(applyId);
+        bia.setAddFileStatus(0);
+        bizItemApplyService.update(bia);
         try {
             if(editList.size()>0){
                 for (Map<String, Object> editMap : editList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    Integer applyId = (Integer)editMap.get("applyid");
-                    Integer fileId = (Integer)editMap.get("fileid");
-                    changeAddFileStatus(editMap,bizItemApplyService,applyId);//修改
-                    ApplySupplement applySupplement = applySupplementMapper.selectByApplyId(applyId);
-                    Integer supplementId= 0;
-                    if(null!= applySupplement){
-                        supplementId = applySupplement.getId();
-                    }
+                    Integer fileId = (Integer)editMap.get("fileIds");
+                    Integer fileLogId = (Integer)editMap.get("fileLogId");
                     iaf.setApplyid(applyId);
                     iaf.setFileid(fileId);
                     iaf.setIsDel(1);
                     iaf.setCreatedDate(new Date());
                     iaf.setFileTypes(6);
-                    iaf.setSupplementId(supplementId);
+                    iaf.setFileLogId(fileLogId);
                     itemApplyFilesService.insert(iaf);
 
                 }
@@ -74,20 +71,22 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
             }
 
             if(supplementList.size()>0){
-                for (Map<String, Object> suppleMap : supplementList) {
+                 for (Map<String, Object> suppleMap : supplementList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    Integer applyId = (Integer)suppleMap.get("applyid");
-                    Integer fileId = (Integer)suppleMap.get("fileid");
-                    changeAddFileStatus(suppleMap,bizItemApplyService,applyId);
-                    List<ApplyFileLog> applyFileLogs = applyFileLogService.selectByFileId(fileId);
-                    Integer  fileLogId = applyFileLogs.get(0).getId();
+                    String fileIds = (String)suppleMap.get("fileids");
+                    Integer supplementId = (Integer)suppleMap.get("supplementId");
                     iaf.setApplyid(applyId);
-                    iaf.setFileid(fileId);
-                    iaf.setIsDel(1);
-                    iaf.setCreatedDate(new Date());
-                    iaf.setFileLogId(fileLogId);
                     iaf.setFileTypes(5);
-                    itemApplyFilesService.insert(iaf);
+                    iaf.setIsDel(1);
+                    iaf.setSupplementId(supplementId);
+                    String[] split = fileIds.split(",");
+                    if(split.length>0){
+                        for (int i = 0; i < split.length; i++) {
+                            iaf.setFileid(Integer.valueOf(split[i]));
+                            iaf.setCreatedDate(new Date());
+                            itemApplyFilesService.insert(iaf);
+                        }
+                    }
                 }
             }
 
@@ -101,14 +100,6 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
         }
 
 
-
     }
 
-    static void changeAddFileStatus(Map<String,Object> map,BizItemApplyService  bizItemApplyService,Integer applyId){
-        BizItemApply bia = new BizItemApply();
-        bia.setApplyid(applyId);
-        bia.setAddFileStatus(0);
-        bizItemApplyService.update(bia);
-
-    }
 }
