@@ -175,7 +175,7 @@
     </select>
     <select id="selectUpdateFiles" parameterType="java.util.Map" resultType="com.dm.user.entity.CertFiles">
         SELECT
-            certfile.`file_id` AS `fileId`,
+            filelog.`id` AS `fileId`,
             certfile.`detail` AS detail,
             filelog.file_status AS fileStatus,
             filelog.log_string AS logString
@@ -203,7 +203,8 @@
     </select>
     <select id="selectAddFiles" parameterType="java.util.Map" resultType="com.dm.user.entity.CertFiles">
         SELECT
-            applysup.files_desc AS logString
+            applysup.files_desc AS logString,
+            applysup.id AS fileId
         FROM
             biz_item_apply_supplement AS applysup
         LEFT JOIN biz_item_apply_files AS applyfiles ON applyfiles.applyid = applysup.apply_id
