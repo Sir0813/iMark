@@ -1,10 +1,13 @@
 package com.dm.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class BizCertFilesVo extends BizCertFiles {
     private int applyId;
     private String applyDesc;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     public int getApplyId() {

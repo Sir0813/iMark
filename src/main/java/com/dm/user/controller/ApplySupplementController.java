@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(description = "补充材料")
 @RestController
-@RequestMapping(value = "/apply/supplement")
+@RequestMapping(value = "apply/supplement")
 public class ApplySupplementController extends BaseController {
 
     @Autowired
@@ -34,8 +34,7 @@ public class ApplySupplementController extends BaseController {
     @RequestMapping(value = "/userApplySupplement", method = RequestMethod.POST)
     public Result userApplySupplement(@RequestBody ApplySupplementVo applySupplementVo ) throws Exception {
         Result  result = applySupplementService.userApplySupplement(applySupplementVo);
-
-        return null;
+        return ResultUtil.success(result);
 }
 
 

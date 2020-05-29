@@ -6,6 +6,7 @@ import java.util.Map;
 public class ApplySupplementVo {
     private List<Map<String,Object>>  eidtList;
     private List<Map<String,Object>>  supplementList;
+    private Integer applyId;
 
     public List<Map<String, Object>> getEidtList() {
         return eidtList;
@@ -21,5 +22,13 @@ public class ApplySupplementVo {
 
     public void setSupplementList(List<Map<String, Object>> supplementList) {
         this.supplementList = supplementList;
+    }
+
+    public Integer getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(Integer applyId) {
+        this.applyId = applyId;
     }
 }

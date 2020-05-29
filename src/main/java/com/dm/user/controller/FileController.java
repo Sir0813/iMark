@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -91,6 +92,7 @@ public class FileController {
             BizItemAttachment biz = new BizItemAttachment();
             biz.setFileId(fileid);
             biz.setApplyId(applyId);
+            biz.setCreateTime(new Date());
             biz.setApplyDesc(applyDesc);
             bizItemAttachmentService.insertSelective(biz);
             return ResultUtil.success("success");
