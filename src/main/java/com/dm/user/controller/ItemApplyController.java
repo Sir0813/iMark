@@ -212,6 +212,26 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.approvalProgress(applyid);
     }
 
+    @ApiOperation(value = "审批通过", response = ResultUtil.class)
+    @RequestMapping(value = "/approved", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "applyid", value = "公正ID", dataType = "int"),
+            @ApiImplicitParam(name = "opinion", value = "审批通过意见", dataType = "String")
+    })
+    public Result approved(@RequestBody Map<String, Object> map) throws Exception {
+        return itemApplyService.approved(map);
+    }
+
+    @ApiOperation(value = "审批退回", response = ResultUtil.class)
+    @RequestMapping(value = "/reject/reason", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "applyid", value = "公正ID", dataType = "int"),
+            @ApiImplicitParam(name = "opinion", value = "审批退回意见", dataType = "String")
+    })
+    public Result rejectReason(@RequestBody Map<String, Object> map) throws Exception {
+        return itemApplyService.rejectReason(map);
+    }
+
     @ApiOperation(value = "国家", response = ResultUtil.class)
     @RequestMapping(value = "/country", method = RequestMethod.GET)
     public Result country() throws Exception {

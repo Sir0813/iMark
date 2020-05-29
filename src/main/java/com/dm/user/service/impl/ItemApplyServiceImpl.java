@@ -1049,4 +1049,68 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("isNotProgress", isNotProgress);
         return ResultUtil.success(map);
     }
+
+    @Override
+    public Result approved(Map<String, Object> map) throws Exception {
+        try {
+            map.put("userId", LoginUserHelper.getUserId());
+            ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
+            WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
+            WfItemNode wfItemNode = wfItemNodeService.selectLaseNode(map);
+            /* 当前节点 不是 审批最后一个节点  当前节点 需 +1 */
+            if (!wfInstance.getNodeid().equals(wfItemNode.getId())) {
+                map.put("nodeId", wfInstance.getNodeid());
+                WfItemNode wfItemNode2 = wfItemNodeService.selectNextNode(map);
+                wfInstance.setNodeid(wfItemNode2.getId());
+            } else {
+                wfInstance.setStatus(InstanceEnum.REVIEW_PASS.getCode());
+                itemApply.setStatus(ItemApplyEnum.FILE_MAKE.getCode());
+                itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+            }
+            wfInstance.setUpdateDate(new Date());
+            wfInstanceService.updateById(wfInstance);
+            map.put("nodeid", wfInstance.getNodeid());
+            map.put("instid", wfInstance.getId());
+            wfInstAuditTrackService.insertApproved(map);
+            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public Result rejectReason(Map<String, Object> map) throws Exception {
+        try {
+            /* 如果是第一审批人 状态改为 4 材料核查  */
+            map.put("userId", LoginUserHelper.getUserId());
+            ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
+            WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
+            WfItemNode wfItemNode = wfItemNodeService.selectFirstNode(map);
+            if (wfInstance.getNodeid().equals(wfItemNode.getId())) {
+                map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
+                itemApplyFilesService.updateDelState(itemApply.getApplyid());
+                wfInstanceService.updateByInstanceId(map);
+                itemApply.setStatus(ItemApplyEnum.FILE_CHECK.getCode());
+                itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+            } else {
+                /* 如果不是第一审批人 取上一审批人 */
+                WfItemNode wfItemNode1 = wfItemNodeService.selectPreviousNode(map.get("applyid").toString(), wfInstance.getNodeid());
+                wfInstance.setNodeid(wfItemNode1.getId());
+                wfInstanceService.updateById(wfInstance);
+            }
+            map.put("instid", wfInstance.getId());
+            map.put("nodeid", wfInstance.getNodeid());
+            wfInstAuditTrackService.insertData(map);
+            return ResultUtil.success();
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public ItemApply selectById(Integer applyId) throws Exception {
+        ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyId);
+        return itemApply;
+    }
 }

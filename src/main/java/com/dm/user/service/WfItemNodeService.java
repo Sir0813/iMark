@@ -5,6 +5,7 @@ import com.dm.user.entity.ProgressView;
 import com.dm.user.entity.WfItemNode;
 
 import java.util.List;
+import java.util.Map;
 
 public interface WfItemNodeService {
 
@@ -45,4 +46,37 @@ public interface WfItemNodeService {
      * @return
      */
     List<ProgressView> isNotProgress(Integer applyid);
+
+    /**
+     * 查询最后一个审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectLaseNode(Map<String, Object> map);
+
+    /**
+     * 查询下一审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectNextNode(Map<String, Object> map);
+
+    /**
+     * 查询第一审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectFirstNode(Map<String, Object> map);
+
+    /**
+     * 查询上一个审批节点
+     *
+     * @param applyid
+     * @param nodeid
+     * @return
+     */
+    WfItemNode selectPreviousNode(String applyid, Integer nodeid);
 }

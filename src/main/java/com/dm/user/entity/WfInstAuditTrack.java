@@ -15,7 +15,17 @@ public class WfInstAuditTrack {
 
     private String reason;
 
+    private String fileString;
+
     private Integer fileid;
+
+    public String getFileString() {
+        return fileString;
+    }
+
+    public void setFileString(String fileString) {
+        this.fileString = fileString;
+    }
 
     public Integer getId() {
         return id;

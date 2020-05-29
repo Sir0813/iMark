@@ -84,7 +84,7 @@
         LEFT JOIN uc_user AS ucuser ON node.audit_userid = ucuser.userid
         WHERE
             node.apply_id = #{applyid}
-        AND node.id > (
+        AND node.id >= (
             SELECT
                 wfin.nodeid
             FROM
@@ -101,5 +101,63 @@
         )
         GROUP BY
             node.id
+    </select>
+    <select id="selectLaseNode" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        `wf_item_node_define`
+        WHERE
+        apply_id = #{applyid}
+        ORDER BY
+        `order` DESC
+        LIMIT 1
+    </select>
+    <select id="selectNextNode" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+            id
+        FROM
+            wf_item_node_define
+        WHERE
+            apply_id = #{applyid}
+        AND `order` = (
+            (
+                SELECT
+                    `order`
+                FROM
+                    `wf_item_node_define`
+                WHERE
+                    id = #{nodeId}
+            ) + 1
+        )
+    </select>
+    <select id="selectFirstNode" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+            id
+        FROM
+            wf_item_node_define
+        WHERE
+            apply_id = #{applyid}
+        ORDER BY
+            `order` ASC
+        LIMIT 1
+    </select>
+    <select id="selectPreviousNode" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+            id
+        FROM
+            wf_item_node_define
+        WHERE
+            apply_id = #{applyId}
+        AND `order` = (
+            (
+                SELECT
+                    `order`
+                FROM
+                    wf_item_node_define
+                WHERE
+                    id = #{nodeId}
+            ) - 1
+        )
     </select>
 </mapper>

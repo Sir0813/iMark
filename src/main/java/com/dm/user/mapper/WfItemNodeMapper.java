@@ -48,4 +48,36 @@ public interface WfItemNodeMapper {
      * @return
      */
     List<ProgressView> isNotProgress(Integer applyid);
+
+    /**
+     * 查询最后一个审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectLaseNode(Map<String, Object> map);
+
+    /**
+     * 查询下一审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectNextNode(Map<String, Object> map);
+
+    /**
+     * 查询第一审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectFirstNode(Map<String, Object> map);
+
+    /**
+     * 查询上一审批节点
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectPreviousNode(Map<String, Object> map);
 }

@@ -261,4 +261,27 @@ public interface ItemApplyService {
      * @return
      */
     Result approvalProgress(Integer applyid) throws Exception;
+
+    /**
+     * 审批通过
+     *
+     * @param map
+     * @return
+     */
+    Result approved(Map<String, Object> map) throws Exception;
+
+    /**
+     * 审批退回
+     *
+     * @param map
+     * @return
+     */
+    Result rejectReason(Map<String, Object> map) throws Exception;
+
+    /**
+     * 主键ID查询
+     *
+     * @param applyId
+     */
+    ItemApply selectById(Integer applyId) throws Exception;
 }

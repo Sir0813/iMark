@@ -28,7 +28,8 @@
                 usercard.real_name
             ) AS realName,
             orguser.userid AS auditUserid,
-            ucuser.username AS userName
+            ucuser.username AS userName,
+            ucuser.head_photo AS headPhoto
         FROM
             `biz_org_users` AS orguser
         LEFT JOIN uc_user AS ucuser ON ucuser.userid = orguser.userid

@@ -11,8 +11,6 @@
     </resultMap>
 
 
-
-
     <!--查询单个-->
     <select id="queryById" resultMap="BizItemAttachmentMap">
         select
@@ -45,7 +43,7 @@
         bcf.detail detail,
         bia.apply_id applyId,
         bia.apply_desc applyDesc,
-        bia.create_time createTime,
+        bia.create_time createTime
         FROM
         biz_item_attachment bia
         INNER JOIN biz_cert_files bcf ON bia.file_id = bcf.file_id
@@ -56,7 +54,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="BizItemAttachmentMap">
         select
-          id, file_id, apply_id, create_time, apply_desc
+        id, file_id, apply_id, create_time, apply_desc
         from org-sy.biz_item_attachment
         <where>
             <if test="id != null">
@@ -86,38 +84,38 @@
     <insert id="insertSelective" parameterType="com.dm.user.entity.BizItemAttachment">
         insert into biz_item_attachment
 
-                <trim prefix="(" suffix=")" suffixOverrides=",">
-                    <if test="applyId != null">
-                        apply_id,
-                    </if>
-                    <if test="fileId != null">
-                        file_id,
-                    </if>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">
+                apply_id,
+            </if>
+            <if test="fileId != null">
+                file_id,
+            </if>
 
-                    <if test="applyDesc != null">
-                        apply_desc,
-                    </if>
-                    <if test="createTime != null">
-                        create_time,
-                    </if>
+            <if test="applyDesc != null">
+                apply_desc,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
 
-                </trim>
-                <trim prefix="values (" suffix=")" suffixOverrides=",">
-                    <if test="applyId != null">
-                        #{applyId,jdbcType=INTEGER},
-                    </if>
-                    <if test="fileId != null">
-                        #{fileId,jdbcType=INTEGER},
-                    </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">
+                #{applyId,jdbcType=INTEGER},
+            </if>
+            <if test="fileId != null">
+                #{fileId,jdbcType=INTEGER},
+            </if>
 
-                    <if test="applyDesc != null">
-                        #{applyDesc,jdbcType=VARCHAR},
-                    </if>
-                    <if test="createTime != null">
-                        #{createTime,jdbcType=TIMESTAMP},
-                    </if>
+            <if test="applyDesc != null">
+                #{applyDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
 
-                </trim>
+        </trim>
 
     </insert>
 

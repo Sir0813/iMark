@@ -49,4 +49,27 @@ public class WfItemNodeServiceImpl implements WfItemNodeService {
     public List<ProgressView> isNotProgress(Integer applyid) {
         return wfItemNodeMapper.isNotProgress(applyid);
     }
+
+    @Override
+    public WfItemNode selectLaseNode(Map<String, Object> map) {
+        return wfItemNodeMapper.selectLaseNode(map);
+    }
+
+    @Override
+    public WfItemNode selectNextNode(Map<String, Object> map) {
+        return wfItemNodeMapper.selectNextNode(map);
+    }
+
+    @Override
+    public WfItemNode selectFirstNode(Map<String, Object> map) {
+        return wfItemNodeMapper.selectFirstNode(map);
+    }
+
+    @Override
+    public WfItemNode selectPreviousNode(String applyid, Integer nodeid) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyId", applyid);
+        map.put("nodeId", nodeid);
+        return wfItemNodeMapper.selectPreviousNode(map);
+    }
 }

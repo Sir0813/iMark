@@ -9,10 +9,10 @@
         <result column="audit_date" jdbcType="VARCHAR" property="auditDate"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="reason" jdbcType="VARCHAR" property="reason"/>
-        <result column="fileid" jdbcType="INTEGER" property="fileid"/>
+        <result column="file_string" jdbcType="LONGVARCHAR" property="fileString"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, instid, userid, nodeid, audit_date, status, reason, fileid
+    id, instid, userid, nodeid, audit_date, status, reason, file_string
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -56,8 +56,8 @@
             <if test="reason != null">
                 reason,
             </if>
-            <if test="fileid != null">
-                fileid,
+            <if test="file_string != null">
+                fileString,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -82,8 +82,8 @@
             <if test="reason != null">
                 #{reason,jdbcType=VARCHAR},
             </if>
-            <if test="fileid != null">
-                #{fileid,jdbcType=INTEGER},
+            <if test="fileString != null">
+                #{fileString},
             </if>
         </trim>
     </insert>
@@ -108,8 +108,8 @@
             <if test="reason != null">
                 reason = #{reason,jdbcType=VARCHAR},
             </if>
-            <if test="fileid != null">
-                reason = #{fileid,jdbcType=INTEGER},
+            <if test="fileString != null">
+                file_string = #{fileString},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -131,39 +131,16 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`,
-            `fileid`
+            `reason`
         )
         VALUES
             (
-                (
-                    SELECT
-                        wf_instance_id
-                    FROM
-                        biz_item_apply
-                    WHERE
-                        applyid = #{applyid}
-                ),
+                #{instid},
                 #{userId},
-                (
-                    SELECT
-                        nodeid
-                    FROM
-                        wf_instance
-                    WHERE
-                        id = (
-                            SELECT
-                                wf_instance_id
-                            FROM
-                                biz_item_apply
-                            WHERE
-                                applyid = #{applyid}
-                        )
-                ),
+                #{nodeid},
                 NOW(),
                 '1',
-                #{rejectReason},
-                #{fileId}
+                #{rejectReason}
             )
     </insert>
     <insert id="insertApproved" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
@@ -173,39 +150,16 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`,
-            `fileid`
+            `reason`
         )
         VALUES
             (
-                (
-                    SELECT
-                        wf_instance_id
-                    FROM
-                        biz_item_apply
-                    WHERE
-                        applyid = #{applyid}
-                ),
+                #{instid},
                 #{userId},
-                (
-                    SELECT
-                        nodeid
-                    FROM
-                        wf_instance
-                    WHERE
-                        id = (
-                            SELECT
-                                wf_instance_id
-                            FROM
-                                biz_item_apply
-                            WHERE
-                                applyid = #{applyid}
-                        )
-                ),
+                #{nodeid},
                 NOW(),
                 '0',
-                #{opinion},
-                #{fileId}
+                #{opinion}
             )
     </insert>
     <select id="selectIsProgress" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ProgressView">
