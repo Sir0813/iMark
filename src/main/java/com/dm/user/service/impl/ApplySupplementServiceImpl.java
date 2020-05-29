@@ -2,19 +2,19 @@ package com.dm.user.service.impl;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
-import com.dm.user.entity.*;
+import com.dm.user.entity.ApplySupplement;
+import com.dm.user.entity.ApplySupplementVo;
+import com.dm.user.entity.BizItemApply;
+import com.dm.user.entity.ItemApplyFiles;
 import com.dm.user.mapper.ApplySupplementMapper;
 import com.dm.user.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.EditorKit;
 import java.util.Date;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -29,7 +29,7 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
     ItemApplyFilesService itemApplyFilesService;
 
     @Autowired
-    private BizItemApplyService  bizItemApplyService;
+    private BizItemApplyService bizItemApplyService;
     @Autowired
     private ApplyFileLogService applyFileLogService;
 
@@ -52,11 +52,11 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
         bia.setAddFileStatus(0);
         bizItemApplyService.update(bia);
         try {
-            if(editList.size()>0){
+            if (editList.size() > 0) {
                 for (Map<String, Object> editMap : editList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    Integer fileId = (Integer)editMap.get("fileIds");
-                    Integer fileLogId = (Integer)editMap.get("fileLogId");
+                    Integer fileId = (Integer) editMap.get("fileIds");
+                    Integer fileLogId = (Integer) editMap.get("fileLogId");
                     iaf.setApplyid(applyId);
                     iaf.setFileid(fileId);
                     iaf.setIsDel(1);
@@ -70,17 +70,17 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
 
             }
 
-            if(supplementList.size()>0){
-                 for (Map<String, Object> suppleMap : supplementList) {
+            if (supplementList.size() > 0) {
+                for (Map<String, Object> suppleMap : supplementList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    String fileIds = (String)suppleMap.get("fileids");
-                    Integer supplementId = (Integer)suppleMap.get("supplementId");
+                    String fileIds = (String) suppleMap.get("fileids");
+                    Integer supplementId = (Integer) suppleMap.get("supplementId");
                     iaf.setApplyid(applyId);
                     iaf.setFileTypes(5);
                     iaf.setIsDel(1);
                     iaf.setSupplementId(supplementId);
                     String[] split = fileIds.split(",");
-                    if(split.length>0){
+                    if (split.length > 0) {
                         for (int i = 0; i < split.length; i++) {
                             iaf.setFileid(Integer.valueOf(split[i]));
                             iaf.setCreatedDate(new Date());
@@ -92,7 +92,7 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
 
 
             return ResultUtil.success("success");
-        } catch (Exception e){
+        } catch (Exception e) {
 
             e.printStackTrace();
             return ResultUtil.error("fail");

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.BizCertModelMapper">
+    <resultMap id="BaseResultMap" type="com.dm.user.entity.BizCertModel">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="item_id" jdbcType="INTEGER" property="itemId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.dm.user.entity.BizCertModel">
+        <result column="item_string" jdbcType="LONGVARCHAR" property="itemString"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, item_id, create_time
+  </sql>
+    <sql id="Blob_Column_List">
+    item_string
+  </sql>
+
+    <select id="selectByItemId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        `biz_cert_model`
+        WHERE
+        item_id = #{itemid}
+    </select>
+    <select id="selectInfoByApplyId" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT
+            item.item_name AS itemName,
+            org.orgname AS orgname,
+            usercard.real_name AS realName,
+            usercard.card_number AS idCard
+        FROM
+            biz_item_apply AS apply
+        LEFT JOIN biz_org_items AS item ON apply.itemid = item.itemid
+        LEFT JOIN biz_org AS org ON item.orgid = org.itemid
+        LEFT JOIN sys_user_card AS usercard ON apply.userid = usercard.userid
+        WHERE
+            apply.applyid = #{applyId}
+    </select>
+</mapper>
