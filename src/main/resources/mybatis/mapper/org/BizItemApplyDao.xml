@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dm.user.mapper.BizItemApplyDao">
+
+    <resultMap type="com.dm.user.entity.BizItemApply" id="BizItemApplyMap">
+        <result property="applyid" column="applyid" jdbcType="INTEGER"/>
+        <result property="applyNo" column="apply_no" jdbcType="VARCHAR"/>
+        <result property="itemid" column="itemid" jdbcType="INTEGER"/>
+        <result property="userid" column="userid" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="describe" column="describe" jdbcType="VARCHAR"/>
+        <result property="certid" column="certid" jdbcType="INTEGER"/>
+        <result property="createdDate" column="created_date" jdbcType="TIMESTAMP"/>
+        <result property="submitDate" column="submit_date" jdbcType="TIMESTAMP"/>
+        <result property="itemValue" column="item_value" jdbcType="NUMERIC"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="handleCreatedDate" column="handle_created_date" jdbcType="TIMESTAMP"/>
+        <result property="handleUserid" column="handle_userid" jdbcType="INTEGER"/>
+        <result property="wfInstanceId" column="wf_instance_id" jdbcType="VARCHAR"/>
+        <result property="payStatus" column="pay_status" jdbcType="INTEGER"/>
+        <result property="payEndPrice" column="pay_end_price" jdbcType="NUMERIC"/>
+        <result property="payEndDate" column="pay_end_date" jdbcType="TIMESTAMP"/>
+        <result property="itemCode" column="item_code" jdbcType="VARCHAR"/>
+        <result property="rejectReason" column="reject_reason" jdbcType="VARCHAR"/>
+        <result property="addFileStatus" column="add_file_status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BizItemApplyMap">
+        select
+          applyid, apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
+        from biz_item_apply
+        where applyid = #{applyid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BizItemApplyMap">
+        select
+          applyid, apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
+        from biz_item_apply
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BizItemApplyMap">
+        select
+          applyid, apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
+        from biz_item_apply
+        <where>
+            <if test="applyid != null">
+                and applyid = #{applyid}
+            </if>
+            <if test="applyNo != null and applyNo != ''">
+                and apply_no = #{applyNo}
+            </if>
+            <if test="itemid != null">
+                and itemid = #{itemid}
+            </if>
+            <if test="userid != null">
+                and userid = #{userid}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="describe != null and describe != ''">
+                and describe = #{describe}
+            </if>
+            <if test="certid != null">
+                and certid = #{certid}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="submitDate != null">
+                and submit_date = #{submitDate}
+            </if>
+            <if test="itemValue != null">
+                and item_value = #{itemValue}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="handleCreatedDate != null">
+                and handle_created_date = #{handleCreatedDate}
+            </if>
+            <if test="handleUserid != null">
+                and handle_userid = #{handleUserid}
+            </if>
+            <if test="wfInstanceId != null and wfInstanceId != ''">
+                and wf_instance_id = #{wfInstanceId}
+            </if>
+            <if test="payStatus != null">
+                and pay_status = #{payStatus}
+            </if>
+            <if test="payEndPrice != null">
+                and pay_end_price = #{payEndPrice}
+            </if>
+            <if test="payEndDate != null">
+                and pay_end_date = #{payEndDate}
+            </if>
+            <if test="itemCode != null and itemCode != ''">
+                and item_code = #{itemCode}
+            </if>
+            <if test="rejectReason != null and rejectReason != ''">
+                and reject_reason = #{rejectReason}
+            </if>
+            <if test="addFileStatus != null">
+                and add_file_status = #{addFileStatus}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="applyid" useGeneratedKeys="true">
+        insert into biz_item_apply(apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status)
+        values (#{applyNo}, #{itemid}, #{userid}, #{status}, #{describe}, #{certid}, #{createdDate}, #{submitDate}, #{itemValue}, #{price}, #{handleCreatedDate}, #{handleUserid}, #{wfInstanceId}, #{payStatus}, #{payEndPrice}, #{payEndDate}, #{itemCode}, #{rejectReason}, #{addFileStatus})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update biz_item_apply
+        <set>
+            <if test="applyNo != null and applyNo != ''">
+                apply_no = #{applyNo},
+            </if>
+            <if test="itemid != null">
+                itemid = #{itemid},
+            </if>
+            <if test="userid != null">
+                userid = #{userid},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="describe != null and describe != ''">
+                describe = #{describe},
+            </if>
+            <if test="certid != null">
+                certid = #{certid},
+            </if>
+            <if test="createdDate != null">
+                created_date = #{createdDate},
+            </if>
+            <if test="submitDate != null">
+                submit_date = #{submitDate},
+            </if>
+            <if test="itemValue != null">
+                item_value = #{itemValue},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="handleCreatedDate != null">
+                handle_created_date = #{handleCreatedDate},
+            </if>
+            <if test="handleUserid != null">
+                handle_userid = #{handleUserid},
+            </if>
+            <if test="wfInstanceId != null and wfInstanceId != ''">
+                wf_instance_id = #{wfInstanceId},
+            </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus},
+            </if>
+            <if test="payEndPrice != null">
+                pay_end_price = #{payEndPrice},
+            </if>
+            <if test="payEndDate != null">
+                pay_end_date = #{payEndDate},
+            </if>
+            <if test="itemCode != null and itemCode != ''">
+                item_code = #{itemCode},
+            </if>
+            <if test="rejectReason != null and rejectReason != ''">
+                reject_reason = #{rejectReason},
+            </if>
+            <if test="addFileStatus != null">
+                add_file_status = #{addFileStatus},
+            </if>
+        </set>
+        where applyid = #{applyid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from biz_item_apply where applyid = #{applyid}
+    </delete>
+
+</mapper>
