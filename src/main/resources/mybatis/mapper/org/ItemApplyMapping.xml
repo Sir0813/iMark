@@ -654,4 +654,11 @@
         WHERE
             `applyid` = (SELECT applyid FROM `biz_item_apply_files` where fileid = #{id})
     </update>
+    <update id="updateWfInstanceIdById" parameterType="java.util.Map">
+        update biz_item_apply
+        SET `wf_instance_id` = #{wfInstanceId},
+            `status` = #{status}
+        WHERE
+            `applyid` = #{applyId}
+    </update>
 </mapper>

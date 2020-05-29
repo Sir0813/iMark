@@ -5,6 +5,7 @@ import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.ApplyFeeView;
 import com.dm.user.entity.ItemApply;
+import com.dm.user.entity.ProcessConfigView;
 import com.dm.user.entity.Reject;
 import com.dm.user.service.ItemApplyService;
 import com.dm.user.service.PubDictoryService;
@@ -197,6 +198,18 @@ public class ItemApplyController extends BaseController {
     @RequestMapping(value = "/process/list", method = RequestMethod.GET)
     public Result processList() throws Exception {
         return itemApplyService.processList();
+    }
+
+    @ApiOperation(value = "审批流程保存-申请审批", response = ResultUtil.class)
+    @RequestMapping(value = "/process/save", method = RequestMethod.POST)
+    public Result processSave(@RequestBody ProcessConfigView processConfigView) throws Exception {
+        return itemApplyService.processSave(processConfigView);
+    }
+
+    @ApiOperation(value = "审批进度", response = ResultUtil.class)
+    @RequestMapping(value = "/approval/progress/{applyid}", method = RequestMethod.GET)
+    public Result approvalProgress(@PathVariable Integer applyid) throws Exception {
+        return itemApplyService.approvalProgress(applyid);
     }
 
     @ApiOperation(value = "国家", response = ResultUtil.class)

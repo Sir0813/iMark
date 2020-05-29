@@ -11,11 +11,13 @@ import com.dm.user.service.*;
 import com.dm.user.util.Arith;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -986,5 +988,65 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    @Override
+    public Result processSave(ProcessConfigView processConfigView) throws Exception {
+        /* 删除该公正审批模板及之前审批节点 */
+        wfItemNodeService.deleteByUserId(LoginUserHelper.getUserId(), processConfigView.getApplyid());
+        List<ProcessConfig> processConfigList = processConfigView.getProcessConfigList();
+        Integer nodeId = null;
+        /* 新增该公正审批模板及审批节点 */
+        for (int i = 0; i < processConfigList.size(); i++) {
+            ProcessConfig processConfig = processConfigList.get(i);
+            WfItemNode wfItemNode = new WfItemNode();
+            WfItemNode node = new WfItemNode();
+            wfItemNode.setUserId(Integer.parseInt(LoginUserHelper.getUserId()));
+            wfItemNode.setOrder(processConfig.getOrder());
+            wfItemNode.setAuditUserid(processConfig.getAuditUserid().toString());
+            wfItemNode.setCreatedDate(DateUtil.getSystemTimeStr());
+            wfItemNode.setCreatedBy(LoginUserHelper.getUserId());
+            try {
+                BeanUtils.copyProperties(node, wfItemNode);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            wfItemNode.setApplyId(0);
+            node.setApplyId(processConfigView.getApplyid());
+            wfItemNodeService.insertData(wfItemNode);
+            wfItemNodeService.insertData(node);
+            if (null == nodeId) {
+                nodeId = node.getId();
+            }
+        }
+        /* 创建唯一审批示例 */
+        WfInstance wfInstance = new WfInstance();
+        wfInstance.setCreatedDate(new Date());
+        wfInstance.setUpdateDate(new Date());
+        wfInstance.setNodeid(nodeId);
+        wfInstance.setStatus(InstanceEnum.UNDER_REVIEW.getCode());
+        wfInstance.setCreatedBy(Integer.parseInt(LoginUserHelper.getUserId()));
+        wfInstanceService.insert(wfInstance);
+        /* 公正申请添加审批流程实例 */
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyId", processConfigView.getApplyid());
+        map.put("wfInstanceId", wfInstance.getId());
+        map.put("status", ItemApplyEnum.FILE_REVIEW.getCode());
+        itemApplyMapper.updateWfInstanceIdById(map);
+        return ResultUtil.success();
+    }
+
+    @Override
+    public Result approvalProgress(Integer applyid) throws Exception {
+        /* 查询已审批节点审批人信息 */
+        List<ProgressView> isProgress = wfInstAuditTrackService.selectIsProgress(applyid);
+        /* 查询未审批人审批信息 */
+        List<ProgressView> isNotProgress = wfItemNodeService.isNotProgress(applyid);
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("isProgress", isProgress);
+        map.put("isNotProgress", isNotProgress);
+        return ResultUtil.success(map);
     }
 }

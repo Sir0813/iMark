@@ -203,7 +203,6 @@
     </select>
     <select id="selectAddFiles" parameterType="java.util.Map" resultType="com.dm.user.entity.CertFiles">
         SELECT
-            applyfiles.fileid AS fileId,
             applysup.files_desc AS logString
         FROM
             biz_item_apply_supplement AS applysup

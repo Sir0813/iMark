@@ -3,6 +3,7 @@ package com.dm.user.service;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.ApplyFeeView;
 import com.dm.user.entity.ItemApply;
+import com.dm.user.entity.ProcessConfigView;
 import com.dm.user.entity.Reject;
 import com.github.pagehelper.PageInfo;
 
@@ -244,4 +245,20 @@ public interface ItemApplyService {
      * @param applyId
      */
     void updateById(Integer applyId) throws Exception;
+
+    /**
+     * 审批流程保存
+     *
+     * @param processConfigView
+     * @return
+     */
+    Result processSave(ProcessConfigView processConfigView) throws Exception;
+
+    /**
+     * 审批进度
+     *
+     * @param applyid
+     * @return
+     */
+    Result approvalProgress(Integer applyid) throws Exception;
 }
