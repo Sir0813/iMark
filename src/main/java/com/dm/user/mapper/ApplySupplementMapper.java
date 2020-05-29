@@ -2,6 +2,7 @@ package com.dm.user.mapper;
 
 import com.dm.user.entity.ApplySupplement;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ApplySupplementMapper {
@@ -12,6 +13,7 @@ public interface ApplySupplementMapper {
     int insertSelective(ApplySupplement record);
 
     ApplySupplement selectByPrimaryKey(Integer id);
+    ApplySupplement selectByApplyId(@Param("applyId") Integer applyId);
 
     int updateByPrimaryKeySelective(ApplySupplement record);
 

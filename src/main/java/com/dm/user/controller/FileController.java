@@ -2,6 +2,8 @@ package com.dm.user.controller;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.user.entity.BizItemAttachment;
+import com.dm.user.service.BizItemAttachmentService;
 import com.dm.user.service.CertFicateService;
 import com.dm.user.util.FileUtil;
 import io.swagger.annotations.Api;
@@ -32,7 +34,8 @@ public class FileController {
     @Autowired
     private CertFicateService certFicateService;
 
-
+    @Autowired
+    private BizItemAttachmentService bizItemAttachmentService;
     @ApiOperation(value = "文件上传", response = ResultUtil.class)
     @RequestMapping(value = "/api/upload", method = RequestMethod.POST)
     public Result upload(HttpServletRequest request, HttpServletResponse response,
@@ -77,11 +80,26 @@ public class FileController {
 
     @ApiOperation(value = "公正附件(单张上传)", response = ResultUtil.class)
     @RequestMapping(value = "/item/attachmentUpload", method = RequestMethod.POST)
-    public Result attachmentUpload(HttpServletRequest request, HttpServletResponse response,
-                                @RequestParam(value = "file") MultipartFile multipartFile) throws Exception {
+    public Result attachmentUpload(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Result result = fileUtil.itemUploadOne(request, response, multipartFile);
-        return result;
+        try {
+            Map<String, Object> map= fileUtil.applyUpload(request, response);
+            Integer fileid = (Integer)map.get("fileid");
+            String id = request.getParameter("applyId");
+            String applyDesc = request.getParameter("applyDesc");
+            Integer applyId = Integer.valueOf(id);
+            BizItemAttachment biz = new BizItemAttachment();
+            biz.setFileId(fileid);
+            biz.setApplyId(applyId);
+            biz.setApplyDesc(applyDesc);
+            bizItemAttachmentService.insertSelective(biz);
+            return ResultUtil.success("success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.error("fail");
+        }
+
+
     }
 
     @ApiOperation(value = "上传公正意见书", response = ResultUtil.class)

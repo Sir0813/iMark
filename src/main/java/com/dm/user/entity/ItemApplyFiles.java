@@ -16,6 +16,8 @@ public class ItemApplyFiles {
     private Date createdDate;
 
     private int fileTypes;
+    private Integer supplementId;
+    private Integer fileLogId;
 
     /**
      * 1 存在 0 删除
@@ -84,5 +86,21 @@ public class ItemApplyFiles {
 
     public void setIsDel(int isDel) {
         this.isDel = isDel;
+    }
+
+    public Integer getSupplementId() {
+        return supplementId;
+    }
+
+    public void setSupplementId(Integer supplementId) {
+        this.supplementId = supplementId;
+    }
+
+    public Integer getFileLogId() {
+        return fileLogId;
+    }
+
+    public void setFileLogId(Integer fileLogId) {
+        this.fileLogId = fileLogId;
     }
 }
