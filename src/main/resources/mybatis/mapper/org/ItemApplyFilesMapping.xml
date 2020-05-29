@@ -9,6 +9,8 @@
         <result column="describe" jdbcType="VARCHAR" property="describe"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
         <result column="file_types" jdbcType="INTEGER" property="fileTypes"/>
+        <result column="supplement_id" jdbcType="INTEGER" property="supplementId"/>
+        <result column="file_log_id" jdbcType="INTEGER" property="C"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -46,6 +48,12 @@
             <if test="fileTypes != null">
                 file_types,
             </if>
+            <if test="supplementId != null">
+                supplement_id,
+            </if>
+            <if test="fileLogId != null">
+                file_log_id,
+            </if>
             <if test="isDel != null">
                 is_del,
             </if>
@@ -68,6 +76,14 @@
             </if>
             <if test="fileTypes != null">
                 #{fileTypes,jdbcType=INTEGER},
+            </if>
+
+             <if test="supplementId != null">
+                #{supplementId,jdbcType=INTEGER},
+            </if>
+
+             <if test="fileLogId != null">
+                #{fileLogId,jdbcType=INTEGER},
             </if>
             <if test="isDel != null">
                 #{isDel,jdbcType=INTEGER},

@@ -18,6 +18,14 @@
         from biz_item_apply_supplement
         where id = #{id,jdbcType=INTEGER}
     </select>
+
+
+    <select id="selectByApplyId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_item_apply_supplement
+        where apply_id = #{applyId,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from biz_item_apply_supplement
     where id = #{id,jdbcType=INTEGER}
@@ -26,7 +34,7 @@
     insert into biz_item_apply_supplement (id, apply_id, `name`,
       files_desc, detail, create_time
       )
-    values (#{id,jdbcType=INTEGER}, #{applyId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{applyId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
       #{filesDesc,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
