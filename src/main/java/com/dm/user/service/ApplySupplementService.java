@@ -15,4 +15,5 @@ public interface ApplySupplementService {
     Result add(ApplySupplement applySupplement) throws Exception;
 
     Result userApplySupplement(ApplySupplementVo applySupplementVo) throws Exception;
+
 }

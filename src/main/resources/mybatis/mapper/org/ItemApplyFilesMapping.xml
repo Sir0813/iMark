@@ -10,11 +10,12 @@
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
         <result column="file_types" jdbcType="INTEGER" property="fileTypes"/>
         <result column="supplement_id" jdbcType="INTEGER" property="supplementId"/>
-        <result column="file_log_id" jdbcType="INTEGER" property="C"/>
+        <result column="file_log_id" jdbcType="INTEGER" property="fileLogId"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="file_string" jdbcType="VARCHAR" property="fileString"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, applyid, fileid, requeredid, `describe`, created_date, file_types, is_del
+    id, applyid, fileid, requeredid, `describe`, created_date, file_types, is_del, supplement_id, file_log_id, file_string
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -57,6 +58,9 @@
             <if test="isDel != null">
                 is_del,
             </if>
+            <if test="fileString != null">
+                file_string,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="applyid != null">
@@ -78,15 +82,18 @@
                 #{fileTypes,jdbcType=INTEGER},
             </if>
 
-             <if test="supplementId != null">
+            <if test="supplementId != null">
                 #{supplementId,jdbcType=INTEGER},
             </if>
 
-             <if test="fileLogId != null">
+            <if test="fileLogId != null">
                 #{fileLogId,jdbcType=INTEGER},
             </if>
             <if test="isDel != null">
                 #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="fileString != null">
+                #{fileString},
             </if>
         </trim>
     </insert>
@@ -135,5 +142,10 @@
         WHERE
             applyid = #{applyid}
         AND file_types = 2
+    </update>
+    <update id="updateData" parameterType="com.dm.user.entity.ItemApplyFiles">
+        update biz_item_apply_files
+        set file_string = #{fileString}
+        where id = #{id}
     </update>
 </mapper>

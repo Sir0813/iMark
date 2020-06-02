@@ -22,4 +22,10 @@ public interface WfInstAuditTrackMapper {
     void insertApproved(Map<String, Object> map);
 
     List<ProgressView> selectIsProgress(Integer applyid);
+
+    void insertNewData(Map<String, Object> map);
+
+    WfInstAuditTrack selectByInstanId(Map<String, Object> map);
+
+    void updateData(WfInstAuditTrack wfInstAuditTrack);
 }

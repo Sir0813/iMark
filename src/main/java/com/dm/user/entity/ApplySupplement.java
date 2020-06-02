@@ -3,6 +3,7 @@ package com.dm.user.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
+import java.util.List;
 
 public class ApplySupplement {
     private Integer id;
@@ -17,6 +18,19 @@ public class ApplySupplement {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
+
+    /**
+     * 文件业务字段
+     */
+    private List<CertFiles> certfilesList;
+
+    public List<CertFiles> getCertfilesList() {
+        return certfilesList;
+    }
+
+    public void setCertfilesList(List<CertFiles> certfilesList) {
+        this.certfilesList = certfilesList;
+    }
 
     public Integer getId() {
         return id;

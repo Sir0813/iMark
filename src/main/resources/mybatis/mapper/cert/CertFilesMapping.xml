@@ -225,4 +225,30 @@
         GROUP BY
             applysup.id
     </select>
+    <select id="selectIsAddFiles" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+            certfile.file_url,
+            certfile.thumb_url,
+            certfile.detail
+        FROM
+            biz_item_apply_files AS applyfile
+        LEFT JOIN biz_cert_files AS certfile ON applyfile.fileid = certfile.file_id
+        WHERE
+            applyfile.applyid = #{applyid}
+        AND applyfile.file_types = 5
+        AND applyfile.is_del = 1
+    </select>
+    <select id="selectIsUpdateFiles" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+            certfile.file_url,
+            certfile.thumb_url,
+            certfile.detail
+        FROM
+            biz_item_apply_files AS applyfile
+        LEFT JOIN biz_cert_files AS certfile ON applyfile.fileid = certfile.file_id
+        WHERE
+            applyfile.applyid = #{applyid}
+        AND applyfile.file_types = 6
+        AND applyfile.is_del = 1
+    </select>
 </mapper>

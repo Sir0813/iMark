@@ -19,10 +19,20 @@ public class ItemApplyFiles {
     private Integer supplementId;
     private Integer fileLogId;
 
+    private String fileString;
+
     /**
      * 1 存在 0 删除
      */
     private int isDel;
+
+    public String getFileString() {
+        return fileString;
+    }
+
+    public void setFileString(String fileString) {
+        this.fileString = fileString;
+    }
 
     public Integer getId() {
         return id;

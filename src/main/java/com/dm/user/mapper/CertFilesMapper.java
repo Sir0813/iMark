@@ -89,4 +89,20 @@ public interface CertFilesMapper {
      * @return
      */
     List<CertFiles> selectAddFiles(Map<String, Object> map);
+
+    /**
+     * 已提交修改材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<CertFiles> selectIsAddFiles(int applyid);
+
+    /**
+     * 已修改材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<CertFiles> selectIsUpdateFiles(int applyid);
 }

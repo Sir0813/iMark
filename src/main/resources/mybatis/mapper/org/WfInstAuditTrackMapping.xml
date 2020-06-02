@@ -131,7 +131,8 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`
+            `reason`,
+            `file_string`
         )
         VALUES
             (
@@ -140,7 +141,8 @@
                 #{nodeid},
                 NOW(),
                 '1',
-                #{rejectReason}
+                #{rejectReason},
+                #{fileString}
             )
     </insert>
     <insert id="insertApproved" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
@@ -150,7 +152,8 @@
             `nodeid`,
             `audit_date`,
             `status`,
-            `reason`
+            `reason`,
+            `file_string`
         )
         VALUES
             (
@@ -159,7 +162,8 @@
                 #{nodeid},
                 NOW(),
                 '0',
-                #{opinion}
+                #{opinion},
+                #{fileString}
             )
     </insert>
     <select id="selectIsProgress" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ProgressView">
@@ -185,4 +189,76 @@
         ORDER BY
             track.`id` ASC
     </select>
+    <insert id="insertNewData" parameterType="java.util.Map">
+        INSERT INTO `wf_inst_audit_track` (
+            `instid`,
+            `userid`,
+            `nodeid`,
+            `status`,
+            `file_string`
+        )
+        VALUES
+            (
+                (
+                    SELECT
+                        wf_instance_id
+                    FROM
+                        biz_item_apply
+                    WHERE
+                        applyid = #{applyid}
+                ),
+                #{userId},
+                (
+                    SELECT
+                        nodeid
+                    FROM
+                        wf_instance
+                    WHERE
+                        id = (
+                            SELECT
+                                wf_instance_id
+                            FROM
+                                biz_item_apply
+                            WHERE
+                                applyid = #{applyid}
+                        )
+                ),
+                '2',
+                #{fileString}
+            )
+    </insert>
+    <select id="selectByInstanId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        wf_inst_audit_track
+        WHERE
+        instid = (
+        SELECT
+        wf_instance_id
+        FROM
+        biz_item_apply
+        WHERE
+        applyid = #{applyid}
+        )
+        AND `status` = 2
+    </select>
+    <update id="updateData" parameterType="com.dm.user.entity.WfInstAuditTrack">
+        update wf_inst_audit_track
+        <set>
+            <if test="fileString != null">
+                file_string = #{fileString},
+            </if>
+            <if test="auditDate != null">
+                audit_date = #{auditDate},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="reason != null">
+                `reason` = #{reason}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

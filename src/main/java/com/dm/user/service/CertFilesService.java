@@ -92,4 +92,20 @@ public interface CertFilesService {
      * @return
      */
     List<CertFiles> selectAddFiles(int applyid, int fileType) throws Exception;
+
+    /**
+     * 已提交补充材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<CertFiles> selectIsAddFiles(int applyid);
+
+    /**
+     * 已修改材料
+     *
+     * @param applyid
+     * @return
+     */
+    List<CertFiles> selectIsUpdateFiles(int applyid);
 }

@@ -62,4 +62,18 @@ public interface ItemApplyFilesService {
      * @param applyid
      */
     void updateDelState(Integer applyid) throws Exception;
+
+    /**
+     * 公正意见书首次提交
+     *
+     * @param itemApplyFiles
+     */
+    void insertData(ItemApplyFiles itemApplyFiles);
+
+    /**
+     * 修改意见书内容
+     *
+     * @param itemApplyFiles1
+     */
+    void updateData(ItemApplyFiles itemApplyFiles1);
 }

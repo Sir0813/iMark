@@ -216,7 +216,8 @@ public class ItemApplyController extends BaseController {
     @RequestMapping(value = "/approved", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "applyid", value = "公正ID", dataType = "int"),
-            @ApiImplicitParam(name = "opinion", value = "审批通过意见", dataType = "String")
+            @ApiImplicitParam(name = "opinion", value = "审批通过意见", dataType = "String"),
+            @ApiImplicitParam(name = "fileString", value = "意见书内容", dataType = "String")
     })
     public Result approved(@RequestBody Map<String, Object> map) throws Exception {
         return itemApplyService.approved(map);
@@ -226,7 +227,8 @@ public class ItemApplyController extends BaseController {
     @RequestMapping(value = "/reject/reason", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "applyid", value = "公正ID", dataType = "int"),
-            @ApiImplicitParam(name = "opinion", value = "审批退回意见", dataType = "String")
+            @ApiImplicitParam(name = "opinion", value = "审批退回意见", dataType = "String"),
+            @ApiImplicitParam(name = "fileString", value = "意见书内容", dataType = "String")
     })
     public Result rejectReason(@RequestBody Map<String, Object> map) throws Exception {
         return itemApplyService.rejectReason(map);

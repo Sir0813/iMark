@@ -1,6 +1,8 @@
 package com.dm.user.service;
 
+import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.BizCertModel;
+import com.dm.user.entity.ItemApplyFiles;
 
 import java.util.Map;
 
@@ -20,4 +22,20 @@ public interface BizCertService {
      * @param applyId
      */
     Map<String, Object> certInfo(Integer applyId);
+
+    /**
+     * 制证第一次提交
+     *
+     * @param itemApplyFiles
+     * @return
+     */
+    Result submit(ItemApplyFiles itemApplyFiles) throws Exception;
+
+    /**
+     * 审批意见书保存
+     *
+     * @param itemApplyFiles
+     * @return
+     */
+    Result reviewSubmit(ItemApplyFiles itemApplyFiles) throws Exception;
 }

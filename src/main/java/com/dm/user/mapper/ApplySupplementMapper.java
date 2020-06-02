@@ -13,9 +13,11 @@ public interface ApplySupplementMapper {
     int insertSelective(ApplySupplement record);
 
     ApplySupplement selectByPrimaryKey(Integer id);
+
     ApplySupplement selectByApplyId(@Param("applyId") Integer applyId);
 
     int updateByPrimaryKeySelective(ApplySupplement record);
 
     int updateByPrimaryKey(ApplySupplement record);
+
 }

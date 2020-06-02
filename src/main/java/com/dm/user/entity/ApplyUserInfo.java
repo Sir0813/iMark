@@ -107,6 +107,19 @@ public class ApplyUserInfo {
      */
     private Integer addFileStatus;
 
+    /**
+     * 是否进行视频预约
+     */
+    private Integer isAppointment;
+
+    public Integer getIsAppointment() {
+        return isAppointment;
+    }
+
+    public void setIsAppointment(Integer isAppointment) {
+        this.isAppointment = isAppointment;
+    }
+
     public Integer getAddFileStatus() {
         return addFileStatus;
     }

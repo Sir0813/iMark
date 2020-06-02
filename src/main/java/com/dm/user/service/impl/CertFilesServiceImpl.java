@@ -76,4 +76,14 @@ public class CertFilesServiceImpl implements CertFilesService {
         map.put("fileType", fileType);
         return certFilesMapper.selectAddFiles(map);
     }
+
+    @Override
+    public List<CertFiles> selectIsAddFiles(int applyid) {
+        return certFilesMapper.selectIsAddFiles(applyid);
+    }
+
+    @Override
+    public List<CertFiles> selectIsUpdateFiles(int applyid) {
+        return certFilesMapper.selectIsUpdateFiles(applyid);
+    }
 }

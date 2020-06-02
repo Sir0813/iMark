@@ -30,6 +30,11 @@ public class OrgItems {
 
     private Double price;
 
+    /**
+     * 是否视频预约 0 可以 1 不可以
+     */
+    private Integer isAppointment;
+
     private Double lowestPrice;
 
     /**

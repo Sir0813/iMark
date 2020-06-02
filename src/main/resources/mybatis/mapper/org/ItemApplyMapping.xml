@@ -490,6 +490,7 @@
         apply.`status` AS `status`,
         apply.`describe` AS `describe`,
         items.valuation AS `valuation`,
+        items.is_appointment AS isAppointment,
         apply.pay_status AS `payStatus`,
         apply.applyid AS applyid
         FROM

@@ -90,6 +90,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Autowired
     private ApplyFileLogService applyFileLogService;
 
+    @Autowired
+    private ApplySupplementService applySupplementService;
+
     private List<ChargeDetail> addChargeDetail(ItemApply itemApply) {
         List<ChargeDetail> itemCharges = new ArrayList<>();
         ItemCharge prePay = itemChargeService.selectByName("公证预付款");
@@ -297,6 +300,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             }
         }
         List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
+        /* 补充材料 */
+        List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
+        /* 修改材料 */
+        List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
+        applyMap.put("updateFiles", updateFiles);
+        applyMap.put("addFiles", addFiles);
         applyMap.put("applyFees", applyFees);
         applyMap.put("payEndPrice", itemApply.getPayEndPrice());
         applyMap.put("applyInfo", applyInfo);
@@ -814,6 +823,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ApplyFee applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
         List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
         List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        /* 补充材料 */
+        List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
+        /* 修改材料 */
+        List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
+        applyMap.put("addFile", addFiles);
+        applyMap.put("updateFiles", updateFiles);
         applyMap.put("applyVideo", bizItemVideoList.size() > 0 ? bizItemVideoList.get(0) : null);
         applyMap.put("isPay", applyFee);
         applyMap.put("applyFees", applyFees);
@@ -1071,7 +1086,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             wfInstanceService.updateById(wfInstance);
             map.put("nodeid", wfInstance.getNodeid());
             map.put("instid", wfInstance.getId());
-            wfInstAuditTrackService.insertApproved(map);
+            WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
+            if (null == wfInstAuditTrack) {
+                wfInstAuditTrackService.insertApproved(map);
+            } else {
+                wfInstAuditTrack.setAuditDate(DateUtil.getSystemTimeStr());
+                wfInstAuditTrack.setStatus(0);
+                wfInstAuditTrack.setReason(String.valueOf(map.get("opinion")));
+                wfInstAuditTrackService.updateData(wfInstAuditTrack);
+            }
             itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
             return ResultUtil.success();
         } catch (Exception e) {
@@ -1101,7 +1124,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             }
             map.put("instid", wfInstance.getId());
             map.put("nodeid", wfInstance.getNodeid());
-            wfInstAuditTrackService.insertData(map);
+            WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
+            if (null == wfInstAuditTrack) {
+                wfInstAuditTrackService.insertData(map);
+            } else {
+                wfInstAuditTrack.setAuditDate(DateUtil.getSystemTimeStr());
+                wfInstAuditTrack.setStatus(1);
+                wfInstAuditTrack.setReason(String.valueOf(map.get("opinion")));
+                wfInstAuditTrackService.updateData(wfInstAuditTrack);
+            }
             return ResultUtil.success();
         } catch (Exception e) {
             throw new Exception(e);

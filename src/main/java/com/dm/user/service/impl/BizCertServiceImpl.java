@@ -1,13 +1,22 @@
 package com.dm.user.service.impl;
 
+import com.dm.frame.jboot.msg.Result;
+import com.dm.frame.jboot.msg.ResultUtil;
+import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.user.entity.BizCertModel;
+import com.dm.user.entity.ItemApplyFiles;
+import com.dm.user.entity.WfInstAuditTrack;
 import com.dm.user.mapper.BizCertModelMapper;
+import com.dm.user.msg.ItemFileTypeEnum;
 import com.dm.user.service.BizCertService;
-import com.dm.user.service.OrgItemService;
+import com.dm.user.service.ItemApplyFilesService;
+import com.dm.user.service.WfInstAuditTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -18,7 +27,10 @@ public class BizCertServiceImpl implements BizCertService {
     private BizCertModelMapper bizCertModelMapper;
 
     @Autowired
-    private OrgItemService orgItemService;
+    private ItemApplyFilesService itemApplyFilesService;
+
+    @Autowired
+    private WfInstAuditTrackService wfInstAuditTrackService;
 
     @Override
     public BizCertModel selectByItemId(Integer itemid) {
@@ -29,5 +41,39 @@ public class BizCertServiceImpl implements BizCertService {
     @Override
     public Map<String, Object> certInfo(Integer applyId) {
         return bizCertModelMapper.selectInfoByApplyId(applyId);
+    }
+
+    @Override
+    public Result submit(ItemApplyFiles itemApplyFiles) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyId", itemApplyFiles.getApplyid());
+        map.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+        ItemApplyFiles itemApplyFiles1 = itemApplyFilesService.selectByApplyIdAndState(map);
+        if (null == itemApplyFiles1) {
+            itemApplyFiles.setCreatedDate(new Date());
+            itemApplyFiles.setFileTypes(ItemFileTypeEnum.OPINION_FILE.getCode());
+            itemApplyFiles.setIsDel(ItemFileTypeEnum.FILE_EXISTENCE.getCode());
+            itemApplyFilesService.insertData(itemApplyFiles);
+        } else {
+            itemApplyFiles1.setFileString(itemApplyFiles.getFileString());
+            itemApplyFilesService.updateData(itemApplyFiles1);
+        }
+        return ResultUtil.success(itemApplyFiles.getFileString());
+    }
+
+    @Override
+    public Result reviewSubmit(ItemApplyFiles itemApplyFiles) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", itemApplyFiles.getApplyid());
+        map.put("fileString", itemApplyFiles.getFileString());
+        map.put("userId", LoginUserHelper.getUserId());
+        WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
+        if (null == wfInstAuditTrack) {
+            wfInstAuditTrackService.insertNewData(map);
+        } else {
+            wfInstAuditTrack.setFileString(itemApplyFiles.getFileString());
+            wfInstAuditTrackService.updateData(wfInstAuditTrack);
+        }
+        return ResultUtil.success(itemApplyFiles.getFileString());
     }
 }
