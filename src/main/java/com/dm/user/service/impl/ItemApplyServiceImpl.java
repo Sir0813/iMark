@@ -827,7 +827,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
         /* 修改材料 */
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
-        applyMap.put("addFile", addFiles);
+        applyMap.put("addFiles", addFiles);
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("applyVideo", bizItemVideoList.size() > 0 ? bizItemVideoList.get(0) : null);
         applyMap.put("isPay", applyFee);
