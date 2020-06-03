@@ -28,7 +28,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="BizItemApplyMap">
         select
-          applyid, apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
+          applyid, apply_no, itemid, userid, `status`, `describe`, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
         from biz_item_apply
         where applyid = #{applyid}
     </select>
@@ -36,7 +36,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="BizItemApplyMap">
         select
-          applyid, apply_no, itemid, userid, status, describe, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
+          applyid, apply_no, itemid, userid, status,`describe`, certid, created_date, submit_date, item_value, price, handle_created_date, handle_userid, wf_instance_id, pay_status, pay_end_price, pay_end_date, item_code, reject_reason, add_file_status
         from biz_item_apply
         limit #{offset}, #{limit}
     </select>
@@ -117,7 +117,7 @@
     </insert>
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="update" keyProperty="applyid" useGeneratedKeys="true">
         update biz_item_apply
         <set>
             <if test="applyNo != null and applyNo != ''">

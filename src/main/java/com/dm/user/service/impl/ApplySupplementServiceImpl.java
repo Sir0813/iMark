@@ -1,5 +1,6 @@
 package com.dm.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.user.entity.ApplySupplement;
@@ -8,6 +9,9 @@ import com.dm.user.entity.BizItemApply;
 import com.dm.user.entity.ItemApplyFiles;
 import com.dm.user.mapper.ApplySupplementMapper;
 import com.dm.user.service.*;
+import com.dms.app.did.sdk.model.form.BizForm;
+import com.dms.app.did.sdk.service.DidService;
+import com.dms.app.did.sdk.service.impl.DidServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,13 +48,28 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
 
     @Override
     public Result userApplySupplement(ApplySupplementVo applySupplementVo) throws Exception {
+
+
+
         List<Map<String, Object>> editList = applySupplementVo.getEidtList();
         List<Map<String, Object>> supplementList = applySupplementVo.getSupplementList();
         Integer applyId = applySupplementVo.getApplyId();
         BizItemApply bia = new BizItemApply();
-        bia.setApplyid(applyId);
-        bia.setAddFileStatus(0);
-        bizItemApplyService.update(bia);
+        BizItemApply bizItemApply = bizItemApplyService.queryById(applyId);
+        if(null!= bizItemApply){
+            Integer addFileStatus = bizItemApply.getAddFileStatus();
+            if(addFileStatus!=0){
+                bia.setApplyid(applyId);
+                bia.setAddFileStatus(0);
+                bizItemApplyService.update(bia);
+
+                //上链操作
+                upChain(bizItemApply.getApplyNo());
+
+
+            }
+        }
+
         try {
             if (editList.size() > 0) {
                 for (Map<String, Object> editMap : editList) {
@@ -73,7 +92,7 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
             if (supplementList.size() > 0) {
                 for (Map<String, Object> suppleMap : supplementList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    String fileIds = (String) suppleMap.get("fileids");
+                    String fileIds = (String) suppleMap.get("fileIds");
                     Integer supplementId = (Integer) suppleMap.get("supplementId");
                     iaf.setApplyid(applyId);
                     iaf.setFileTypes(5);
@@ -99,6 +118,23 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
 
         }
 
+
+    }
+
+    private void upChain(String applyNo) throws Exception {
+//        DidService did = new DidServiceImpl();
+//        BizForm biz = new BizForm();
+//
+//        biz.setNo("imarkcehsi1-2");
+//        biz.setAppId("imark01");
+//        biz.setAppPassword("imark01password");
+//        biz.setSubject("imark01");
+//        biz.setBizId("imarkcehsi1");
+//        String json = "{'applyNo':'"+applyNo+"' }";
+//        Object parse = JSON.parse(json);
+//
+//        biz.setData(parse);
+//        did.addBizData(biz);
 
     }
 
