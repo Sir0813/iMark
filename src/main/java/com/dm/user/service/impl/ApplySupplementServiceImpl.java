@@ -48,9 +48,21 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
         List<Map<String, Object>> supplementList = applySupplementVo.getSupplementList();
         Integer applyId = applySupplementVo.getApplyId();
         BizItemApply bia = new BizItemApply();
-        bia.setApplyid(applyId);
-        bia.setAddFileStatus(0);
-        bizItemApplyService.update(bia);
+        BizItemApply bizItemApply = bizItemApplyService.queryById(applyId);
+        if(null!= bizItemApply){
+            Integer addFileStatus = bizItemApply.getAddFileStatus();
+            if(addFileStatus!=0){
+                bia.setApplyid(applyId);
+                bia.setAddFileStatus(0);
+                bizItemApplyService.update(bia);
+
+                //上链操作
+                upChain(bizItemApply.getApplyNo());
+
+
+            }
+        }
+
         try {
             if (editList.size() > 0) {
                 for (Map<String, Object> editMap : editList) {
@@ -73,7 +85,7 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
             if (supplementList.size() > 0) {
                 for (Map<String, Object> suppleMap : supplementList) {
                     ItemApplyFiles iaf = new ItemApplyFiles();
-                    String fileIds = (String) suppleMap.get("fileids");
+                    String fileIds = (String) suppleMap.get("fileIds");
                     Integer supplementId = (Integer) suppleMap.get("supplementId");
                     iaf.setApplyid(applyId);
                     iaf.setFileTypes(5);
@@ -102,5 +114,21 @@ public class ApplySupplementServiceImpl implements ApplySupplementService {
 
     }
 
+    private void upChain(String applyNo) throws Exception {
+//        DidService did = new DidServiceImpl();
+//        BizForm biz = new BizForm();
+//
+//        biz.setNo("imarkcehsi1-2");
+//        biz.setAppId("imark01");
+//        biz.setAppPassword("imark01password");
+//        biz.setSubject("imark01");
+//        biz.setBizId("imarkcehsi1");
+//        String json = "{'applyNo':'"+applyNo+"' }";
+//        Object parse = JSON.parse(json);
+//
+//        biz.setData(parse);
+//        did.addBizData(biz);
+
+    }
 
 }
