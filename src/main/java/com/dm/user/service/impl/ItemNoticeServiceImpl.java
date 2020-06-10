@@ -90,6 +90,10 @@ public class ItemNoticeServiceImpl implements ItemNoticeService {
             PdfReader pdfReader = new PdfReader(new FileInputStream(new File(itemNotice.getFilePath())));
             //System.out.println("x:" + position[1] + " y:" + position[2]);
             String path = "/opt/czt-upload/apply/" + LoginUserHelper.getUserId() + "/signature/" + itemNotice.getFileName() + itemNotice.getFileType();
+            File f = new File(path);
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
             PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileOutputStream(path));
             Image image = Image.getInstance(certFiles.getFilePath());
             image.setAbsolutePosition(position[1], position[2]);

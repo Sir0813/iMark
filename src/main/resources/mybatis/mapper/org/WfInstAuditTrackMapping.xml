@@ -10,9 +10,10 @@
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="reason" jdbcType="VARCHAR" property="reason"/>
         <result column="file_string" jdbcType="LONGVARCHAR" property="fileString"/>
+        <result column="apply_id" jdbcType="INTEGER" property="applyId"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, instid, userid, nodeid, audit_date, status, reason, file_string
+    id, instid, userid, nodeid, audit_date, `status`, reason, file_string, apply_id
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -51,7 +52,7 @@
                 audit_date,
             </if>
             <if test="status != null">
-                status,
+                `status`,
             </if>
             <if test="reason != null">
                 reason,
@@ -103,7 +104,7 @@
                 audit_date = #{auditDate,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=INTEGER},
+                `status` = #{status,jdbcType=INTEGER},
             </if>
             <if test="reason != null">
                 reason = #{reason,jdbcType=VARCHAR},
@@ -132,7 +133,8 @@
             `audit_date`,
             `status`,
             `reason`,
-            `file_string`
+            `file_string`,
+            `apply_id`
         )
         VALUES
             (
@@ -142,7 +144,8 @@
                 NOW(),
                 '1',
                 #{rejectReason},
-                #{fileString}
+                #{fileString},
+                #{applyid}
             )
     </insert>
     <insert id="insertApproved" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
@@ -153,7 +156,8 @@
             `audit_date`,
             `status`,
             `reason`,
-            `file_string`
+            `file_string`,
+            `apply_id`
         )
         VALUES
             (
@@ -163,11 +167,12 @@
                 NOW(),
                 '0',
                 #{opinion},
-                #{fileString}
+                #{fileString},
+                #{applyid}
             )
     </insert>
     <select id="selectIsProgress" parameterType="java.lang.Integer" resultType="com.dm.user.entity.ProgressView">
-          SELECT
+        SELECT
             IFNULL(
                 orguser.remarks,
                 usercard.real_name
@@ -175,7 +180,8 @@
             ucuser.userName,
             track.audit_date AS auditDate,
             track.reason AS reason,
-            track.`status` AS `status`
+            track.`status` AS `status`,
+            track.id AS id
         FROM
             `wf_inst_audit_track` AS track
         LEFT JOIN biz_item_apply AS apply ON track.instid = apply.wf_instance_id
@@ -183,11 +189,12 @@
         LEFT JOIN sys_user_card AS usercard ON track.userid = usercard.userid
         LEFT JOIN uc_user AS ucuser ON ucuser.userid = track.userid
         WHERE
-            apply.applyid = #{applyid}
+            track.apply_id = #{applyid}
+            AND (track.`status` = 0 OR track.`status` = 1)
         GROUP BY
             track.`id`
         ORDER BY
-            track.`id` ASC
+            track.`audit_date` ASC
     </select>
     <insert id="insertNewData" parameterType="java.util.Map">
         INSERT INTO `wf_inst_audit_track` (
@@ -195,7 +202,8 @@
             `userid`,
             `nodeid`,
             `status`,
-            `file_string`
+            `file_string`,
+            `apply_id`
         )
         VALUES
             (
@@ -224,7 +232,8 @@
                         )
                 ),
                 '2',
-                #{fileString}
+                #{fileString},
+                #{applyid}
             )
     </insert>
     <select id="selectByInstanId" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -261,4 +270,57 @@
         </set>
         where id = #{id}
     </update>
+    <select id="selectLastReason" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        `wf_inst_audit_track`
+        WHERE
+        apply_id = #{applyid}
+        AND `status` = 0
+        ORDER BY
+        audit_date DESC
+        LIMIT 1
+    </select>
+    <select id="selectEditData" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        `wf_inst_audit_track`
+        WHERE
+        apply_id = #{applyid}
+        AND userid = #{userId}
+        AND `status` = 2
+    </select>
+    <select id="selectByApplyIdAndUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+            audit_date,
+            `status`,
+            reason
+        FROM
+            `wf_inst_audit_track`
+        WHERE
+            apply_id = #{applyid}
+        AND userid = #{userId}
+        AND instid = (
+            SELECT
+                wf_instance_id
+            FROM
+                biz_item_apply
+            WHERE
+                applyid = #{applyid}
+        )
+        AND (`status` = 0 OR `status` = 1)
+        ORDER BY
+            audit_date DESC
+        LIMIT 1
+    </select>
+    <select id="selectByNodeId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+            file_string
+        FROM
+            `wf_inst_audit_track`
+        WHERE
+            nodeid = #{id}
+    </select>
 </mapper>

@@ -273,7 +273,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             list.add(itemRequered);
         }
         Map<String, Object> map = new LinkedHashMap<>(16);
-        map.put("applyId", applyid);
+        map.put("applyid", applyid);
         map.put("userId", LoginUserHelper.getUserId());
         ApplyUserInfo applyInfo = itemApplyMapper.selectDetailInfo(map);
         ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
@@ -304,6 +304,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
         /* 修改材料 */
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
+        Org org = orgService.selectByApplyId(applyid);
+        applyMap.put("orgName", org.getOrgname());
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("addFiles", addFiles);
         applyMap.put("applyFees", applyFees);
@@ -425,8 +427,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put(ItemApplyEnum.FILE_RECEPTION.getCode(), ItemApplyEnum.FILE_RECEPTION.getDesc());
         map.put(ItemApplyEnum.WAIT_ORDER.getCode(), ItemApplyEnum.WAIT_ORDER.getDesc());
         map.put(ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_CHECK.getDesc());
-        map.put(ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.FILE_MAKE.getDesc());
         map.put(ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
+        map.put(ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.FILE_MAKE.getDesc());
         map.put(ItemApplyEnum.FILE_SEND.getCode(), ItemApplyEnum.FILE_SEND.getDesc());
         map.put(ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_SUCCESS.getDesc());
         List<ItemapplyNode> collect = map.entrySet().stream().map(e -> new ItemapplyNode(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
@@ -662,7 +664,6 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     public Result payBalance(ApplyFeeView applyFeeView) throws Exception {
         /* 支付尾款 后续集成支付接口 */
         ItemApply itemApply1 = itemApplyMapper.selectByPrimaryKey(applyFeeView.getApplyid());
-        itemApply1.setPayEndPrice(0.00);
         itemApply1.setPayStatus(ItemApplyEnum.PAY_ALL.getCode());
         itemApply1.setPayEndDate(new Date());
         List<ApplyFee> applyFees1 = chargeDetailService.selectByApplyId(itemApply1.getApplyid());
@@ -696,9 +697,12 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Integer myApplyCount = itemApplyMapper.selectMyApplyCount(dataMap);
         List<ItemApply> myApplyList = itemApplyMapper.selectMyApply(dataMap);
         List<PubArticle> articleList = pubArticleService.articleTop();
+        dataMap.put("status", ItemApplyEnum.FILE_CHECK.getCode());
+        Integer myTaskCount = itemApplyMapper.inProcessing(dataMap);
         map.put("articleList", articleList);
         map.put("myApplyCount", myApplyCount);
         map.put("myApplyList", myApplyList);
+        map.put("myTaskCount", myTaskCount);
         return ResultUtil.success(map);
     }
 
@@ -706,8 +710,19 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     public Result acceptProgress(int applyid) throws Exception {
         Map<String, Object> map = new HashMap<>(16);
         ApplyUserInfo applyInfo = itemApplyMapper.selectApplyInfo(applyid);
+        List<ItemApplyLog> itemApplyLogs = historyNode(applyid);
+        if (itemApplyLogs.size() > 1) {
+            ItemApplyLog itemApplyLog = itemApplyLogs.get(itemApplyLogs.size() - 1);
+            ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
+            if (Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.APPLY_FAIL.getCode()) {
+                WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
+                itemApplyLog.setRejectReason(wfInstance.getRejectReason());
+            } else if (Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.REJECT_REASON.getCode()) {
+                itemApplyLog.setRejectReason(itemApply.getRejectReason());
+            }
+        }
         map.put("allNode", getAllNode());
-        map.put("historyNode", historyNode(applyid));
+        map.put("historyNode", itemApplyLogs);
         map.put("applyInfo", applyInfo);
         return ResultUtil.success(map);
     }
@@ -750,7 +765,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 break;
             case 3: /* 正在受理 */
                 map.put("userId", LoginUserHelper.getUserId());
-                map.put("status", new int[]{ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.FILE_SEND.getCode()});
+                map.put("status", new int[]{ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.CHECK_RETURN.getCode()});
                 break;
             case 4: /* 已完成 */
                 map.put("userId", LoginUserHelper.getUserId());
@@ -805,7 +820,8 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             list.add(itemRequered);
         }
         Map<String, Object> map = new LinkedHashMap<>(16);
-        map.put("applyId", applyid);
+        map.put("applyid", applyid);
+        /* 订单信息及项目信息 */
         ApplyUserInfo applyInfo = itemApplyMapper.selectDetailInfo(map);
         ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
         if (applyExpand.getAddressId() == 0) {
@@ -820,23 +836,103 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             applyInfo.setUserAddress(userAddress);
         }
         /* 公证收款项 */
-        ApplyFee applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
-        List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
-        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        List<ApplyFee> applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
+        applyMap.put("isPay", applyFee.get(0));
+        if (itemApply.getPayStatus() == ItemApplyEnum.PAY_ALL.getCode()) {
+            List<ApplyFee> applyFees = chargeDetailService.selectByApplyIdAndStatus(applyid);
+            applyFees.remove(0);
+            applyMap.put("applyFees", applyFees);
+        } else {
+            List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
+            applyMap.put("applyFees", applyFees);
+        }
+        /* 视频预约 */
+        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid, 1);
         /* 补充材料 */
         List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
         /* 修改材料 */
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
+        /* 公正意见书版本 */
+        if (LoginUserHelper.getUserId().equals(String.valueOf(itemApply.getHandleUserid()))) {
+            /* 申请审批后进入详情看自己提交意见书 其他信息审批进度中查看 */
+            BookView bookView = selectBook(itemApply);
+            if (bookView.getId() != null) {
+                applyMap.put("firstBook", bookView);
+            }
+        }
+        if (itemApply.getStatus() == ItemApplyEnum.FILE_REVIEW.getCode() || itemApply.getStatus() == ItemApplyEnum.CHECK_RETURN.getCode()) {
+            /* 查询是否有草稿意见书 */
+            WfInstAuditTrack auditTrack = wfInstAuditTrackService.selectEditData(applyid, LoginUserHelper.getUserId());
+            if (null != auditTrack) {
+                BookView bookView = new BookView();
+                bookView.setId(auditTrack.getId());
+                bookView.setCreatedDate(DateUtil.stringToDate(auditTrack.getAuditDate(), ""));
+                bookView.setType(1);
+                applyMap.put("newBook", bookView);
+            } else {
+                /* 是第一审批人取提交版本 不是第一审批人取上一版本 */
+                WfItemNode wfItemNode = wfItemNodeService.selectFirstNode(map);
+                if (LoginUserHelper.getUserId().equals(String.valueOf(wfItemNode.getAuditUserid()))) {
+                    BookView bookView = selectBook(itemApply);
+                    applyMap.put("newBook", bookView);
+                } else {
+                    WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectLastReason(applyid);
+                    if (null != wfInstAuditTrack) {
+                        BookView bookView = new BookView();
+                        bookView.setId(wfInstAuditTrack.getId());
+                        bookView.setCreatedDate(DateUtil.stringToDate(wfInstAuditTrack.getAuditDate(), ""));
+                        bookView.setReason(wfInstAuditTrack.getReason());
+                        bookView.setType(1);
+                        applyMap.put("newBook", bookView);
+                    }
+                }
+            }
+        }
+        WfInstAuditTrack track = wfInstAuditTrackService.selectByApplyIdAndUserId(applyid, LoginUserHelper.getUserId());
+        if (itemApply.getStatus() == ItemApplyEnum.FILE_MAKE.getCode()) {
+            Map<String, Object> hashMap = new HashMap<>(16);
+            hashMap.put("applyId", itemApply.getApplyid());
+            hashMap.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
+            ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
+            if (null == itemApplyFiles) {
+                applyMap.put("makeFileStatus", 0);
+            } else {
+                applyMap.put("makeFileStatus", 1);
+            }
+        }
+        applyMap.put("track", track);
         applyMap.put("addFiles", addFiles);
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("applyVideo", bizItemVideoList.size() > 0 ? bizItemVideoList.get(0) : null);
-        applyMap.put("isPay", applyFee);
-        applyMap.put("applyFees", applyFees);
         applyMap.put("payEndPrice", itemApply.getPayEndPrice());
-        applyMap.put("payEndDate", itemApply.getPayEndDate());
+        applyMap.put("payEndDate", DateUtil.dateToString(itemApply.getPayEndDate(), ""));
         applyMap.put("applyInfo", applyInfo);
         applyMap.put("itemRequered", list);
         return ResultUtil.success(applyMap);
+    }
+
+    private BookView selectBook(ItemApply itemApply) throws Exception {
+        Map<String, Object> hashMap = new HashMap<>(16);
+        hashMap.put("applyId", itemApply.getApplyid());
+        ItemApplyFiles itemApplyFiles = null;
+        if (itemApply.getStatus() == ItemApplyEnum.FILE_MAKE.getCode()) {
+            hashMap.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
+            itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
+            if (null == itemApplyFiles) {
+                hashMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+                itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
+            }
+        } else {
+            hashMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+            itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
+        }
+        BookView bookView = new BookView();
+        if (null != itemApplyFiles) {
+            bookView.setId(itemApplyFiles.getId());
+            bookView.setCreatedDate(itemApplyFiles.getCreatedDate());
+            bookView.setType(0);
+        }
+        return bookView;
     }
 
     @Override
@@ -1088,6 +1184,20 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("instid", wfInstance.getId());
             WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
             if (null == wfInstAuditTrack) {
+                /* 判断是否是第一审批人 */
+                WfItemNode wfItemNode1 = wfItemNodeService.selectFirstNode(map);
+                /* 是第一审批人 取制证版本保存 */
+                if (wfItemNode1.getAuditUserid().equals(LoginUserHelper.getUserId())) {
+                    map.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+                    map.put("applyId", itemApply.getApplyid());
+                    ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(map);
+                    map.put("fileString", itemApplyFiles.getFileString());
+                } else {
+                    /* 不是第一审批人 取 上一节点意见书保存 */
+                    WfItemNode wfItemNode2 = wfItemNodeService.selectPreviousNode(map.get("applyid").toString(), wfInstance.getNodeid());
+                    WfInstAuditTrack wfInstAuditTrack1 = wfInstAuditTrackService.selectByNodeId(wfItemNode2.getId());
+                    map.put("fileString", wfInstAuditTrack1.getFileString());
+                }
                 wfInstAuditTrackService.insertApproved(map);
             } else {
                 wfInstAuditTrack.setAuditDate(DateUtil.getSystemTimeStr());
@@ -1095,7 +1205,11 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 wfInstAuditTrack.setReason(String.valueOf(map.get("opinion")));
                 wfInstAuditTrackService.updateData(wfInstAuditTrack);
             }
-            itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
+            if (itemApply.getStatus() == ItemApplyEnum.FILE_REVIEW.getCode()) {
+                itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
+            } else {
+                itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.FILE_MAKE.getDesc());
+            }
             return ResultUtil.success();
         } catch (Exception e) {
             throw new Exception(e);
@@ -1105,23 +1219,16 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public Result rejectReason(Map<String, Object> map) throws Exception {
         try {
-            /* 如果是第一审批人 状态改为 4 材料核查  */
+            /* 退回到发起人 状态改为 审核退回  */
             map.put("userId", LoginUserHelper.getUserId());
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
             WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
             WfItemNode wfItemNode = wfItemNodeService.selectFirstNode(map);
-            if (wfInstance.getNodeid().equals(wfItemNode.getId())) {
-                map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
-                itemApplyFilesService.updateDelState(itemApply.getApplyid());
-                wfInstanceService.updateByInstanceId(map);
-                itemApply.setStatus(ItemApplyEnum.FILE_CHECK.getCode());
-                itemApplyMapper.updateByPrimaryKeySelective(itemApply);
-            } else {
-                /* 如果不是第一审批人 取上一审批人 */
-                WfItemNode wfItemNode1 = wfItemNodeService.selectPreviousNode(map.get("applyid").toString(), wfInstance.getNodeid());
-                wfInstance.setNodeid(wfItemNode1.getId());
-                wfInstanceService.updateById(wfInstance);
-            }
+            map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
+            itemApplyFilesService.updateDelState(itemApply.getApplyid());
+            wfInstanceService.updateByInstanceId(map);
+            itemApply.setStatus(ItemApplyEnum.CHECK_RETURN.getCode());
+            itemApplyMapper.updateByPrimaryKeySelective(itemApply);
             map.put("instid", wfInstance.getId());
             map.put("nodeid", wfInstance.getNodeid());
             WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
@@ -1143,5 +1250,21 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     public ItemApply selectById(Integer applyId) throws Exception {
         ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyId);
         return itemApply;
+    }
+
+    @Override
+    public Result isSuccess(int applyid) throws Exception {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("state", ItemApplyEnum.APPLY_SUCCESS.getCode());
+        map.put("applyid", applyid);
+        itemApplyMapper.updateState(map);
+        itemApplyLogService.insertLog(LoginUserHelper.getUserId(), applyid, new Date(), ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_SUCCESS.getDesc());
+        return ResultUtil.success();
+    }
+
+    @Override
+    public Result seeBook(Integer id) throws Exception {
+        WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectById(id);
+        return ResultUtil.success(wfInstAuditTrack.getFileString());
     }
 }

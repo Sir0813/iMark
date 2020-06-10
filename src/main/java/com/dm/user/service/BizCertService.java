@@ -2,6 +2,7 @@ package com.dm.user.service;
 
 import com.dm.frame.jboot.msg.Result;
 import com.dm.user.entity.BizCertModel;
+import com.dm.user.entity.BookView;
 import com.dm.user.entity.ItemApplyFiles;
 
 import java.util.Map;
@@ -38,4 +39,20 @@ public interface BizCertService {
      * @return
      */
     Result reviewSubmit(ItemApplyFiles itemApplyFiles) throws Exception;
+
+    /**
+     * 查看建议意见书
+     *
+     * @param bookView
+     * @return
+     */
+    Result certView(BookView bookView) throws Exception;
+
+    /**
+     * 制证
+     *
+     * @param itemApplyFiles
+     * @return
+     */
+    Result realCert(ItemApplyFiles itemApplyFiles) throws Exception;
 }

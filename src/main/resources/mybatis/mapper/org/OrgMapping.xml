@@ -49,7 +49,8 @@
     </select>
     <select id="selectByApplyId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT DISTINCT
-            bizorg.address
+            bizorg.address,
+            bizorg.orgname
         FROM
             biz_org AS bizorg
         LEFT JOIN biz_org_items AS orgitem ON bizorg.itemid = orgitem.orgid

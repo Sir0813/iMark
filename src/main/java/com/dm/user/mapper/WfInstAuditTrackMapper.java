@@ -28,4 +28,12 @@ public interface WfInstAuditTrackMapper {
     WfInstAuditTrack selectByInstanId(Map<String, Object> map);
 
     void updateData(WfInstAuditTrack wfInstAuditTrack);
+
+    WfInstAuditTrack selectLastReason(int applyid);
+
+    WfInstAuditTrack selectEditData(Map<String, Object> map);
+
+    WfInstAuditTrack selectByApplyIdAndUserId(Map<String, Object> map);
+
+    WfInstAuditTrack selectByNodeId(Integer id);
 }

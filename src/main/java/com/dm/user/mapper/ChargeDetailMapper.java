@@ -33,7 +33,7 @@ public interface ChargeDetailMapper {
 
     void updateByIdAndApplyId(Map<String, Object> chargeMap);
 
-    ApplyFee selectByApplyIdAndStatus(int applyid);
+    List<ApplyFee> selectByApplyIdAndStatus(int applyid);
 
     void updatePayStatus(Integer id);
 }

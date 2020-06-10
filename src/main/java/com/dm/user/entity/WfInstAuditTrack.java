@@ -19,6 +19,16 @@ public class WfInstAuditTrack {
 
     private Integer fileid;
 
+    private Integer applyId;
+
+    public Integer getApplyId() {
+        return applyId;
+    }
+
+    public void setApplyId(Integer applyId) {
+        this.applyId = applyId;
+    }
+
     public String getFileString() {
         return fileString;
     }

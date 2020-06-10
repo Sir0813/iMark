@@ -23,8 +23,12 @@ public class BizItemVideoServiceImpl implements BizItemVideoService {
     @Override
     public Result insertData(BizItemVideo bizItemVideo) throws Exception {
         if (bizItemVideo.getId() > 0) {
+            if (bizItemVideo.getIsDel() == 0) {
+                bizItemVideo.setDelTime(new Date());
+            }
             bizItemVideoMapper.updateByPrimaryKeySelective(bizItemVideo);
         } else {
+            bizItemVideo.setIsDel(1);
             bizItemVideo.setCreateTime(new Date());
             bizItemVideo.setIsConversation(0);
             bizItemVideo.setCreatedBy(Integer.parseInt(LoginUserHelper.getUserId()));
@@ -34,8 +38,8 @@ public class BizItemVideoServiceImpl implements BizItemVideoService {
     }
 
     @Override
-    public List<BizItemVideo> selectByApplyId(int applyid) throws Exception {
-        List<BizItemVideo> bizItemVideoList = bizItemVideoMapper.selectByApplyId(applyid);
+    public List<BizItemVideo> selectByApplyId(int applyid, int status) throws Exception {
+        List<BizItemVideo> bizItemVideoList = bizItemVideoMapper.selectByApplyId(applyid, status);
         return bizItemVideoList;
     }
 

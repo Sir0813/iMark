@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,5 +47,36 @@ public class WfInstAuditTrackServiceImpl implements WfInstAuditTrackService {
     @Override
     public void updateData(WfInstAuditTrack wfInstAuditTrack) {
         wfInstAuditTrackMapper.updateData(wfInstAuditTrack);
+    }
+
+    @Override
+    public WfInstAuditTrack selectLastReason(int applyid) {
+        return wfInstAuditTrackMapper.selectLastReason(applyid);
+    }
+
+    @Override
+    public WfInstAuditTrack selectEditData(int applyid, String userId) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", applyid);
+        map.put("userId", userId);
+        return wfInstAuditTrackMapper.selectEditData(map);
+    }
+
+    @Override
+    public WfInstAuditTrack selectById(Integer id) {
+        return wfInstAuditTrackMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public WfInstAuditTrack selectByApplyIdAndUserId(int applyid, String userId) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", applyid);
+        map.put("userId", userId);
+        return wfInstAuditTrackMapper.selectByApplyIdAndUserId(map);
+    }
+
+    @Override
+    public WfInstAuditTrack selectByNodeId(Integer id) {
+        return wfInstAuditTrackMapper.selectByNodeId(id);
     }
 }

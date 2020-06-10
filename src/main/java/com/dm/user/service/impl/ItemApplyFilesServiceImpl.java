@@ -71,4 +71,9 @@ public class ItemApplyFilesServiceImpl implements ItemApplyFilesService {
     public void updateData(ItemApplyFiles itemApplyFiles1) {
         itemApplyFilesMapper.updateData(itemApplyFiles1);
     }
+
+    @Override
+    public ItemApplyFiles selectById(Integer id) {
+        return itemApplyFilesMapper.selectByPrimaryKey(id);
+    }
 }

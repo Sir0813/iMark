@@ -133,7 +133,7 @@
     </select>
     <select id="selectFirstNode" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT
-            id
+            id,apply_id,audit_userid
         FROM
             wf_item_node_define
         WHERE

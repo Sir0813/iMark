@@ -71,7 +71,7 @@ public interface ChargeDetailService {
      * @param applyid
      * @return
      */
-    ApplyFee selectByApplyIdAndStatus(int applyid);
+    List<ApplyFee> selectByApplyIdAndStatus(int applyid);
 
     /**
      * 修改支付状态

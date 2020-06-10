@@ -81,11 +81,9 @@
             <if test="fileTypes != null">
                 #{fileTypes,jdbcType=INTEGER},
             </if>
-
             <if test="supplementId != null">
                 #{supplementId,jdbcType=INTEGER},
             </if>
-
             <if test="fileLogId != null">
                 #{fileLogId,jdbcType=INTEGER},
             </if>

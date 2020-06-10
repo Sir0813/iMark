@@ -59,7 +59,7 @@ public class ChargeDetailServiceImpl implements ChargeDetailService {
     }
 
     @Override
-    public ApplyFee selectByApplyIdAndStatus(int applyid) {
+    public List<ApplyFee> selectByApplyIdAndStatus(int applyid) {
         return chargeDetailMapper.selectByApplyIdAndStatus(applyid);
     }
 

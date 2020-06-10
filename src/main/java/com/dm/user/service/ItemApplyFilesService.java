@@ -76,4 +76,12 @@ public interface ItemApplyFilesService {
      * @param itemApplyFiles1
      */
     void updateData(ItemApplyFiles itemApplyFiles1);
+
+    /**
+     * 查看意见书内容
+     *
+     * @param id
+     * @return
+     */
+    ItemApplyFiles selectById(Integer id);
 }

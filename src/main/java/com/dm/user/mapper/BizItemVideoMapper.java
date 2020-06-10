@@ -14,5 +14,5 @@ public interface BizItemVideoMapper {
 
     int updateByPrimaryKeySelective(BizItemVideo record);
 
-    List<BizItemVideo> selectByApplyId(int applyid);
+    List<BizItemVideo> selectByApplyId(int applyid, int status);
 }

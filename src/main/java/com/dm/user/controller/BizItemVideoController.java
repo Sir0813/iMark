@@ -33,8 +33,9 @@ public class BizItemVideoController extends BaseController {
     @ApiOperation(value = "预约公正历史记录", response = ResultUtil.class)
     @RequestMapping(value = "/list/{applyid}", method = RequestMethod.GET)
     public Result list(@PathVariable int applyid) throws Exception {
-        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid);
+        List<BizItemVideo> bizItemVideoList = bizItemVideoService.selectByApplyId(applyid, 0);
         return ResultUtil.success(bizItemVideoList);
     }
+
 
 }

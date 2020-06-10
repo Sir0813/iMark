@@ -19,9 +19,10 @@ public interface BizItemVideoService {
      * 公正视频预约记录
      *
      * @param applyid
+     * @param status
      * @return
      * @throws Exception
      */
-    List<BizItemVideo> selectByApplyId(int applyid) throws Exception;
+    List<BizItemVideo> selectByApplyId(int applyid, int status) throws Exception;
 
 }

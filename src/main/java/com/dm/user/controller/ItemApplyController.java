@@ -212,6 +212,12 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.approvalProgress(applyid);
     }
 
+    @ApiOperation(value = "审批进度中查看意见书", response = ResultUtil.class)
+    @RequestMapping(value = "/see/book/{id}", method = RequestMethod.GET)
+    public Result seeBook(@PathVariable Integer id) throws Exception {
+        return itemApplyService.seeBook(id);
+    }
+
     @ApiOperation(value = "审批通过", response = ResultUtil.class)
     @RequestMapping(value = "/approved", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -234,6 +240,12 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.rejectReason(map);
     }
 
+    @ApiOperation(value = "制证完成", response = ResultUtil.class)
+    @RequestMapping(value = "/success/{applyid}", method = RequestMethod.GET)
+    public Result isSuccess(@PathVariable int applyid) throws Exception {
+        return itemApplyService.isSuccess(applyid);
+    }
+
     @ApiOperation(value = "国家", response = ResultUtil.class)
     @RequestMapping(value = "/country", method = RequestMethod.GET)
     public Result country() throws Exception {
@@ -245,7 +257,6 @@ public class ItemApplyController extends BaseController {
     public Result language(@PathVariable Integer id) throws Exception {
         return pubDictoryService.selectCountryLanguage(id);
     }
-
 
     /*@ApiOperation(value = "用户材料审核通过", response = ResultUtil.class)
     @RequestMapping(value = "/pass", method = RequestMethod.POST)

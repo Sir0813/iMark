@@ -9,9 +9,11 @@
         <result column="is_conversation" jdbcType="INTEGER" property="isConversation"/>
         <result column="file_id" jdbcType="INTEGER" property="fileId"/>
         <result column="created_by" jdbcType="INTEGER" property="createdBy"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="del_time" jdbcType="TIMESTAMP" property="delTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, applyid, create_time, appointment_time, is_conversation, file_id, created_by
+    id, applyid, create_time, appointment_time, is_conversation, file_id, created_by, is_del, del_time
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -84,6 +86,12 @@
             <if test="createdBy != null">
                 created_by = #{createdBy,jdbcType=INTEGER},
             </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="delTime != null">
+                del_time = #{delTime,jdbcType=TIMESTAMP},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -103,8 +111,9 @@
         LEFT JOIN uc_user AS ucuser ON video.created_by = ucuser.userid
         LEFT JOIN sys_user_card AS usercard ON usercard.userid = video.created_by
         WHERE
-            applyid = #{applyid}
+            video.applyid = #{applyid}
+        AND video.is_del = #{status}
         ORDER BY
-            create_time DESC
+            video.create_time DESC
     </select>
 </mapper>

@@ -23,7 +23,30 @@ public class BizItemVideo {
 
     private Integer createdBy;
 
+    private Integer isDel;
+
+    private Date delTime;
+
+    /**
+     * 业务字段
+     */
     private String userName;
+
+    public Integer getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(Integer isDel) {
+        this.isDel = isDel;
+    }
+
+    public Date getDelTime() {
+        return delTime;
+    }
+
+    public void setDelTime(Date delTime) {
+        this.delTime = delTime;
+    }
 
     public String getUserName() {
         return userName;

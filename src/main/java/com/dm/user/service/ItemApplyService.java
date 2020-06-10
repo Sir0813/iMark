@@ -284,4 +284,21 @@ public interface ItemApplyService {
      * @param applyId
      */
     ItemApply selectById(Integer applyId) throws Exception;
+
+    /**
+     * 公正完成
+     *
+     * @param applyid
+     * @return
+     */
+    Result isSuccess(int applyid) throws Exception;
+
+    /**
+     * 审批进度查看意见书
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    Result seeBook(Integer id) throws Exception;
 }

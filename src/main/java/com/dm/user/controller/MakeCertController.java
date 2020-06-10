@@ -3,10 +3,7 @@ package com.dm.user.controller;
 import com.dm.frame.jboot.base.controller.BaseController;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
-import com.dm.user.entity.BizCertModel;
-import com.dm.user.entity.ItemApply;
-import com.dm.user.entity.ItemApplyFiles;
-import com.dm.user.entity.TemplateSymbol;
+import com.dm.user.entity.*;
 import com.dm.user.service.BizCertService;
 import com.dm.user.service.ItemApplyService;
 import io.swagger.annotations.Api;
@@ -44,7 +41,7 @@ public class MakeCertController extends BaseController {
         return ResultUtil.success(map);
     }
 
-    @ApiOperation(value = "制证意见书信息提交", response = ResultUtil.class)
+    @ApiOperation(value = "初始意见书信息提交", response = ResultUtil.class)
     @RequestMapping(value = "/cert/template/submit", method = RequestMethod.POST)
     public Result certSubmit(@RequestBody ItemApplyFiles itemApplyFiles) throws Exception {
         return bizCertService.submit(itemApplyFiles);
@@ -56,6 +53,18 @@ public class MakeCertController extends BaseController {
         return bizCertService.reviewSubmit(itemApplyFiles);
     }
 
+    @ApiOperation(value = "查看意见书内容并编辑", response = ResultUtil.class)
+    @RequestMapping(value = "/cert/view", method = RequestMethod.POST)
+    public Result certView(@RequestBody BookView bookView) throws Exception {
+        return bizCertService.certView(bookView);
+    }
+
+    @ApiOperation(value = "制证保存", response = ResultUtil.class)
+    @RequestMapping(value = "/real/cert", method = RequestMethod.POST)
+    public Result realCert(@RequestBody ItemApplyFiles itemApplyFiles) throws Exception {
+        return bizCertService.realCert(itemApplyFiles);
+    }
+
     @ApiOperation(value = "意见书占位符", response = ResultUtil.class)
     @RequestMapping(value = "/cert/template/symbol", method = RequestMethod.GET)
     public Result templateSymbol() throws Exception {
@@ -64,7 +73,7 @@ public class MakeCertController extends BaseController {
         templateSymbol.setName("itemName");
         templateSymbol.setValue("项目名称");
         TemplateSymbol templateSymbol2 = new TemplateSymbol();
-        templateSymbol2.setName("orgName");
+        templateSymbol2.setName("orgname");
         templateSymbol2.setValue("公证处名称");
         TemplateSymbol templateSymbol3 = new TemplateSymbol();
         templateSymbol3.setName("idCard");

@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class ProgressView {
 
+    private Integer id;
+
     private String realName;
 
     private String userName;
@@ -16,6 +18,14 @@ public class ProgressView {
     private String reason;
 
     private Integer status;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getRealName() {
         return realName;

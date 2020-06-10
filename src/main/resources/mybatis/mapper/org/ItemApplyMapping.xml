@@ -315,8 +315,22 @@
         LEFT JOIN sys_user_card AS usercard ON itemapply.userid = usercard.userid
         LEFT JOIN wf_item_node_define AS nodedefine ON nodedefine.apply_id = itemapply.applyid
         WHERE
-        nodedefine.audit_userid = #{userId}
-        AND itemapply.`status` = #{status}
+        nodedefine.id IN (
+        SELECT
+        wfin.nodeid
+        FROM
+        wf_instance AS wfin
+        WHERE
+        wfin.id IN (
+        SELECT
+        apply.wf_instance_id
+        FROM
+        `biz_item_apply` AS apply
+        WHERE
+        apply.`status` = #{status}
+        )
+        )
+        AND nodedefine.audit_userid = #{userId}
         <if test="word!=null">
             AND (itemapply.apply_no like CONCAT('%',#{word},'%') or item.item_name like CONCAT('%',#{word},'%'))
         </if>
@@ -485,6 +499,7 @@
         apply.apply_no AS applyNo,
         apply.add_file_status AS addFileStatus,
         apply.submit_date AS submitDate,
+        apply.userid AS userId,
         items.item_name AS itemName,
         apply.item_value AS itemValue,
         apply.`status` AS `status`,
@@ -500,7 +515,7 @@
         LEFT JOIN uc_user AS ucuser ON apply.userid = ucuser.userid
         LEFT JOIN `sys_user_card` AS usercard ON apply.userid = usercard.userid
         WHERE
-        apply.applyid = #{applyId}
+        apply.applyid = #{applyid}
         <if test="userId!=null">
             AND apply.userid = #{userId}
         </if>

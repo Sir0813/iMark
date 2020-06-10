@@ -112,6 +112,32 @@ public class ApplyUserInfo {
      */
     private Integer isAppointment;
 
+    /**
+     * 申请人ID
+     */
+    private Integer userId;
+
+    /**
+     * 盖章意见书状态 0 有 1 没有
+     */
+    private Integer makeFileStatus;
+
+    public Integer getMakeFileStatus() {
+        return makeFileStatus;
+    }
+
+    public void setMakeFileStatus(Integer makeFileStatus) {
+        this.makeFileStatus = makeFileStatus;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public Integer getIsAppointment() {
         return isAppointment;
     }

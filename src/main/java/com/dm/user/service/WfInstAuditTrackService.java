@@ -51,4 +51,45 @@ public interface WfInstAuditTrackService {
      * @param wfInstAuditTrack
      */
     void updateData(WfInstAuditTrack wfInstAuditTrack);
+
+    /**
+     * 上一版本意见书
+     *
+     * @param applyid
+     * @return
+     */
+    WfInstAuditTrack selectLastReason(int applyid);
+
+    /**
+     * 查询草稿意见书
+     *
+     * @param applyid
+     * @param userId
+     * @return
+     */
+    WfInstAuditTrack selectEditData(int applyid, String userId);
+
+    /**
+     * 查看草稿意见书
+     *
+     * @param id
+     */
+    WfInstAuditTrack selectById(Integer id);
+
+    /**
+     * 最新审批意见
+     *
+     * @param applyid
+     * @param userId
+     * @return
+     */
+    WfInstAuditTrack selectByApplyIdAndUserId(int applyid, String userId);
+
+    /**
+     * 查询意见书
+     *
+     * @param id
+     * @return
+     */
+    WfInstAuditTrack selectByNodeId(Integer id);
 }
