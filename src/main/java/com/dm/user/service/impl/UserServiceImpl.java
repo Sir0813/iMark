@@ -31,7 +31,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
@@ -150,11 +149,11 @@ public class UserServiceImpl implements UserService {
         user.setCreatedDate(DateUtil.timeToString2(new Date()));
         informationService.updateByPrimaryKeySelective(information);
         /* 注册用户身份上链  start **/
-        boolean register = tidUtil.register(user.getUsername(), md5Password);
+        /*boolean register = tidUtil.register(user.getUsername(), md5Password);
         if (!register) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }
+        }*/
         /* 注册用户身份上链  end **/
         userMapper.userRegister(user);
         // 待自己确认 需要更新注册用户ID
@@ -209,11 +208,11 @@ public class UserServiceImpl implements UserService {
             userMapper.updateById(map);
         }
         /* 修改密码修改链上对应身份密码信息 start **/
-        boolean b = tidUtil.updatePassword(user.getUsername(), md5Password, newPwd);
+        /*boolean b = tidUtil.updatePassword(user.getUsername(), md5Password, newPwd);
         if (!b) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }
+        }*/
         /* 修改密码修改链上对应身份密码信息 end **/
         return ResultUtil.success();
     }
@@ -303,11 +302,11 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPassword);
         userMapper.updateByPrimaryKeySelective(user);
         /* 找回密码修改链上身份信息 start */
-        boolean b = tidUtil.updatePassword(user.getUsername(), oldPassword, newPassword);
+        /*boolean b = tidUtil.updatePassword(user.getUsername(), oldPassword, newPassword);
         if (!b) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultUtil.error();
-        }
+        }*/
         /* 找回密码修改链上身份信息 start */
         return ResultUtil.success();
     }

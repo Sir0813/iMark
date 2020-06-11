@@ -276,35 +276,39 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("applyid", applyid);
         map.put("userId", LoginUserHelper.getUserId());
         ApplyUserInfo applyInfo = itemApplyMapper.selectDetailInfo(map);
+        /*OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
+        if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
+            *//* 固定价格计费 返回本次公正所需费用 **//*
+            applyInfo.setPrice(orgItems.getPrice());
+        } else {
+            *//* 按标的 或公正人员自定义先缴纳最低价格 **//*
+            applyInfo.setPrice(orgItems.getLowestPrice());
+        }*/
         ApplyExpand applyExpand = applyExpandService.selectByApplyId(applyid);
         if (applyExpand.getAddressId() == 0) {
             /* 自取 */
-            Org org = orgService.selectByApplyId(applyid);
             applyInfo.setIsSend(0);
-            applyInfo.setOrgAddress(org.getAddress());
         } else {
             /* 邮寄 */
-            UserAddress userAddress = userAddressService.selectById(applyExpand.getAddressId());
             applyInfo.setIsSend(1);
+            UserAddress userAddress = userAddressService.selectById(applyExpand.getAddressId());
             applyInfo.setUserAddress(userAddress);
         }
-        if (itemApply.getStatus() != ItemApplyEnum.FILE_DRAFT.getCode() && itemApply.getStatus() != ItemApplyEnum.WAIT_PAY.getCode()) {
-            applyMap.put("allNode", getAllNode());
-            applyMap.put("historyNode", historyNode(applyid));
+        Org org = orgService.selectByApplyId(applyid);
+        applyInfo.setOrgAddress(org.getAddress());
+        applyMap.put("allNode", getAllNode());
+        applyMap.put("historyNode", historyNode(applyid));
+        OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
+        if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
+            applyInfo.setPrice(orgItems.getPrice());
         } else {
-            OrgItems orgItems = orgItemService.selectByPrimaryKey(itemApply.getItemid());
-            if (OrgItemEnum.FIXED_PRICE.getCode() == orgItems.getValuation()) {
-                applyInfo.setPrice(orgItems.getPrice());
-            } else {
-                applyInfo.setPrice(orgItems.getLowestPrice());
-            }
+            applyInfo.setPrice(orgItems.getLowestPrice());
         }
         List<ApplyFee> applyFees = chargeDetailService.selectByApplyId(applyid);
         /* 补充材料 */
         List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
         /* 修改材料 */
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
-        Org org = orgService.selectByApplyId(applyid);
         applyMap.put("orgName", org.getOrgname());
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("addFiles", addFiles);
@@ -732,7 +736,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         Map<String, Object> map = new HashMap<>(16);
         map.put("userId", LoginUserHelper.getUserId());
         map.put("status", ItemApplyEnum.FILE_CHECK.getCode());
-        map.put("isEnd", new int[]{ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_FAIL.getCode()});
+        map.put("isEnd", new int[]{ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_FAIL.getCode(), ItemApplyEnum.REJECT_REASON.getCode()});
         map.put("inProcessing", new int[]{ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_MAKE.getCode()});
         map.put("review", ItemApplyEnum.FILE_REVIEW.getCode());
         Integer newOrderCount = itemApplyMapper.selectOrderCount(ItemApplyEnum.FILE_RECEPTION.getCode());
@@ -954,6 +958,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             if (reject.getType() == 0) {
                 /* 预审退费 全额退款 */
                 map.put("status", ItemApplyEnum.REJECT_REASON.getCode());
+                map.put("handleUserid", LoginUserHelper.getUserId());
                 itemApplyMapper.updateRejectReason(map);
                 ChargeDetail chargeDetail = chargeDetailService.selectById(reject.getFeeInfo().get(0).getId());
                 chargeDetail.setId(null);

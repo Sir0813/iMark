@@ -219,9 +219,17 @@
         FROM
         biz_item_apply AS itemapply
         LEFT JOIN biz_org_items AS orgitem ON itemapply.itemid = orgitem.itemid
-        LEFT JOIN biz_charge_detail AS charge ON (charge.apply_id = itemapply.applyid
-        AND charge.charge_id = (select id from biz_item_charge where `name` = '公证预付款' and org_id = (SELECT orgid FROM
-        biz_org_users WHERE userid = #{userId} GROUP BY userid) and is_del = 0)
+        LEFT JOIN biz_charge_detail AS charge ON (
+        charge.apply_id = itemapply.applyid
+        AND charge.charge_id = (
+        SELECT
+        id
+        FROM
+        biz_item_charge
+        WHERE
+        `name` = '公证预付款'
+        AND is_del = 0
+        )
         )
         WHERE
         itemapply.userid = #{userId}
@@ -607,7 +615,8 @@
     <update id="updateRejectReason" parameterType="java.util.Map">
         UPDATE biz_item_apply
         SET `status` = #{status},
-        `reject_reason` = #{rejectReason}
+        `reject_reason` = #{rejectReason},
+        handle_userid = #{handleUserid}
         WHERE
             `applyid` = #{applyId}
     </update>

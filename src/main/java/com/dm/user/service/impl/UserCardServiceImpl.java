@@ -13,7 +13,6 @@ import com.dm.user.util.TidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class UserCardServiceImpl implements UserCardService {
         AppUser appUser = userService.selectByPrimaryKey(Integer.parseInt(LoginUserHelper.getUserId()));
         if (userCard.getCardid() != null) {
             if (UserCardEnum.REAL_SUCCESS.getCode().equals(userCard.getRealState())) {
-                String code = tidUtil.checkTid(LoginUserHelper.getUserName(), userCard.getCardNumber());
+                /*String code = tidUtil.checkTid(LoginUserHelper.getUserName(), userCard.getCardNumber());
                 if ("201".equals(code)) {
                     if (!tidUtil.queryTid(userCard.getCardNumber())) {
                         tidUtil.addTid(userCard.getCardNumber());
@@ -50,7 +49,7 @@ public class UserCardServiceImpl implements UserCardService {
                 } else if (!"200".equals(code)) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return ResultUtil.error();
-                }
+                }*/
                 userCard.setRealTime(new Date());
             }
             userCardMapper.updateByPrimaryKeySelective(userCard);

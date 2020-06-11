@@ -10,5 +10,5 @@ spring:
   # location: application.yml
   profiles:
     # 配置扩展profiles
-    active: dev
-    #active: pro
+    #active: dev
+    active: pro
