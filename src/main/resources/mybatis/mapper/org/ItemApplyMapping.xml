@@ -236,6 +236,12 @@
         <if test="state!=null and state!=''">
             AND itemapply.`status` = #{state}
         </if>
+        <if test="states!=null">
+            and itemapply.`status` in
+            <foreach collection="states" item="state" open="(" close=")" separator=",">
+                #{state}
+            </foreach>
+        </if>
         <if test="word!=null and word!=''">
             AND orgitem.item_name like CONCAT('%',#{word},'%')
         </if>
@@ -616,7 +622,8 @@
         UPDATE biz_item_apply
         SET `status` = #{status},
         `reject_reason` = #{rejectReason},
-        handle_userid = #{handleUserid}
+        handle_userid = #{handleUserid},
+        handle_created_date = #{handleCreatedDate}
         WHERE
             `applyid` = #{applyId}
     </update>

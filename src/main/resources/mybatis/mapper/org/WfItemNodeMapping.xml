@@ -84,7 +84,7 @@
         LEFT JOIN uc_user AS ucuser ON node.audit_userid = ucuser.userid
         WHERE
             node.apply_id = #{applyid}
-        AND node.id >= (
+        AND node.id > (
             SELECT
                 wfin.nodeid
             FROM

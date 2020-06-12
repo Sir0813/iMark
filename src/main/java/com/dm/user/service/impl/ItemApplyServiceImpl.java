@@ -223,7 +223,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 map.put("state", ItemApplyEnum.FILE_RECEPTION.getCode());
                 break;
             case 3: /* 已完成公正 */
-                map.put("state", ItemApplyEnum.APPLY_SUCCESS.getCode());
+                map.put("states", new int[]{ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_FAIL.getCode(), ItemApplyEnum.REJECT_REASON.getCode()});
                 break;
             case 4: /* 我的预约后续加入 */
                 break;
@@ -892,6 +892,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 }
             }
         }
+        /* 最新一个审批人审批状态时间等信息 */
         WfInstAuditTrack track = wfInstAuditTrackService.selectByApplyIdAndUserId(applyid, LoginUserHelper.getUserId());
         if (itemApply.getStatus() == ItemApplyEnum.FILE_MAKE.getCode()) {
             Map<String, Object> hashMap = new HashMap<>(16);
@@ -903,6 +904,13 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             } else {
                 applyMap.put("makeFileStatus", 1);
             }
+        }
+        if (itemApply.getStatus() == ItemApplyEnum.REJECT_REASON.getCode()) {
+            WfInstAuditTrack track1 = new WfInstAuditTrack();
+            track1.setReason(itemApply.getRejectReason());
+            track1.setAuditDate(DateUtil.dateToString(itemApply.getHandleCreatedDate(), ""));
+            track1.setStatus(1);
+            applyMap.put("preReason", track1);
         }
         applyMap.put("track", track);
         applyMap.put("addFiles", addFiles);
@@ -921,15 +929,15 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         ItemApplyFiles itemApplyFiles = null;
         if (itemApply.getStatus() == ItemApplyEnum.FILE_MAKE.getCode()) {
             hashMap.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
-            itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
             if (null == itemApplyFiles) {
                 hashMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
-                itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
             }
+        } else if (itemApply.getStatus() == ItemApplyEnum.APPLY_SUCCESS.getCode()) {
+            hashMap.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
         } else {
             hashMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
-            itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
         }
+        itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
         BookView bookView = new BookView();
         if (null != itemApplyFiles) {
             bookView.setId(itemApplyFiles.getId());
@@ -959,6 +967,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 /* 预审退费 全额退款 */
                 map.put("status", ItemApplyEnum.REJECT_REASON.getCode());
                 map.put("handleUserid", LoginUserHelper.getUserId());
+                map.put("handleCreatedDate", new Date());
                 itemApplyMapper.updateRejectReason(map);
                 ChargeDetail chargeDetail = chargeDetailService.selectById(reject.getFeeInfo().get(0).getId());
                 chargeDetail.setId(null);
