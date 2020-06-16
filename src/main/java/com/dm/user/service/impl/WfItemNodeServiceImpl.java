@@ -72,4 +72,9 @@ public class WfItemNodeServiceImpl implements WfItemNodeService {
         map.put("nodeId", nodeid);
         return wfItemNodeMapper.selectPreviousNode(map);
     }
+
+    @Override
+    public WfItemNode selectByAuditIdAndApplyId(Map<String, Object> map) {
+        return wfItemNodeMapper.selectByAuditIdAndApplyId(map);
+    }
 }

@@ -80,10 +80,9 @@ public interface WfInstAuditTrackService {
      * 最新审批意见
      *
      * @param applyid
-     * @param userId
      * @return
      */
-    WfInstAuditTrack selectByApplyIdAndUserId(int applyid, String userId);
+    WfInstAuditTrack selectByApplyIdAndUserId(int applyid);
 
     /**
      * 查询意见书
@@ -92,4 +91,14 @@ public interface WfInstAuditTrackService {
      * @return
      */
     WfInstAuditTrack selectByNodeId(Integer id);
+
+    /**
+     * 上一人审批书
+     *
+     * @param applyid
+     * @param wfInstanceId
+     * @param id
+     * @return
+     */
+    WfInstAuditTrack selectByApplyIdAndInstIdAndNodeId(String applyid, String wfInstanceId, Integer id);
 }

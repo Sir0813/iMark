@@ -3,6 +3,7 @@ package com.dm.user.entity;
 import java.util.Date;
 
 public class ItemApplyFiles {
+
     private Integer id;
 
     private Integer applyid;
@@ -16,7 +17,9 @@ public class ItemApplyFiles {
     private Date createdDate;
 
     private int fileTypes;
+
     private Integer supplementId;
+
     private Integer fileLogId;
 
     private String fileString;
@@ -26,12 +29,14 @@ public class ItemApplyFiles {
      */
     private int isDel;
 
-    public String getFileString() {
-        return fileString;
+    private int status;
+
+    public int getStatus() {
+        return status;
     }
 
-    public void setFileString(String fileString) {
-        this.fileString = fileString;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Integer getId() {
@@ -71,7 +76,7 @@ public class ItemApplyFiles {
     }
 
     public void setDescribe(String describe) {
-        this.describe = describe == null ? null : describe.trim();
+        this.describe = describe;
     }
 
     public Date getCreatedDate() {
@@ -90,14 +95,6 @@ public class ItemApplyFiles {
         this.fileTypes = fileTypes;
     }
 
-    public int getIsDel() {
-        return isDel;
-    }
-
-    public void setIsDel(int isDel) {
-        this.isDel = isDel;
-    }
-
     public Integer getSupplementId() {
         return supplementId;
     }
@@ -112,5 +109,21 @@ public class ItemApplyFiles {
 
     public void setFileLogId(Integer fileLogId) {
         this.fileLogId = fileLogId;
+    }
+
+    public String getFileString() {
+        return fileString;
+    }
+
+    public void setFileString(String fileString) {
+        this.fileString = fileString;
+    }
+
+    public int getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(int isDel) {
+        this.isDel = isDel;
     }
 }

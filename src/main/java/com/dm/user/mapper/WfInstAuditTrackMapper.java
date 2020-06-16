@@ -36,4 +36,6 @@ public interface WfInstAuditTrackMapper {
     WfInstAuditTrack selectByApplyIdAndUserId(Map<String, Object> map);
 
     WfInstAuditTrack selectByNodeId(Integer id);
+
+    WfInstAuditTrack selectByApplyIdAndInstIdAndNodeId(Map<String, Object> map);
 }

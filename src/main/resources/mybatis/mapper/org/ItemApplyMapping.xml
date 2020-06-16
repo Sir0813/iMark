@@ -420,8 +420,14 @@
         count(1)
         FROM
         biz_item_apply AS itemapply
-        WHERE itemapply.`status` = #{status}
-        AND itemapply.handle_userid = #{userId}
+        WHERE
+        itemapply.handle_userid = #{userId}
+        <if test="inPro!=null">
+            AND itemapply.`status` in
+            <foreach collection="inPro" open="(" separator="," close=")" item="pro">
+                #{pro}
+            </foreach>
+        </if>
     </select>
     <select id="isProcessing" parameterType="java.util.Map" resultType="java.lang.Integer">
         SELECT
@@ -560,12 +566,27 @@
     </select>
     <select id="inReview" parameterType="java.util.Map" resultType="java.lang.Integer">
         SELECT
-            count(1)
+            COUNT(1)
         FROM
             biz_item_apply AS itemapply
+        LEFT JOIN wf_item_node_define AS nodedefine ON nodedefine.apply_id = itemapply.applyid
         WHERE
-            itemapply.`status` = #{review}
-        AND itemapply.handle_userid = #{userId}
+            nodedefine.id IN (
+                SELECT
+                    wfin.nodeid
+                FROM
+                    wf_instance AS wfin
+                WHERE
+                    wfin.id IN (
+                        SELECT
+                            apply.wf_instance_id
+                        FROM
+                            `biz_item_apply` AS apply
+                        WHERE
+                            apply.`status` = #{review}
+                    )
+            )
+        AND nodedefine.audit_userid = #{userId}
     </select>
     <select id="inProcessingList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -579,11 +600,15 @@
         FROM
         biz_item_apply AS itemapply
         LEFT JOIN biz_org_items item ON itemapply.itemid = item.itemid
-        WHERE itemapply.`status` IN
-        <foreach collection="inProcessing" open="(" separator="," close=")" item="inPro">
-            #{inPro}
-        </foreach>
-        AND itemapply.handle_userid = #{userId}
+        WHERE
+        itemapply.handle_userid = #{userId}
+        <if test="inPro!=null">
+            AND itemapply.`status` IN
+            <foreach collection="inPro" open="(" separator="," close=")" item="pro">
+                #{pro}
+            </foreach>
+        </if>
+
     </select>
     <select id="selectMyTaskList" parameterType="java.util.Map" resultType="com.dm.user.entity.ItemApply">
         SELECT
@@ -620,12 +645,17 @@
     </select>
     <update id="updateRejectReason" parameterType="java.util.Map">
         UPDATE biz_item_apply
-        SET `status` = #{status},
-        `reject_reason` = #{rejectReason},
-        handle_userid = #{handleUserid},
-        handle_created_date = #{handleCreatedDate}
+        SET
+        <if test="handleUserid!=null">
+            handle_userid = #{handleUserid},
+        </if>
+        <if test="handleCreatedDate!=null">
+            handle_created_date = #{handleCreatedDate},
+        </if>
+        `status` = #{status},
+        `reject_reason` = #{rejectReason}
         WHERE
-            `applyid` = #{applyId}
+        `applyid` = #{applyId}
     </update>
     <select id="orderInfo" parameterType="java.lang.Integer" resultType="com.dm.user.entity.OrderInfo">
         SELECT

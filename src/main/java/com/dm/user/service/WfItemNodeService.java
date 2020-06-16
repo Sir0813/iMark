@@ -79,4 +79,12 @@ public interface WfItemNodeService {
      * @return
      */
     WfItemNode selectPreviousNode(String applyid, Integer nodeid);
+
+    /**
+     * 查询
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectByAuditIdAndApplyId(Map<String, Object> map);
 }

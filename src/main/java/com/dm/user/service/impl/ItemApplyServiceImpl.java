@@ -211,7 +211,9 @@ public class ItemApplyServiceImpl implements ItemApplyService {
 
     @Override
     public PageInfo<ItemApply> list(int pageNum, int type, String word) throws Exception {
-        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
+        if (type == 4) {
+            return null;
+        }
         Map<String, Object> map = new HashMap<>(16);
         switch (type) {
             case 0: /* 全部数据 */
@@ -232,6 +234,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("word", word);
         }
         map.put("userId", LoginUserHelper.getUserId());
+        PageHelper.startPage(pageNum, StateMsg.PAGE_SIZE);
         List<ItemApply> itemApplyList = itemApplyMapper.list(map);
         PageInfo<ItemApply> pageInfo = new PageInfo<>(itemApplyList);
         if (pageNum > pageInfo.getPages()) {
@@ -309,6 +312,17 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<CertFiles> addFiles = certFilesService.selectIsAddFiles(applyid);
         /* 修改材料 */
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
+        /* 收费项 */
+        List<ApplyFee> applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
+        applyMap.put("isPay", applyFee.get(0));
+        if (itemApply.getPayStatus() == ItemApplyEnum.PAY_ALL.getCode()) {
+            List<ApplyFee> applyFeeList = chargeDetailService.selectByApplyIdAndStatus(applyid);
+            applyFeeList.remove(0);
+            applyMap.put("applyFeeList", applyFeeList);
+        } else {
+            List<ApplyFee> applyFeeList = chargeDetailService.selectByApplyId(applyid);
+            applyMap.put("applyFeeList", applyFeeList);
+        }
         applyMap.put("orgName", org.getOrgname());
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("addFiles", addFiles);
@@ -456,7 +470,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public synchronized Result takeOrder(ItemApply itemApply) throws Exception {
         ItemApply ia = itemApplyMapper.selectByPrimaryKey(itemApply.getApplyid());
-        if (ia.getHandleUserid() != 0) {
+        if (null != ia.getHandleUserid() && ia.getHandleUserid() != 0) {
             throw new Exception(StateMsg.TAKE_ORDER_ERROR_MSG);
         }
         ia.setStatus(ItemApplyEnum.FILE_CHECK.getCode());
@@ -718,10 +732,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         if (itemApplyLogs.size() > 1) {
             ItemApplyLog itemApplyLog = itemApplyLogs.get(itemApplyLogs.size() - 1);
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
-            if (Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.APPLY_FAIL.getCode()) {
-                WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
-                itemApplyLog.setRejectReason(wfInstance.getRejectReason());
-            } else if (Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.REJECT_REASON.getCode()) {
+            if (Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.APPLY_FAIL.getCode() || Integer.parseInt(itemApplyLog.getStatus()) == ItemApplyEnum.REJECT_REASON.getCode()) {
                 itemApplyLog.setRejectReason(itemApply.getRejectReason());
             }
         }
@@ -737,7 +748,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         map.put("userId", LoginUserHelper.getUserId());
         map.put("status", ItemApplyEnum.FILE_CHECK.getCode());
         map.put("isEnd", new int[]{ItemApplyEnum.APPLY_SUCCESS.getCode(), ItemApplyEnum.APPLY_FAIL.getCode(), ItemApplyEnum.REJECT_REASON.getCode()});
-        map.put("inProcessing", new int[]{ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_MAKE.getCode()});
+        map.put("inPro", new int[]{ItemApplyEnum.FILE_CHECK.getCode(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_MAKE.getCode(), ItemApplyEnum.CHECK_RETURN.getCode()});
         map.put("review", ItemApplyEnum.FILE_REVIEW.getCode());
         Integer newOrderCount = itemApplyMapper.selectOrderCount(ItemApplyEnum.FILE_RECEPTION.getCode());
         Integer isVerifiCount = itemApplyMapper.isVerifi(ItemApplyEnum.WAIT_ORDER.getCode());
@@ -892,27 +903,27 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 }
             }
         }
-        /* 最新一个审批人审批状态时间等信息 */
-        WfInstAuditTrack track = wfInstAuditTrackService.selectByApplyIdAndUserId(applyid, LoginUserHelper.getUserId());
         if (itemApply.getStatus() == ItemApplyEnum.FILE_MAKE.getCode()) {
             Map<String, Object> hashMap = new HashMap<>(16);
             hashMap.put("applyId", itemApply.getApplyid());
             hashMap.put("state", ItemFileTypeEnum.SEAL_OPINION_FILE.getCode());
             ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(hashMap);
             if (null == itemApplyFiles) {
-                applyMap.put("makeFileStatus", 0);
+                applyInfo.setMakeFileStatus(0);
             } else {
-                applyMap.put("makeFileStatus", 1);
+                applyInfo.setMakeFileStatus(1);
             }
         }
-        if (itemApply.getStatus() == ItemApplyEnum.REJECT_REASON.getCode()) {
+        if (itemApply.getStatus() == ItemApplyEnum.REJECT_REASON.getCode() || itemApply.getStatus() == ItemApplyEnum.APPLY_FAIL.getCode()) {
             WfInstAuditTrack track1 = new WfInstAuditTrack();
             track1.setReason(itemApply.getRejectReason());
             track1.setAuditDate(DateUtil.dateToString(itemApply.getHandleCreatedDate(), ""));
             track1.setStatus(1);
-            applyMap.put("preReason", track1);
+            applyMap.put("track", track1);
+        } else {
+            WfInstAuditTrack track = wfInstAuditTrackService.selectByApplyIdAndUserId(applyid);
+            applyMap.put("track", track);
         }
-        applyMap.put("track", track);
         applyMap.put("addFiles", addFiles);
         applyMap.put("updateFiles", updateFiles);
         applyMap.put("applyVideo", bizItemVideoList.size() > 0 ? bizItemVideoList.get(0) : null);
@@ -1169,6 +1180,13 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<ProgressView> isProgress = wfInstAuditTrackService.selectIsProgress(applyid);
         /* 查询未审批人审批信息 */
         List<ProgressView> isNotProgress = wfItemNodeService.isNotProgress(applyid);
+        if (isNotProgress.size() == 1) {
+            ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
+            WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByApplyIdAndInstIdAndNodeId(String.valueOf(applyid), itemApply.getWfInstanceId(), isNotProgress.get(0).getId());
+            if (null != wfInstAuditTrack) {
+                isNotProgress.remove(0);
+            }
+        }
         Map<String, Object> map = new HashMap<>(16);
         map.put("isProgress", isProgress);
         map.put("isNotProgress", isNotProgress);
@@ -1182,18 +1200,6 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
             WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
             WfItemNode wfItemNode = wfItemNodeService.selectLaseNode(map);
-            /* 当前节点 不是 审批最后一个节点  当前节点 需 +1 */
-            if (!wfInstance.getNodeid().equals(wfItemNode.getId())) {
-                map.put("nodeId", wfInstance.getNodeid());
-                WfItemNode wfItemNode2 = wfItemNodeService.selectNextNode(map);
-                wfInstance.setNodeid(wfItemNode2.getId());
-            } else {
-                wfInstance.setStatus(InstanceEnum.REVIEW_PASS.getCode());
-                itemApply.setStatus(ItemApplyEnum.FILE_MAKE.getCode());
-                itemApplyMapper.updateByPrimaryKeySelective(itemApply);
-            }
-            wfInstance.setUpdateDate(new Date());
-            wfInstanceService.updateById(wfInstance);
             map.put("nodeid", wfInstance.getNodeid());
             map.put("instid", wfInstance.getId());
             WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
@@ -1219,6 +1225,18 @@ public class ItemApplyServiceImpl implements ItemApplyService {
                 wfInstAuditTrack.setReason(String.valueOf(map.get("opinion")));
                 wfInstAuditTrackService.updateData(wfInstAuditTrack);
             }
+            /* 当前节点 不是 审批最后一个节点  当前节点 需 +1 */
+            if (!wfInstance.getNodeid().equals(wfItemNode.getId())) {
+                map.put("nodeId", wfInstance.getNodeid());
+                WfItemNode wfItemNode2 = wfItemNodeService.selectNextNode(map);
+                wfInstance.setNodeid(wfItemNode2.getId());
+            } else {
+                wfInstance.setStatus(InstanceEnum.REVIEW_PASS.getCode());
+                itemApply.setStatus(ItemApplyEnum.FILE_MAKE.getCode());
+                itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+            }
+            wfInstance.setUpdateDate(new Date());
+            wfInstanceService.updateById(wfInstance);
             if (itemApply.getStatus() == ItemApplyEnum.FILE_REVIEW.getCode()) {
                 itemApplyLogService.insertLog(LoginUserHelper.getUserId(), Integer.parseInt(map.get("applyid").toString()), new Date(), ItemApplyEnum.FILE_REVIEW.getCode(), ItemApplyEnum.FILE_REVIEW.getDesc());
             } else {
@@ -1237,9 +1255,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("userId", LoginUserHelper.getUserId());
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(Integer.valueOf(map.get("applyid").toString()));
             WfInstance wfInstance = wfInstanceService.selectById(itemApply.getWfInstanceId());
-            WfItemNode wfItemNode = wfItemNodeService.selectFirstNode(map);
             map.put("instanceState", InstanceEnum.PENDING_REVIEW.getCode());
-            itemApplyFilesService.updateDelState(itemApply.getApplyid());
             wfInstanceService.updateByInstanceId(map);
             itemApply.setStatus(ItemApplyEnum.CHECK_RETURN.getCode());
             itemApplyMapper.updateByPrimaryKeySelective(itemApply);
@@ -1247,6 +1263,18 @@ public class ItemApplyServiceImpl implements ItemApplyService {
             map.put("nodeid", wfInstance.getNodeid());
             WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByInstanId(map);
             if (null == wfInstAuditTrack) {
+                WfItemNode wfItemNode = wfItemNodeService.selectByAuditIdAndApplyId(map);
+                if (wfItemNode.getOrder() == 1) {
+                    Map<String, Object> dataMap = new HashMap<>(16);
+                    dataMap.put("applyId", Integer.valueOf(map.get("applyid").toString()));
+                    dataMap.put("state", ItemFileTypeEnum.OPINION_FILE.getCode());
+                    ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectByApplyIdAndState(dataMap);
+                    map.put("fileString", itemApplyFiles.getFileString());
+                } else {
+                    WfItemNode wfItemNode1 = wfItemNodeService.selectPreviousNode(map.get("applyid").toString(), wfItemNode.getId());
+                    WfInstAuditTrack wfInstAuditTrack1 = wfInstAuditTrackService.selectByApplyIdAndInstIdAndNodeId(map.get("applyid").toString(), itemApply.getWfInstanceId(), wfItemNode1.getId());
+                    map.put("fileString", wfInstAuditTrack1.getFileString());
+                }
                 wfInstAuditTrackService.insertData(map);
             } else {
                 wfInstAuditTrack.setAuditDate(DateUtil.getSystemTimeStr());
@@ -1277,8 +1305,19 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     }
 
     @Override
-    public Result seeBook(Integer id) throws Exception {
-        WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectById(id);
-        return ResultUtil.success(wfInstAuditTrack.getFileString());
+    public Result seeBook(Integer id, Integer type) throws Exception {
+        if (type == 0) {
+            WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectById(id);
+            return ResultUtil.success(wfInstAuditTrack.getFileString());
+        } else if (type == 1) {
+            ItemApplyFiles itemApplyFiles = itemApplyFilesService.selectById(id);
+            return ResultUtil.success(itemApplyFiles.getFileString());
+        }
+        return null;
+    }
+
+    @Override
+    public void updateByPrimaryKeySelective(ItemApply itemApply) {
+        itemApplyMapper.updateByPrimaryKeySelective(itemApply);
     }
 }

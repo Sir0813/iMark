@@ -227,7 +227,7 @@
             `biz_charge_detail` AS cd
         LEFT JOIN biz_item_charge AS ic ON cd.charge_id = ic.id
         WHERE
-            cd.apply_id = #{applyId}
+            cd.apply_id = #{applyid}
         AND cd.pay_status = 0
         AND cd.is_del = 0
         AND cd.is_pay = 1

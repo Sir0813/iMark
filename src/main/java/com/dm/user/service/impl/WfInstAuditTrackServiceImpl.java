@@ -68,15 +68,23 @@ public class WfInstAuditTrackServiceImpl implements WfInstAuditTrackService {
     }
 
     @Override
-    public WfInstAuditTrack selectByApplyIdAndUserId(int applyid, String userId) {
+    public WfInstAuditTrack selectByApplyIdAndUserId(int applyid) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("applyid", applyid);
-        map.put("userId", userId);
         return wfInstAuditTrackMapper.selectByApplyIdAndUserId(map);
     }
 
     @Override
     public WfInstAuditTrack selectByNodeId(Integer id) {
         return wfInstAuditTrackMapper.selectByNodeId(id);
+    }
+
+    @Override
+    public WfInstAuditTrack selectByApplyIdAndInstIdAndNodeId(String applyid, String wfInstanceId, Integer id) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("applyid", applyid);
+        map.put("wfInstanceId", wfInstanceId);
+        map.put("id", id);
+        return wfInstAuditTrackMapper.selectByApplyIdAndInstIdAndNodeId(map);
     }
 }

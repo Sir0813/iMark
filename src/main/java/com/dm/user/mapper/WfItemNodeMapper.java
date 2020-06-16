@@ -80,4 +80,12 @@ public interface WfItemNodeMapper {
      * @return
      */
     WfItemNode selectPreviousNode(Map<String, Object> map);
+
+    /**
+     * 查询
+     *
+     * @param map
+     * @return
+     */
+    WfItemNode selectByAuditIdAndApplyId(Map<String, Object> map);
 }

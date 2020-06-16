@@ -297,8 +297,16 @@ public interface ItemApplyService {
      * 审批进度查看意见书
      *
      * @param id
+     * @param type
      * @return
      * @throws Exception
      */
-    Result seeBook(Integer id) throws Exception;
+    Result seeBook(Integer id, Integer type) throws Exception;
+
+    /**
+     * 修改
+     *
+     * @param itemApply
+     */
+    void updateByPrimaryKeySelective(ItemApply itemApply);
 }

@@ -76,7 +76,8 @@
                 orguser.remarks,
                 usercard.real_name
             ) AS realName,
-            ucuser.username AS userName
+            ucuser.username AS userName,
+            node.id AS id
         FROM
             wf_item_node_define AS node
         LEFT JOIN biz_org_users AS orguser ON node.audit_userid = orguser.userid
@@ -84,19 +85,26 @@
         LEFT JOIN uc_user AS ucuser ON node.audit_userid = ucuser.userid
         WHERE
             node.apply_id = #{applyid}
-        AND node.id > (
+        AND node.`order` >= (
             SELECT
-                wfin.nodeid
+                `order`
             FROM
-                wf_instance AS wfin
+                wf_item_node_define
             WHERE
-                wfin.id = (
+                id = (
                     SELECT
-                        apply.wf_instance_id
+                        wfin.nodeid
                     FROM
-                        biz_item_apply AS apply
+                        wf_instance AS wfin
                     WHERE
-                        apply.applyid = #{applyid}
+                        wfin.id = (
+                            SELECT
+                                apply.wf_instance_id
+                            FROM
+                                biz_item_apply AS apply
+                            WHERE
+                                apply.applyid = #{applyid}
+                        )
                 )
         )
         GROUP BY
@@ -133,7 +141,7 @@
     </select>
     <select id="selectFirstNode" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT
-            id,apply_id,audit_userid
+            id,apply_id,audit_userid, `order`
         FROM
             wf_item_node_define
         WHERE
@@ -159,5 +167,13 @@
                     id = #{nodeId}
             ) - 1
         )
+    </select>
+    <select id="selectByAuditIdAndApplyId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from wf_item_node_define
+        where apply_id = #{applyid}
+        and audit_userid = #{userId}
+        limit 1
     </select>
 </mapper>

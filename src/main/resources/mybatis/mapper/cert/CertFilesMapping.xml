@@ -229,7 +229,8 @@
         SELECT
             certfile.file_url,
             certfile.thumb_url,
-            certfile.detail
+            certfile.detail,
+            certfile.file_id
         FROM
             biz_item_apply_files AS applyfile
         LEFT JOIN biz_cert_files AS certfile ON applyfile.fileid = certfile.file_id
@@ -242,7 +243,8 @@
         SELECT
             certfile.file_url,
             certfile.thumb_url,
-            certfile.detail
+            certfile.detail,
+            certfile.file_id
         FROM
             biz_item_apply_files AS applyfile
         LEFT JOIN biz_cert_files AS certfile ON applyfile.fileid = certfile.file_id

@@ -213,9 +213,9 @@ public class ItemApplyController extends BaseController {
     }
 
     @ApiOperation(value = "审批进度中查看意见书", response = ResultUtil.class)
-    @RequestMapping(value = "/see/book/{id}", method = RequestMethod.GET)
-    public Result seeBook(@PathVariable Integer id) throws Exception {
-        return itemApplyService.seeBook(id);
+    @RequestMapping(value = "/see/book/{id}/{type}", method = RequestMethod.GET)
+    public Result seeBook(@PathVariable Integer id, @PathVariable int type) throws Exception {
+        return itemApplyService.seeBook(id, type);
     }
 
     @ApiOperation(value = "审批通过", response = ResultUtil.class)

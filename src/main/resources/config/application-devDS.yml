@@ -46,10 +46,10 @@ spring:
         resetEnable: false
       filter: stat,wall,log4j
         #stat:
-        #   log-slow-sql: true
-        #   slow-sql-millis: 1000
-        #  merge-sql: true
-        #wall:
+      #   log-slow-sql: true
+      #   slow-sql-millis: 1000
+      #  merge-sql: true
+      #wall:
       # config:
       #     multi-statement-allow: true
       #开启Web监控

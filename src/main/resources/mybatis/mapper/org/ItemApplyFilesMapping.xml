@@ -12,11 +12,11 @@
         <result column="supplement_id" jdbcType="INTEGER" property="supplementId"/>
         <result column="file_log_id" jdbcType="INTEGER" property="fileLogId"/>
         <result column="is_del" jdbcType="INTEGER" property="isDel"/>
-        <result column="file_string" jdbcType="VARCHAR" property="fileString"/>
+        <result column="file_string" jdbcType="LONGVARCHAR" property="fileString"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, applyid, fileid, requeredid, `describe`, created_date, file_types, is_del, supplement_id, file_log_id, file_string
-  </sql>
+    `id`, `applyid`, `fileid`, `requeredid`, `describe`, `created_date`, `file_types`, `is_del`, `supplement_id`, `file_log_id`, `file_string`
+    </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -126,7 +126,7 @@
     </delete>
     <select id="selectByApplyIdAndState" parameterType="java.util.Map" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"></include>
         FROM
         biz_item_apply_files
         WHERE

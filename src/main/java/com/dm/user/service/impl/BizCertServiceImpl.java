@@ -3,17 +3,11 @@ package com.dm.user.service.impl;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
-import com.dm.user.entity.BizCertModel;
-import com.dm.user.entity.BookView;
-import com.dm.user.entity.ItemApplyFiles;
-import com.dm.user.entity.WfInstAuditTrack;
+import com.dm.user.entity.*;
 import com.dm.user.mapper.BizCertModelMapper;
 import com.dm.user.msg.ItemApplyEnum;
 import com.dm.user.msg.ItemFileTypeEnum;
-import com.dm.user.service.BizCertService;
-import com.dm.user.service.ItemApplyFilesService;
-import com.dm.user.service.ItemApplyLogService;
-import com.dm.user.service.WfInstAuditTrackService;
+import com.dm.user.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +31,9 @@ public class BizCertServiceImpl implements BizCertService {
 
     @Autowired
     private ItemApplyLogService itemApplyLogService;
+
+    @Autowired
+    private ItemApplyService itemApplyService;
 
     @Override
     public BizCertModel selectByItemId(Integer itemid) {
@@ -63,6 +60,11 @@ public class BizCertServiceImpl implements BizCertService {
         } else {
             itemApplyFiles1.setFileString(itemApplyFiles.getFileString());
             itemApplyFilesService.updateData(itemApplyFiles1);
+        }
+        if (itemApplyFiles.getStatus() == ItemApplyEnum.CHECK_RETURN.getCode()) {
+            ItemApply itemApply = itemApplyService.selectById(itemApplyFiles.getApplyid());
+            itemApply.setStatus(ItemApplyEnum.FILE_CHECK.getCode());
+            itemApplyService.updateByPrimaryKeySelective(itemApply);
         }
         return ResultUtil.success(itemApplyFiles.getFileString());
     }
