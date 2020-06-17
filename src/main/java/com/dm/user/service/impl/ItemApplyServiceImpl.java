@@ -314,7 +314,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
         /* 收费项 */
         List<ApplyFee> applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
-        applyMap.put("isPay", applyFee.get(0));
+        applyMap.put("isPay", applyFee.size() == 0 ? "" : applyFee.get(0));
         if (itemApply.getPayStatus() == ItemApplyEnum.PAY_ALL.getCode()) {
             List<ApplyFee> applyFeeList = chargeDetailService.selectByApplyIdAndStatus(applyid);
             applyFeeList.remove(0);
@@ -1183,7 +1183,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         if (isNotProgress.size() == 1) {
             ItemApply itemApply = itemApplyMapper.selectByPrimaryKey(applyid);
             WfInstAuditTrack wfInstAuditTrack = wfInstAuditTrackService.selectByApplyIdAndInstIdAndNodeId(String.valueOf(applyid), itemApply.getWfInstanceId(), isNotProgress.get(0).getId());
-            if (null != wfInstAuditTrack) {
+            if (null != wfInstAuditTrack && wfInstAuditTrack.getStatus() != 2) {
                 isNotProgress.remove(0);
             }
         }

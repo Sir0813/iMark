@@ -2,10 +2,7 @@ package com.dm.user.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
-import com.dm.fchain.sdk.model.TransactionResult;
-import com.dm.fchain.sdk.msg.Result;
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.frame.jboot.util.DateUtil;
 import com.dm.user.entity.*;
@@ -57,9 +54,6 @@ public class CertFicateServiceImpl implements CertFicateService {
 
     @Autowired
     private PushMsgService pushMsgService;
-
-    @Autowired
-    private CIDService cidService;
 
     @Autowired
     private CertFicateService certFicateService;
@@ -118,7 +112,7 @@ public class CertFicateServiceImpl implements CertFicateService {
             String fileJson = JSON.toJSONString(fileMap);
             map.put("存证文件", fileJson);
             String jsonString = JSON.toJSONString(map);
-            Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), jsonString);
+            /*Result result = cidService.save(dataHash, certFicate.getCertName(), DateUtil.timeToString2(new Date()), jsonString);
             if (result.getData() instanceof TransactionResult) {
                 TransactionResult tr = (TransactionResult) result.getData();
                 certFicate.setCertChainno(tr.getTransactionID());
@@ -128,7 +122,7 @@ public class CertFicateServiceImpl implements CertFicateService {
                 logger.error(result.getMsg());
                 logger.error(result.getData().toString());
                 throw new Exception();
-            }
+            }*/
             certFicate.setCertDate(new Date());
             certFicate.setCertStatus(certFicate.getCertIsconf() == 1 ? CertStateEnum.OTHERS_CONFIRM.getCode() : CertStateEnum.CERT_SUCCESS.getCode());
             sendMsg = true;

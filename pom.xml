@@ -90,22 +90,22 @@
             <artifactId>tid-sdk-java</artifactId>
             <version>0.0.9</version>
         </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.dm.app.tid</groupId>
             <artifactId>tid-sdk-java</artifactId>
             <version>0.1.2</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.dm.app.did</groupId>
             <artifactId>did-sdk-java</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.6</version>
         </dependency>
         <!-- 存证sdk 存证 0.0.3 -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.dm</groupId>
             <artifactId>cid-sdk-java</artifactId>
             <version>0.0.4</version>
-        </dependency>
+        </dependency>-->
         <!-- 极光推送jar -->
         <dependency>
             <groupId>cn.jpush.api</groupId>
@@ -210,6 +210,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>4.10.29.ALL</version>
         </dependency>
         <!--end:视频获取某一帧的图片-->
         <!-- 排除spring-boot-starter-web中的Tomcat -->

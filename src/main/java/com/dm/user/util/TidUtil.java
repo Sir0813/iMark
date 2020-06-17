@@ -1,10 +1,10 @@
 package com.dm.user.util;
 
-import com.dm.app.tid.sdk.model.form.BindForm;
-import com.dm.app.tid.sdk.model.form.RegisterForm;
-import com.dm.app.tid.sdk.model.form.SimpleForm;
-import com.dm.app.tid.sdk.model.form.UpdateTidForm;
-import com.dm.app.tid.sdk.service.TIDService;
+import com.dm.app.did.sdk.model.form.BindForm;
+import com.dm.app.did.sdk.model.form.RegisterForm;
+import com.dm.app.did.sdk.model.form.SimpleForm;
+import com.dm.app.did.sdk.service.DataService;
+import com.dm.app.did.sdk.service.impl.DataServiceImpl;
 import com.dm.fchain.sdk.msg.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class TidUtil {
     private static Logger logger = LoggerFactory.getLogger(TidUtil.class);
 
     @Autowired
-    private TIDService tidService;
+    private DataService didService;
 
     @Value("${tid.appCode}")
     private String appCode;
@@ -34,7 +34,7 @@ public class TidUtil {
      * @throws Exception
      */
     public boolean queryTid(String userCard) throws Exception {
-        Result result = tidService.queryTID(userCard);
+        Result result = didService.queryTID(userCard);
         if ("200".equals(result.getCode())) {
             return true;
         } else {
@@ -49,17 +49,18 @@ public class TidUtil {
      * @param password 密码
      */
     public boolean register(String userName, String password) throws Exception {
+        DataService dataService = new DataServiceImpl();
         RegisterForm registerForm = new RegisterForm();
         registerForm.setAppCode(appCode);
-        registerForm.setPassword(password);
-        registerForm.setMobile(appCode + userName);
         registerForm.setAppPassword(passWord);
-        Result register = tidService.register(registerForm);
+        registerForm.setCode(appCode + userName);
+        registerForm.setPassword(password);
+        Result register = dataService.register(registerForm);
         if ("200".equals(register.getCode())) {
-            logger.info("注册用户绑定链上身份成功!");
+            logger.info(userName + "==>注册用户绑定链上身份成功!");
             return true;
         } else {
-            logger.error(userName + "注册用户绑定链上身份失败!");
+            logger.error(userName + "==>注册用户绑定链上身份失败!");
             logger.error(register.getCode());
             logger.error(register.getMsg());
             logger.error(String.valueOf(register.getData()));
@@ -77,16 +78,16 @@ public class TidUtil {
         SimpleForm simpleForm = new SimpleForm();
         simpleForm.setCode(userCard);
         simpleForm.setPassword(passWord);
-        Result result = tidService.addTid(simpleForm);
+        Result result = didService.registerApp(simpleForm);
         if ("200".equals(result.getCode())) {
-            logger.info("身份证号绑定链上身份成功");
+            logger.info(userCard + "==>实名身份上链成功");
             return true;
         } else {
-            logger.error(userCard + "身份证号绑定链上身份失败");
+            logger.error(userCard + "==>实名身份上链失败");
             logger.error(result.getCode());
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
-            throw new Exception();
+            return false;
         }
     }
 
@@ -98,7 +99,7 @@ public class TidUtil {
      * @param newPassword 新密码
      */
     public boolean updatePassword(String userName, String oldPassWord, String newPassword) throws Exception {
-        UpdateTidForm tidForm = new UpdateTidForm();
+        /*UpdateTidForm tidForm = new UpdateTidForm();
         tidForm.setCode(appCode + userName);
         tidForm.setPassword(oldPassWord);
         tidForm.setNewPassword(newPassword);
@@ -112,7 +113,8 @@ public class TidUtil {
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
             return false;
-        }
+        }*/
+        return false;
     }
 
     /**
@@ -123,13 +125,13 @@ public class TidUtil {
      * @throws Exception
      */
     public String checkTid(String userName, String userCard) throws Exception {
-        Result result = tidService.checkTID(appCode + userName, userCard);
+        Result result = didService.checkTID(appCode + userName, userCard);
         if ("200".equals(result.getCode())) {
             logger.info(userName + "已经绑定实名身份，且实名身份与证件号码相匹配");
         } else if ("201".equals(result.getCode())) {
             logger.info(userName + "未绑定实名身份，可以绑定");
         } else {
-            logger.error(userName + "不能绑定实名身份");
+            logger.error(userName + "身份异常");
             logger.error(result.getCode());
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
@@ -146,22 +148,22 @@ public class TidUtil {
      * @return
      * @throws Exception
      */
-    public void addBind(String userName, String userPassword, String userCard) throws Exception {
+    public boolean addBind(String userName, String userPassword, String userCard) throws Exception {
         BindForm bindForm = new BindForm();
         bindForm.setUserNo(appCode + userName);
         bindForm.setPassword(userPassword);
         bindForm.setToUserNo(userCard);
         bindForm.setToUserPassword(passWord);
-        Result result = tidService.addBind(bindForm);
+        Result result = didService.addBind(bindForm);
         if ("200".equals(result.getCode())) {
-            logger.info(userName + "临时身份绑定身份证号身份成功");
-            return;
+            logger.info(userName + "==>实名身份绑定成功");
+            return true;
         } else {
-            logger.error(userName + "临时身份绑定身份证号身份失败");
+            logger.error(userName + "==>实名身份绑定失败");
             logger.error(result.getCode());
             logger.error(result.getMsg());
             logger.error(String.valueOf(result.getData()));
-            throw new Exception();
+            return false;
         }
     }
 
@@ -171,7 +173,7 @@ public class TidUtil {
      * @param userName
      */
     public String history(String userName) throws Exception {
-        String history = tidService.history(appCode + userName);
+        String history = didService.history(appCode + userName);
         return history;
     }
 

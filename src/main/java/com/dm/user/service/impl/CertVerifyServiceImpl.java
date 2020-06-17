@@ -1,7 +1,5 @@
 package com.dm.user.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dm.cid.sdk.service.CIDService;
 import com.dm.fchain.sdk.helper.CryptoHelper;
 import com.dm.user.entity.CertFicate;
 import com.dm.user.entity.CertFiles;
@@ -33,9 +31,6 @@ public class CertVerifyServiceImpl implements CertVerifyService {
     @Autowired
     private CertFicateService certFicateService;
 
-    @Autowired
-    private CIDService cidService;
-
     @Override
     public boolean verifyCert(CertFicate certFicate) throws Exception {
         CertFicate cf = certFicateService.selectByIdAndState(certFicate.getCertId());
@@ -61,11 +56,11 @@ public class CertVerifyServiceImpl implements CertVerifyService {
         }
         deleteCertFile(certFiles);
         String realHash = CryptoHelper.hash(cf.getCertHash() + cf.getCertId());
-        String result = cidService.query(realHash);
+        /*String result = cidService.query(realHash);
         JSONObject jsonObject = JSONObject.parseObject(result);
         if ("200".equals(jsonObject.get("code").toString()) && "Success".equals(jsonObject.get("msg").toString())) {
             return true;
-        }
+        }*/
         return false;
     }
 

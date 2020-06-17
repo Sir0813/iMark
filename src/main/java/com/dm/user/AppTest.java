@@ -1,12 +1,11 @@
 package com.dm.user;
 
 
-import com.dm.app.tid.sdk.model.form.BindForm;
-import com.dm.app.tid.sdk.model.form.RegisterForm;
-import com.dm.app.tid.sdk.model.form.SimpleForm;
-import com.dm.app.tid.sdk.model.form.UpdateTidForm;
-import com.dm.app.tid.sdk.service.TIDService;
-import com.dm.app.tid.sdk.service.impl.TIDServiceImpl;
+import com.dm.app.did.sdk.model.form.BindForm;
+import com.dm.app.did.sdk.model.form.RegisterForm;
+import com.dm.app.did.sdk.model.form.SimpleForm;
+import com.dm.app.did.sdk.service.DataService;
+import com.dm.app.did.sdk.service.impl.DataServiceImpl;
 import com.dm.fchain.sdk.msg.Result;
 
 /**
@@ -18,15 +17,31 @@ import com.dm.fchain.sdk.msg.Result;
 public class AppTest {
     public static void main(String[] args) throws Exception {
         /*CIDService chainCertService = new CIDServiceImpl();
-        Result result = chainCertService.save("123r1sdfsdf234143", "1312312312312", DateUtil.timeToString2(new Date()), "123123");
+        Result result = chainCertService.save("123r1sdfs12312321df234143", "1311231232312312312", DateUtil.timeToString2(new Date()), "123123");
         System.out.println(result.getCode());*/
-//        checkTid("18811012222", "131182199408131233");
-        // aaaa11112222  asdf23   aaaawer234
-//        addTid("iMark1111");
-//        register("18808080808", "9651e04928c2568e8a8b70d643bd9790");
-//        addTid("user0002");
-//        addBind("user002", "qwe123", "user001");
-//        checkTid("18808080808", "131182199408131233");
+        /**
+         * 注册临时身份
+         */
+//        register("1880808080856757", "9651e04928c2568e8a8b70d643bd9790");
+        /**
+         * 注册实名身份
+         */
+//        addTid("user000209");
+        /**
+         * 绑定实名身份
+         */
+//        addBind("1880808080856757", "9651e04928c2568e8a8b70d643bd9790", "user000209");
+        /**
+         * 历史信息
+         */
+        /*String history = history("1880808080856757");
+        System.out.println(history);*/
+
+        DataService dataService = new DataServiceImpl();
+        Result result = dataService.queryTID("user000209");
+        System.out.println(result);
+
+//        checkTid("1880808080856757", "user000209");
 //        TIDService tidService = new TIDServiceImpl();
 //        String iMark18808080808123123 = tidService.history("iMark18811012959");
 //        System.out.println(iMark18808080808123123);
@@ -43,47 +58,11 @@ public class AppTest {
 //        System.out.println(history);
 
 
-        /*BaseFont baseFont = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-        InputStream input = new FileInputStream(new File("D:\\360极速浏览器下载\\test.pdf"));
-        PdfReader reader = new PdfReader(input);
-        OutputStream output = new FileOutputStream(new File("D:\\360极速浏览器下载\\test1.pdf"));
-        PdfStamper stamper = new PdfStamper(reader, output);
-        PdfContentByte page = stamper.getOverContent(1);
-        //将文字贴入pdf
-        *//*page.beginText();
-        page.setFontAndSize(baseFont, 12);
-        BaseColor coler = new BaseColor(0, 0, 0);
-        page.setColorFill(coler);
-        page.setTextMatrix(100, 500); //设置文字在页面中的坐标
-        page.showText("添加文字信息");
-        page.endText();*//*
-        //将图片贴入pdf
-        Image image = Image.getInstance("D:\\360极速浏览器下载\\8.png");
-        image.setAbsolutePosition(300, 300); //设置图片在页面中的坐标
-        page.addImage(image);
-        stamper.close();
-        reader.close();
-        input.close();*/
-
-        /*String pdfname = "D:\\360极速浏览器下载\\test.pdf";
-        //查找签名位置
-        float[] position = PdfKeywordFinder.getAddImagePositionXY(pdfname, "委托人（签字）：");
-        PdfReader pdfReader = new PdfReader(new FileInputStream(new File("D:\\360极速浏览器下载\\test.pdf")));
-        System.out.println("x:" + position[1] + " y:" + position[2]);
-        PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileOutputStream("E:\\opt\\czt-upload\\headfile\\123.pdf"));
-        Image image = Image.getInstance("E:\\opt\\czt-upload\\headfile\\328e66d3-1d74-4569-8d68-fd03f6cb03c2.png");
-        image.setAbsolutePosition(position[1], position[2]);
-        System.out.println("pages:" + pdfReader.getNumberOfPages());
-        PdfContentByte content = pdfStamper.getOverContent(1);
-        content.addImage(image);
-        pdfStamper.close();*/
-
-
     }
 
 
-    private static String appCode = "iMark";
-    private static String passWord = "123456";
+    private static String appCode = "zgc_app_616_1_code ";
+    private static String passWord = "zgc_app_616_1_password";
 
     /**
      * 链上注册用户身份
@@ -92,13 +71,13 @@ public class AppTest {
      * @param password 密码
      */
     public static void register(String userName, String password) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
+        DataService dataService = new DataServiceImpl();
         RegisterForm registerForm = new RegisterForm();
         registerForm.setAppCode(appCode);
         registerForm.setAppPassword(passWord);
-        registerForm.setMobile(appCode + userName);
+        registerForm.setCode(appCode + userName);
         registerForm.setPassword(password);
-        Result register = tidService.register(registerForm);
+        Result register = dataService.register(registerForm);
         if (!"200".equals(register.getCode())) {
             System.out.println("用户身份上链注册失败!");
         } else {
@@ -113,11 +92,11 @@ public class AppTest {
      * @throws Exception
      */
     public static void addTid(String userCard) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
+        DataService dataService = new DataServiceImpl();
         SimpleForm simpleForm = new SimpleForm();
         simpleForm.setCode(userCard);
         simpleForm.setPassword(passWord);
-        Result result = tidService.addTid(simpleForm);
+        Result result = dataService.registerApp(simpleForm);
         System.out.println(result.getCode());
     }
 
@@ -129,7 +108,7 @@ public class AppTest {
      * @param newPassword 新密码
      */
     public static void updatePassword(String userName, String oldPassWord, String newPassword) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
+        /*TIDService tidService = new TIDServiceImpl();
         UpdateTidForm tidForm = new UpdateTidForm();
         tidForm.setCode(appCode + userName);
         tidForm.setPassword(oldPassWord);
@@ -139,7 +118,7 @@ public class AppTest {
             System.out.println("身份修改成功!");
         } else {
             System.out.println("身份信息修改失败!");
-        }
+        }*/
     }
 
     /**
@@ -148,8 +127,8 @@ public class AppTest {
      * @param userName
      */
     public static String history(String userName) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
-        String history = tidService.history(appCode + userName);
+        DataService didService = new DataServiceImpl();
+        String history = didService.history(appCode + userName);
         return history;
     }
 
@@ -161,8 +140,9 @@ public class AppTest {
      * @throws Exception
      */
     public static void checkTid(String userName, String userCard) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
-        Result result = tidService.checkTID(appCode + userName, userCard);
+        DataService dataService = new DataServiceImpl();
+        Result result = dataService.checkTID(appCode + userName, userCard);
+        System.out.println(result.getCode());
         if ("201".equals(result.getCode())) {
             // 账号未实名认证 可以实名
         } else if ("203".equals(result.getCode())) {
@@ -175,13 +155,13 @@ public class AppTest {
     }
 
     public static void addBind(String userName, String userPassword, String userCard) throws Exception {
-        TIDService tidService = new TIDServiceImpl();
+        DataService dataService = new DataServiceImpl();
         BindForm bindForm = new BindForm();
         bindForm.setUserNo(appCode + userName);
         bindForm.setPassword(userPassword);
         bindForm.setToUserNo(userCard);
         bindForm.setToUserPassword(passWord);
-        Result result = tidService.addBind(bindForm);
+        Result result = dataService.addBind(bindForm);
         System.out.println(result.getCode());
     }
 
