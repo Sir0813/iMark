@@ -53,6 +53,12 @@ public class ItemApplyController extends BaseController {
         return itemApplyService.updateToDraft(itemApply);
     }
 
+    @ApiOperation(value = "支付宝--返回支付订单信息", response = ResultUtil.class)
+    @RequestMapping(value = "/first/alipay", method = RequestMethod.POST)
+    public Result firstAlipay(@RequestBody Map<String, Object> map) throws Exception {
+        return itemApplyService.firstAlipay(map);
+    }
+
     @ApiOperation(value = "确认提交订单(首款)", response = ResultUtil.class)
     @RequestMapping(value = "/submitApply", method = RequestMethod.POST)
     public Result submitApply(@RequestBody ItemApply itemApply) throws Exception {

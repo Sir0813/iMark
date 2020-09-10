@@ -1,9 +1,12 @@
 package com.dm.user.service.impl;
 
+import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.dm.frame.jboot.msg.Result;
 import com.dm.frame.jboot.msg.ResultUtil;
 import com.dm.frame.jboot.user.LoginUserHelper;
 import com.dm.frame.jboot.util.DateUtil;
+import com.dm.user.config.AlipayConfig;
 import com.dm.user.entity.*;
 import com.dm.user.mapper.ItemApplyMapper;
 import com.dm.user.msg.*;
@@ -314,7 +317,7 @@ public class ItemApplyServiceImpl implements ItemApplyService {
         List<CertFiles> updateFiles = certFilesService.selectIsUpdateFiles(applyid);
         /* 收费项 */
         List<ApplyFee> applyFee = chargeDetailService.selectByApplyIdAndStatus(applyid);
-        applyMap.put("isPay", applyFee.size() == 0 ? "" : applyFee.get(0));
+        applyMap.put("isPay", applyFee.size() == 0 ? null : applyFee.get(0));
         if (itemApply.getPayStatus() == ItemApplyEnum.PAY_ALL.getCode()) {
             List<ApplyFee> applyFeeList = chargeDetailService.selectByApplyIdAndStatus(applyid);
             applyFeeList.remove(0);
@@ -1319,5 +1322,27 @@ public class ItemApplyServiceImpl implements ItemApplyService {
     @Override
     public void updateByPrimaryKeySelective(ItemApply itemApply) {
         itemApplyMapper.updateByPrimaryKeySelective(itemApply);
+    }
+
+    @Override
+    public Result firstAlipay(Map<String, Object> map) throws Exception {
+        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+        request.setReturnUrl(AlipayConfig.RETURN_URL);
+        request.setNotifyUrl(AlipayConfig.PAY_NOTIFY);
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+        // 订单描述
+        model.setBody("公正预付款");
+        // 订单标题
+        model.setSubject("公正预付款");
+        // 商户订单号 就是商户后台生成的订单号
+        String time = DateUtil.dateToString(new Date(), DateUtil.FORMAT_DATETIME1);
+        String uid = UUID.randomUUID().toString().replace("-", "");
+        model.setOutTradeNo(time + uid);
+        // 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天 (屁股后面的字母一定要带，不然报错)
+        model.setTimeoutExpress("30m");
+        model.setTotalAmount(map.get("price").toString());
+        request.setBizModel(model);
+        String body = AlipayConfig.getInstance().sdkExecute(request).getBody();
+        return ResultUtil.success(body);
     }
 }

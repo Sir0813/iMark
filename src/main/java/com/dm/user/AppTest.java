@@ -8,6 +8,8 @@ import com.dm.app.did.sdk.service.DataService;
 import com.dm.app.did.sdk.service.impl.DataServiceImpl;
 import com.dm.fchain.sdk.msg.Result;
 
+import java.util.UUID;
+
 /**
  * @Description
  * @Package src.main.java.com.dm.baas
@@ -37,9 +39,9 @@ public class AppTest {
         /*String history = history("1880808080856757");
         System.out.println(history);*/
 
-        DataService dataService = new DataServiceImpl();
+        /*DataService dataService = new DataServiceImpl();
         Result result = dataService.queryTID("user000209");
-        System.out.println(result);
+        System.out.println(result);*/
 
 //        checkTid("1880808080856757", "user000209");
 //        TIDService tidService = new TIDServiceImpl();
@@ -56,6 +58,9 @@ public class AppTest {
 //        updatePassword("18910500312", "11b0ac1a8ca68fad3f5e73858dc59070", "e6bb8eae2959e050997c58d15ea00577");
 //        String history = history("18910500312");
 //        System.out.println(history);
+
+        String s = UUID.randomUUID().toString().replace("-", "");
+        System.out.println(s);
 
 
     }

@@ -308,5 +308,13 @@ public interface ItemApplyService {
      *
      * @param itemApply
      */
-    void updateByPrimaryKeySelective(ItemApply itemApply);
+    void updateByPrimaryKeySelective(ItemApply itemApply) throws Exception;
+
+    /**
+     * 支付宝--预付款
+     *
+     * @param map
+     * @return
+     */
+    Result firstAlipay(Map<String, Object> map) throws Exception;
 }
